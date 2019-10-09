@@ -70,11 +70,11 @@
 			<artifactId>hibernate-types-52</artifactId>
 			<version>2.7.0</version>
 		</dependency>
-		<dependency>
-			<groupId>com.okta.spring</groupId>
-			<artifactId>okta-spring-boot-starter</artifactId>
-			<version>1.2.1</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.okta.spring</groupId>-->
+<!--			<artifactId>okta-spring-boot-starter</artifactId>-->
+<!--			<version>1.2.1</version>-->
+<!--		</dependency>-->
 <!--		<dependency>-->
 <!--			<groupId>org.flywaydb</groupId>-->
 <!--			<artifactId>flyway-core</artifactId>-->
