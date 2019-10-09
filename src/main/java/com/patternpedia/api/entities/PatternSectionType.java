@@ -1,4 +1,4 @@
-package com.patternpedia.demo.entities;
+package com.patternpedia.api.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,7 +17,7 @@ public class PatternSectionType implements Comparable<PatternSectionType> {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private Integer id;
+    private Long id;
     private String label;
     private String type;
     private Integer position;
