@@ -1,9 +1,7 @@
-package com.patternpedia.api.repositories;
+package com.patternpedia.demo.repositories;
 
-import com.patternpedia.api.entities.PatternGraph;
+import com.patternpedia.demo.entities.PatternGraph;
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.UUID;
-
-public interface PatternGraphRepository extends CrudRepository<PatternGraph, UUID> {
+public interface PatternGraphRepository extends CrudRepository<PatternGraph, String> {
 }

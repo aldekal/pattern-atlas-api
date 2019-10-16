@@ -1,4 +1,4 @@
-package com.patternpedia.api.entities;
+package com.patternpedia.demo.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
