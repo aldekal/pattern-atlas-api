@@ -13,8 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 public class PatternView extends PatternGraph {
 
-    public final boolean isview = true;
-
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             joinColumns = @JoinColumn(name = "pattern_view_id", referencedColumnName = "id"),

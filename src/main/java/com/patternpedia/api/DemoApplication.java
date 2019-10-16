@@ -1,19 +1,26 @@
 package com.patternpedia.api;
 
-import com.patternpedia.api.entities.PatternLanguage;
+import com.patternpedia.api.repositories.PatternLanguageRepository;
+import com.patternpedia.api.repositories.PatternRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
-import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import java.util.regex.Pattern;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @SpringBootApplication
 @EnableTransactionManagement
+@EnableWebMvc
+@Slf4j
 public class DemoApplication implements CommandLineRunner {
+
+    @Autowired
+    private PatternLanguageRepository patternLanguageRepository;
+
+    @Autowired
+    private PatternRepository patternRepository;
 
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
@@ -21,14 +28,6 @@ public class DemoApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-    }
-
-    @Configuration
-    public static class RepositoryConfig implements RepositoryRestConfigurer {
-        @Override
-        public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
-            config.exposeIdsFor(PatternLanguage.class, Pattern.class);
-        }
     }
 
    /* @Configuration

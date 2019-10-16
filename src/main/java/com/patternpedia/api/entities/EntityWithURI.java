@@ -1,8 +1,11 @@
 package com.patternpedia.api.entities;
 
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -14,6 +17,9 @@ import java.util.UUID;
 @MappedSuperclass
 @Data
 @NoArgsConstructor
+@TypeDefs({
+        @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
+})
 public abstract class EntityWithURI {
 
     @Id

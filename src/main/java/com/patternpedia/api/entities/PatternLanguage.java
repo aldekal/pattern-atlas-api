@@ -4,7 +4,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import java.net.URL;
 import java.util.List;
 
 @Entity
@@ -13,17 +16,18 @@ import java.util.List;
 @NoArgsConstructor
 public class PatternLanguage extends PatternGraph {
 
-    public final boolean isview = false;
-
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            joinColumns = @JoinColumn(name = "pattern_language_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "pattern_id", referencedColumnName = "id")
-    )
-    private List<Pattern> patterns;
+    private URL logo;
 
     @OneToMany
-    @OrderBy("position ASC")
-    private List<PatternSectionType> patternSchema;
+    private List<Pattern> patterns;
+
+    @OneToOne
+    private PatternSchema patternSchema;
+
+    @OneToMany
+    private List<DirectedEdge> directedEdges;
+
+    @OneToMany
+    private List<UndirectedEdge> undirectedEdges;
 
 }

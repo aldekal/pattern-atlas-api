@@ -1,6 +1,5 @@
 package com.patternpedia.api.entities;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,7 +8,6 @@ import javax.persistence.*;
 @Entity
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class PatternSection {
 
     @Id
@@ -22,4 +20,6 @@ public class PatternSection {
     @Lob
     private String value;
 
+    @ManyToOne
+    private Pattern pattern;
 }
