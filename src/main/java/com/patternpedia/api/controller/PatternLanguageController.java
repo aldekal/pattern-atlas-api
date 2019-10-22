@@ -1,11 +1,9 @@
 package com.patternpedia.api.controller;
 
-import com.patternpedia.api.entities.DirectedEdge;
-import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.entities.PatternLanguage;
-import com.patternpedia.api.entities.UndirectedEdge;
+import com.patternpedia.api.entities.*;
 import com.patternpedia.api.repositories.PatternLanguageRepository;
-import com.patternpedia.api.repositories.PatternRepository;
+import com.patternpedia.api.repositories.PatternSchemaRepository;
+import com.patternpedia.api.repositories.PatternSectionTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.hateoas.Resource;
@@ -25,14 +23,20 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @RequestMapping(value = "/patternLanguages", produces = "application/hal+json")
 public class PatternLanguageController {
 
+
+    // Todo Add Validators for pattern creation, which checks if pattern is compliant to PatternSchema
+
     private PatternLanguageRepository patternLanguageRepository;
-    private PatternRepository patternRepository;
+    private PatternSchemaRepository patternSchemaRepository;
+    private PatternSectionTypeRepository patternSectionTypeRepository;
 
     @Autowired
     public PatternLanguageController(PatternLanguageRepository patternLanguageRepository,
-                                     PatternRepository patternRepository) {
+                                     PatternSchemaRepository patternSchemaRepository,
+                                     PatternSectionTypeRepository patternSectionTypeRepository) {
         this.patternLanguageRepository = patternLanguageRepository;
-        this.patternRepository = patternRepository;
+        this.patternSchemaRepository = patternSchemaRepository;
+        this.patternSectionTypeRepository = patternSectionTypeRepository;
     }
 
     @GetMapping
@@ -47,7 +51,68 @@ public class PatternLanguageController {
                 linkTo(methodOn(PatternLanguageController.class).all()).withSelfRel());
     }
 
-    @GetMapping(value = "{patternLanguageId}")
+    @PostMapping
+    ResponseEntity<PatternLanguage> create(@RequestBody PatternLanguage patternLanguage) {
+        this.patternLanguageRepository.save(patternLanguage);
+        return ResponseEntity
+                .created(linkTo(methodOn(PatternLanguageController.class).one(patternLanguage.getId())).toUri())
+                .body(patternLanguage);
+    }
+
+    @PostMapping(value = "/{patternLanguageId/patternSchema")
+    ResponseEntity<PatternSchema> createPatternSchema(@PathVariable UUID patternLanguageId, @RequestBody PatternSchema patternSchema) {
+        // Todo Implement Test for createPatternSchema
+        PatternLanguage patternLanguage = this.patternLanguageRepository.findById(patternLanguageId)
+                .orElseThrow(() -> new ResourceNotFoundException("PatternLanguage not found: " + patternLanguageId));
+        patternSchema.setPatternLanguage(patternLanguage);
+
+        PatternSchema managedSchema = this.patternSchemaRepository.save(patternSchema);
+
+        return ResponseEntity
+                .created(linkTo(methodOn(PatternLanguageController.class).getPatternSchema(patternLanguageId)).toUri())
+                .body(managedSchema);
+    }
+
+    @PutMapping(value = "/{patternLanguageId}/patternSchema")
+    ResponseEntity<?> updatePatternSchema(@PathVariable UUID patternLanguageId, @RequestBody PatternSchema patternSchema) {
+        // Todo Implement Test for updatePatternSchema
+        PatternLanguage patternLanguage = this.patternLanguageRepository.findById(patternLanguageId)
+                .orElseThrow(() -> new ResourceNotFoundException("PatternLanguage not found: " + patternLanguageId));
+
+        if (patternLanguage.getPatternSchema().getId().equals(patternSchema.getId())) {
+            PatternSchema managedEntity = this.patternSchemaRepository.save(patternSchema);
+            return ResponseEntity.ok(managedEntity);
+        } else {
+            // PatternLanguage must not be changed
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping(value = "/{patternLanguageId/patternSchema}")
+    Resource<PatternSchema> getPatternSchema(@PathVariable UUID patternLanguageId) {
+        // Todo Implement Test for getPatternSchema
+        PatternLanguage patternLanguage = this.patternLanguageRepository.findById(patternLanguageId)
+                .orElseThrow(() -> new ResourceNotFoundException("PatternLanguage not found: " + patternLanguageId));
+
+        return new Resource<>(patternLanguage.getPatternSchema(),
+                linkTo(methodOn(PatternLanguageController.class).getPatternSchema(patternLanguage.getId())).withSelfRel(),
+                linkTo(methodOn(PatternLanguageController.class).one(patternLanguage.getId())).withRel("patternLanguage"));
+    }
+
+    @PutMapping(value = "/{patternLanguageId}")
+    ResponseEntity<?> update(@PathVariable UUID patternLanguageId, @RequestBody PatternLanguage patternLanguage) {
+        if (this.patternLanguageRepository.existsById(patternLanguageId)) {
+            // Since we found the pattern language we can update it
+            this.patternLanguageRepository.save(patternLanguage);
+            return ResponseEntity
+                    .ok(patternLanguage);
+        } else {
+            // Since we generate UUIDs in the database, resource generation via PUT with a given UUID is not allowed
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping(value = "/{patternLanguageId}")
     Resource<PatternLanguage> one(@PathVariable UUID patternLanguageId) {
         PatternLanguage patternLanguage = this.patternLanguageRepository.findById(patternLanguageId)
                 .orElseThrow(() -> new ResourceNotFoundException(patternLanguageId.toString()));

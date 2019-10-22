@@ -17,10 +17,10 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-@ToString(exclude = "patternLanguage")
 public class Pattern extends EntityWithURI {
 
     @JsonIgnore
+    @ToString.Exclude
     @ManyToOne
     private PatternLanguage patternLanguage;
 

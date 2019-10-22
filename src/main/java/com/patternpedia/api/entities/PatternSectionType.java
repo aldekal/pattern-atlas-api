@@ -10,7 +10,6 @@ import javax.persistence.*;
 @Entity
 @Data
 @NoArgsConstructor
-@ToString(exclude = "patternSchema")
 public class PatternSectionType implements Comparable<PatternSectionType> {
 
     @Id
@@ -24,7 +23,8 @@ public class PatternSectionType implements Comparable<PatternSectionType> {
     private Integer position;
 
     @JsonIgnore
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @ManyToOne
     private PatternSchema patternSchema;
 
     @Override

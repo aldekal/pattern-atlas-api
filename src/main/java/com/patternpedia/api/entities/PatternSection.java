@@ -1,7 +1,9 @@
 package com.patternpedia.api.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -20,6 +22,8 @@ public class PatternSection {
     @Lob
     private String value;
 
+    @JsonIgnore
+    @ToString.Exclude
     @ManyToOne
     private Pattern pattern;
 }

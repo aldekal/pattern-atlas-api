@@ -16,7 +16,7 @@ import java.util.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class DemoApplicationTests {
+public class PatternPediaAPITests {
 
     @Autowired
     private PatternRepository patternRepository;

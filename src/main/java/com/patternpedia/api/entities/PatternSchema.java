@@ -11,7 +11,6 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
-@ToString(exclude = "patterns")
 public class PatternSchema {
 
     @Id
@@ -23,6 +22,12 @@ public class PatternSchema {
     private List<PatternSectionType> patternSectionTypes;
 
     @JsonIgnore
+    @ToString.Exclude
+    @OneToOne
+    private PatternLanguage patternLanguage;
+
+    @JsonIgnore
+    @ToString.Exclude
     @OneToMany
     private List<Pattern> patterns;
 

@@ -13,7 +13,6 @@ import javax.persistence.ManyToOne;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-@ToString(exclude = "patternLanguage")
 public class UndirectedEdge extends PatternRelationDescriptor {
 
     @ManyToOne(optional = false)
@@ -23,6 +22,7 @@ public class UndirectedEdge extends PatternRelationDescriptor {
     private Pattern p2;
 
     @JsonIgnore
+    @ToString.Exclude
     @ManyToOne
     private PatternLanguage patternLanguage;
 

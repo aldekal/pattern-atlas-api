@@ -1,6 +1,7 @@
 package com.patternpedia.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.patternpedia.api.entities.DirectedEdge;
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternLanguage;
@@ -21,9 +22,10 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -57,6 +59,8 @@ public class PatternLanguageControllerTest {
         Pattern p1 = new Pattern();
         p1.setUri("http://patternpedia.org/testPatterns/TestPattern1");
         p1.setName("TestPattern1");
+
+        this.patternRepository.save(p1);
 
         MvcResult postResult = this.mockMvc.perform(
                 post("/patternLanguages/{id}/patterns", patternLanguage.getId())
@@ -181,4 +185,66 @@ public class PatternLanguageControllerTest {
         ).andExpect(status().isOk());
     }
 
+    @Test
+    public void testAddPatternLanguageSucceeds() throws Exception {
+        PatternLanguage patternLanguage = new PatternLanguage();
+        patternLanguage.setName("TestPatternLanguage5");
+        patternLanguage.setUri("http://patternpedia.org/testPatternLanguages/TestPatternLanguage5");
+        patternLanguage.setLogo(new URL("http://patternpedia.org/someLogo.png"));
+
+        MvcResult result = this.mockMvc.perform(
+                post("/patternLanguages")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(patternLanguage))
+        ).andExpect(status().isCreated())
+                .andReturn();
+
+        String location = result.getResponse().getHeader("Location");
+
+        this.mockMvc.perform(
+                get(location)
+        ).andExpect(status().isOk());
+    }
+
+    @Test
+    public void testUpdatePatternLanguageSucceeds() throws Exception {
+        PatternLanguage patternLanguage = new PatternLanguage();
+        patternLanguage.setName("TestPatternLanguage6");
+        patternLanguage.setUri("http://patternpedia.org/testPatternLanguages/TestPatternLanguage6");
+        patternLanguage.setLogo(new URL("http://patternpedia.org/someLogo.png"));
+
+        this.patternLanguageRepository.save(patternLanguage);
+
+        patternLanguage.setName("TestPatternLanguage6 - Updated");
+
+        ObjectNode expectedUpdate = this.objectMapper.createObjectNode();
+        expectedUpdate.put("name", "TestPatternLanguage6 - Updated");
+
+        MvcResult result = this.mockMvc.perform(
+                put("/patternLanguages/{patternLanguageId}", patternLanguage.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(patternLanguage))
+        ).andExpect(status().isOk())
+                .andExpect(content().json(this.objectMapper.writeValueAsString(expectedUpdate)))
+                .andReturn();
+
+        System.out.println(result.getResponse().getContentAsString());
+
+    }
+
+    @Test
+    public void testCreatePatternLanguageViaPutFailure() throws Exception {
+        PatternLanguage patternLanguage = new PatternLanguage();
+        patternLanguage.setName("TestPatternLanguage7");
+        patternLanguage.setUri("http://patternpedia.org/testPatternLanguages/TestPatternLanguage7");
+        patternLanguage.setLogo(new URL("http://patternpedia.org/someLogo.png"));
+
+        patternLanguage.setId(UUID.randomUUID());
+
+        this.mockMvc.perform(
+                put("/patternLanguages/{patternLanguageId}", patternLanguage.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(patternLanguage))
+        ).andExpect(status().is4xxClientError());
+    }
 }
