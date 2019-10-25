@@ -1,4 +1,4 @@
-package com.patternpedia.api;
+package com.patternpedia.api.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;

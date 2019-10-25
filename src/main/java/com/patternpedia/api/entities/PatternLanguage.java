@@ -4,9 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.net.URL;
 import java.util.List;
 
@@ -21,7 +19,7 @@ public class PatternLanguage extends PatternGraph {
     @OneToMany
     private List<Pattern> patterns;
 
-    @OneToOne
+    @OneToOne(mappedBy = "patternLanguage", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
     private PatternSchema patternSchema;
 
     @OneToMany

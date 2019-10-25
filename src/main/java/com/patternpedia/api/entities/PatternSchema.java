@@ -7,6 +7,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -14,16 +15,16 @@ import java.util.List;
 public class PatternSchema {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private UUID id;
 
     @OneToMany(cascade = CascadeType.ALL)
     @OrderBy("position ASC")
-    private List<PatternSectionType> patternSectionTypes;
+    private List<PatternSectionSchema> patternSectionSchemas;
 
     @JsonIgnore
     @ToString.Exclude
     @OneToOne
+    @MapsId
     private PatternLanguage patternLanguage;
 
     @JsonIgnore

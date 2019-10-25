@@ -6,7 +6,6 @@ import com.patternpedia.api.entities.UndirectedEdge;
 import com.patternpedia.api.repositories.DirectedEdgeRepository;
 import com.patternpedia.api.repositories.PatternLanguageRepository;
 import com.patternpedia.api.repositories.UndirectedEdgeReository;
-import com.patternpedia.api.repositories.UndirectedHyperedgeRepository;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +53,7 @@ public class PatternRelationDescriptorController {
         this.patternLanguageRepository.save(patternLanguage);
 
         return ResponseEntity
-                .created(linkTo(methodOn(PatternLanguageController.class).getDirectedEdgeById(patternLanguageId, directedEdge.getId())).toUri())
+                .created(linkTo(methodOn(PatternLanguageController.class).getDirectedEdgeOfPatternLanguageById(patternLanguageId, directedEdge.getId())).toUri())
                 .body(directedEdge);
     }
 
@@ -77,7 +76,7 @@ public class PatternRelationDescriptorController {
         this.patternLanguageRepository.save(patternLanguage);
 
         return ResponseEntity
-                .created(linkTo(methodOn(PatternLanguageController.class).getUndirectedEdgeById(patternLanguageId, undirectedEdge.getId())).toUri())
+                .created(linkTo(methodOn(PatternLanguageController.class).getUndirectedEdgeOfPatternLanguageById(patternLanguageId, undirectedEdge.getId())).toUri())
                 .body(undirectedEdge);
     }
 

@@ -1,4 +1,4 @@
-package com.patternpedia.api;
+package com.patternpedia.api.repository;
 
 import com.patternpedia.api.entities.*;
 import com.patternpedia.api.repositories.*;
@@ -16,7 +16,7 @@ import java.util.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class PatternPediaAPITests {
+public class RepositoryTest {
 
     @Autowired
     private PatternRepository patternRepository;

@@ -11,19 +11,15 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 public class PatternSection {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @OneToOne
-    private PatternSectionType type;
-
-    @Lob
-    private String value;
-
     @JsonIgnore
     @ToString.Exclude
     @ManyToOne
-    private Pattern pattern;
+    private PatternSectionSchema patternSectionSchema;
+
+    @Lob
+    private String value;
 }

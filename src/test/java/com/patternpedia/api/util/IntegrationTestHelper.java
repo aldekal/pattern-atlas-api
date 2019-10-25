@@ -21,9 +21,12 @@ public class IntegrationTestHelper {
                 .orElse(this.patternRepository.save(p));
     }
 
-    public PatternLanguage createOrGetPatternLanguage(PatternLanguage pl) {
-        return this.patternLanguageRepository.findById(pl.getId())
-                .orElse(this.patternLanguageRepository.save(pl));
+    public PatternLanguage createOrGetPatternLanguage(PatternLanguage patternLanguage) {
+        if (null != patternLanguage.getId() && this.patternLanguageRepository.existsById(patternLanguage.getId())) {
+            return this.patternLanguageRepository.findById(patternLanguage.getId()).get();
+        } else {
+            return this.patternLanguageRepository.save(patternLanguage);
+        }
     }
 
 }

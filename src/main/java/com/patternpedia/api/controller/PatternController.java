@@ -1,8 +1,7 @@
 package com.patternpedia.api.controller;
 
 import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.repositories.PatternRepository;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import com.patternpedia.api.service.PatternService;
 import org.springframework.hateoas.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,23 +11,26 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.UUID;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 @EnableWebMvc
 @RestController
 @RequestMapping(value = "/patterns", produces = "application/hal+json")
 public class PatternController {
 
-    private PatternRepository patternRepository;
+    private PatternService patternService;
 
-    public PatternController(PatternRepository patternRepository) {
-        this.patternRepository = patternRepository;
+    public PatternController(PatternService patternService) {
+        this.patternService = patternService;
     }
 
     @GetMapping(value = "/{patternId}")
     public Resource<Pattern> one(@PathVariable UUID patternId) {
-        Pattern pattern = this.patternRepository.findById(patternId)
-                .orElseThrow(() -> new ResourceNotFoundException("Pattern not found: " + patternId));
+        Pattern pattern = this.patternService.getPatternById(patternId);
         // Todo: Add link to patternViews
-        return new Resource<>(pattern);
-        // linkTo(methodOn(PatternLanguageController.class).one(pattern.getPatternLanguage().getId())).withRel("patternLanguage"));
+
+        return new Resource<>(pattern,
+                linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(pattern.getPatternLanguage().getId())).withRel("patternLanguage"));
     }
 }

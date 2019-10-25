@@ -1,14 +1,14 @@
-package com.patternpedia.api;
+package com.patternpedia.api.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.patternpedia.api.entities.DirectedEdge;
-import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.entities.PatternLanguage;
-import com.patternpedia.api.entities.UndirectedEdge;
+import com.patternpedia.api.entities.*;
 import com.patternpedia.api.repositories.DirectedEdgeRepository;
 import com.patternpedia.api.repositories.PatternLanguageRepository;
 import com.patternpedia.api.repositories.PatternRepository;
+import com.patternpedia.api.service.PatternLanguageService;
+import com.patternpedia.api.service.PatternService;
+import com.patternpedia.api.util.IntegrationTestHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,13 @@ public class PatternLanguageControllerTest {
     private PatternLanguageRepository patternLanguageRepository;
 
     @Autowired
+    private PatternLanguageService patternLanguageService;
+
+    @Autowired
     private PatternRepository patternRepository;
+
+    @Autowired
+    private PatternService patternService;
 
     @Autowired
     private DirectedEdgeRepository directedEdgeRepository;
@@ -48,8 +54,11 @@ public class PatternLanguageControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private IntegrationTestHelper integrationTestHelper;
+
     @Test
-    public void testAddPatternToPatternLanguageSucceeds() throws Exception {
+    public void addPatternToPatternLanguageSucceeds() throws Exception {
         PatternLanguage patternLanguage = new PatternLanguage();
         patternLanguage.setName("TestPatternLanguage1");
         patternLanguage.setUri("http://patternpedia.org/testPatternLanguages/TestPatternLanguage1");
@@ -77,7 +86,7 @@ public class PatternLanguageControllerTest {
     }
 
     @Test
-    public void testAddDirectedEdgeViaRepositorySucceeds() throws Exception {
+    public void addDirectedEdgeViaRepositorySucceeds() throws Exception {
         PatternLanguage patternLanguage = new PatternLanguage();
         patternLanguage.setName("TestPatternLanguage2");
         patternLanguage.setUri("http://patternpedia.org/testPatternLanguages/TestPatternLanguage2");
@@ -87,12 +96,14 @@ public class PatternLanguageControllerTest {
         Pattern p2 = new Pattern();
         p2.setUri("http://patternpedia.org/testPatterns/TestPattern2");
         p2.setName("TestPattern2");
+        p2.setPatternLanguage(patternLanguage);
 
         Pattern p3 = new Pattern();
         p3.setUri("http://patternpedia.org/testPatterns/TestPattern3");
         p3.setName("TestPattern3");
+        p3.setPatternLanguage(patternLanguage);
 
-        this.patternRepository.save(p2);
+        this.patternService.createPattern(p2);
         this.patternRepository.save(p3);
 
         DirectedEdge directedEdge = new DirectedEdge();
@@ -110,7 +121,7 @@ public class PatternLanguageControllerTest {
     }
 
     @Test
-    public void testAddDirectedEdgeSucceeds() throws Exception {
+    public void addDirectedEdgeSucceeds() throws Exception {
         PatternLanguage patternLanguage = new PatternLanguage();
         patternLanguage.setName("TestPatternLanguage3");
         patternLanguage.setUri("http://patternpedia.org/testPatternLanguages/TestPatternLanguage3");
@@ -148,7 +159,7 @@ public class PatternLanguageControllerTest {
     }
 
     @Test
-    public void testAddUndirectedEdgeSucceeds() throws Exception {
+    public void addUndirectedEdgeSucceeds() throws Exception {
         PatternLanguage patternLanguage = new PatternLanguage();
         patternLanguage.setName("TestPatternLanguage4");
         patternLanguage.setUri("http://patternpedia.org/testPatternLanguages/TestPatternLanguage4");
@@ -186,7 +197,7 @@ public class PatternLanguageControllerTest {
     }
 
     @Test
-    public void testAddPatternLanguageSucceeds() throws Exception {
+    public void addPatternLanguageSucceeds() throws Exception {
         PatternLanguage patternLanguage = new PatternLanguage();
         patternLanguage.setName("TestPatternLanguage5");
         patternLanguage.setUri("http://patternpedia.org/testPatternLanguages/TestPatternLanguage5");
@@ -207,7 +218,7 @@ public class PatternLanguageControllerTest {
     }
 
     @Test
-    public void testUpdatePatternLanguageSucceeds() throws Exception {
+    public void updatePatternLanguageSucceeds() throws Exception {
         PatternLanguage patternLanguage = new PatternLanguage();
         patternLanguage.setName("TestPatternLanguage6");
         patternLanguage.setUri("http://patternpedia.org/testPatternLanguages/TestPatternLanguage6");
@@ -233,7 +244,7 @@ public class PatternLanguageControllerTest {
     }
 
     @Test
-    public void testCreatePatternLanguageViaPutFailure() throws Exception {
+    public void createPatternLanguageViaPutFails() throws Exception {
         PatternLanguage patternLanguage = new PatternLanguage();
         patternLanguage.setName("TestPatternLanguage7");
         patternLanguage.setUri("http://patternpedia.org/testPatternLanguages/TestPatternLanguage7");
@@ -247,4 +258,47 @@ public class PatternLanguageControllerTest {
                         .content(this.objectMapper.writeValueAsString(patternLanguage))
         ).andExpect(status().is4xxClientError());
     }
+
+    @Test
+    public void createPatternLanguageWithPatternsAndRelationDescriptor() throws Exception {
+        PatternLanguage patternLanguage = new PatternLanguage();
+        patternLanguage.setName("TestPatternLanguage1");
+        patternLanguage.setUri("http://patternpedia.org/testPatternLanguages/TestPatternLanguage1");
+        patternLanguage.setLogo(new URL("http://patternpedia.org/someLogo.png"));
+
+        PatternSchema patternSchema = new PatternSchema();
+
+        PatternSectionSchema patternSectionSchema = new PatternSectionSchema();
+        patternSectionSchema.setPosition(1);
+        patternSectionSchema.setType("TestType");
+        patternSectionSchema.setName("TestName");
+        patternSectionSchema.setLabel("TestLabel");
+        patternSectionSchema.setPatternSchema(patternSchema);
+
+        List<PatternSectionSchema> patternSectionSchemas = new ArrayList<>();
+        patternSectionSchemas.add(patternSectionSchema);
+
+        patternSchema.setPatternSectionSchemas(patternSectionSchemas);
+
+        patternLanguage.setPatternSchema(patternSchema);
+
+        // patternLanguage = this.integrationTestHelper.createOrGetPatternLanguage(patternLanguage);
+
+        // patternLanguage = this.patternLanguageService.createPatternLanguage(patternLanguage);
+
+
+        MvcResult result = this.mockMvc.perform(post("/patternLanguages")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.objectMapper.writeValueAsString(patternLanguage)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+//        assertThat(patternLanguage).hasFieldOrPropertyWithValue("name", "TestPatternLanguage1");
+//        assertThat(patternLanguage.getPatternSchema()).isNotNull();
+//        assertThat(patternLanguage.getPatternSchema().getPatternSectionSchemas()).isNotNull();
+//        assertThat(patternLanguage.getPatternSchema().getPatternSectionSchemas().size()).isEqualTo(1);
+//        assertThat(patternLanguage.getPatternSchema().getPatternSectionSchemas().get(0)).isEqualToComparingOnlyGivenFields(patternSectionSchema, "type", "name", "label", "position");
+
+    }
+
 }

@@ -6,17 +6,20 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
 @NoArgsConstructor
-public class PatternSectionType implements Comparable<PatternSectionType> {
+public class PatternSectionSchema implements Comparable<PatternSectionSchema> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String label;
+
+    private String name;
 
     private String type;
 
@@ -27,8 +30,13 @@ public class PatternSectionType implements Comparable<PatternSectionType> {
     @ManyToOne
     private PatternSchema patternSchema;
 
+    @JsonIgnore
+    @ToString.Exclude
+    @OneToMany
+    private List<PatternSection> patternSections;
+
     @Override
-    public int compareTo(PatternSectionType o) {
+    public int compareTo(PatternSectionSchema o) {
         return position.compareTo(o.position);
     }
 }
