@@ -16,10 +16,10 @@ public class PatternLanguage extends PatternGraph {
 
     private URL logo;
 
-    @OneToMany
+    @OneToMany(mappedBy = "patternLanguage")
     private List<Pattern> patterns;
 
-    @OneToOne(mappedBy = "patternLanguage", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    @OneToOne(mappedBy = "patternLanguage", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private PatternSchema patternSchema;
 
     @OneToMany

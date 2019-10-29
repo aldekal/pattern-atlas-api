@@ -18,6 +18,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
+@CrossOrigin
 @RequestMapping(value = "/patternLanguages", produces = "application/hal+json")
 public class PatternLanguageController {
 
@@ -33,6 +34,7 @@ public class PatternLanguageController {
         List<Resource<PatternLanguage>> patternLanguages = this.patternLanguageService.getAllPatternLanguages()
                 .stream()
                 .map(patternLanguage -> new Resource<>(patternLanguage,
+                        linkTo(methodOn(PatternLanguageController.class).getAllPatternsOfPatternLanguage(patternLanguage.getId())).withRel("patterns"),
                         linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguage.getId())).withSelfRel(),
                         linkTo(methodOn(PatternLanguageController.class).getAllPatternLanguages()).withRel("patternLanguages")))
                 .collect(Collectors.toList());
@@ -51,7 +53,6 @@ public class PatternLanguageController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     ResponseEntity<PatternLanguage> createPatternLanguage(@RequestBody PatternLanguage patternLanguage) {
-        System.out.println(patternLanguage);
         PatternLanguage createdPatternLanguage = this.patternLanguageService.createPatternLanguage(patternLanguage);
         return ResponseEntity
                 .created(linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(createdPatternLanguage.getId())).toUri())
@@ -91,7 +92,7 @@ public class PatternLanguageController {
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
     }
 
-    // Todo Implement Integration Test for getAllPatternsOfPatternLanguaget
+    // Todo Implement Integration Test for getAllPatternsOfPatternLanguage
     @GetMapping(value = "/{patternLanguageId}/patterns")
     Resources<Resource<Pattern>> getAllPatternsOfPatternLanguage(@PathVariable UUID patternLanguageId) {
         List<Resource<Pattern>> patterns = this.patternLanguageService.getAllPatternsOfPatternLanguage(patternLanguageId)
@@ -139,7 +140,7 @@ public class PatternLanguageController {
     }
 
     @GetMapping(value = "/{patternLanguageId}/undirectedEdges/{undirectedEdgeId}")
-    Resource<UndirectedEdge> getUndirectedEdgeOfPatternLanguageById(@PathVariable UUID patternLanguageId, @PathVariable Long undirectedEdgeId) {
+    Resource<UndirectedEdge> getUndirectedEdgeOfPatternLanguageById(@PathVariable UUID patternLanguageId, @PathVariable UUID undirectedEdgeId) {
         PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
 
         UndirectedEdge result = patternLanguage.getUndirectedEdges().stream()
@@ -151,7 +152,7 @@ public class PatternLanguageController {
     }
 
     @GetMapping(value = "/{patternLanguageId}/directedEdges/{directedEdgeId}")
-    Resource<DirectedEdge> getDirectedEdgeOfPatternLanguageById(@PathVariable UUID patternLanguageId, @PathVariable Long directedEdgeId) {
+    Resource<DirectedEdge> getDirectedEdgeOfPatternLanguageById(@PathVariable UUID patternLanguageId, @PathVariable UUID directedEdgeId) {
         PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
 
         DirectedEdge result = patternLanguage.getDirectedEdges().stream()

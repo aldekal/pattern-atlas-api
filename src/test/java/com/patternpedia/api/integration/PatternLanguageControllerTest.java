@@ -63,13 +63,13 @@ public class PatternLanguageControllerTest {
         patternLanguage.setName("TestPatternLanguage1");
         patternLanguage.setUri("http://patternpedia.org/testPatternLanguages/TestPatternLanguage1");
         patternLanguage.setLogo(new URL("http://patternpedia.org/someLogo.png"));
-        this.patternLanguageRepository.save(patternLanguage);
+        patternLanguage = this.integrationTestHelper.createOrGetPatternLanguage(patternLanguage);
 
         Pattern p1 = new Pattern();
         p1.setUri("http://patternpedia.org/testPatterns/TestPattern1");
         p1.setName("TestPattern1");
 
-        this.patternRepository.save(p1);
+        p1 = this.integrationTestHelper.createOrGetPattern(p1);
 
         MvcResult postResult = this.mockMvc.perform(
                 post("/patternLanguages/{id}/patterns", patternLanguage.getId())
@@ -164,6 +164,7 @@ public class PatternLanguageControllerTest {
         patternLanguage.setName("TestPatternLanguage4");
         patternLanguage.setUri("http://patternpedia.org/testPatternLanguages/TestPatternLanguage4");
         patternLanguage.setLogo(new URL("http://patternpedia.org/someLogo.png"));
+
         this.patternLanguageRepository.save(patternLanguage);
 
         Pattern p6 = new Pattern();

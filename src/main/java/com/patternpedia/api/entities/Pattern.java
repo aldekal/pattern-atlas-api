@@ -1,7 +1,6 @@
 package com.patternpedia.api.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.patternpedia.api.validator.PatternContentConstraint;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

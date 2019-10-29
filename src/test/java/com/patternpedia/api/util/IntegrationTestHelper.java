@@ -17,13 +17,16 @@ public class IntegrationTestHelper {
     private PatternLanguageRepository patternLanguageRepository;
 
     public Pattern createOrGetPattern(Pattern p) {
-        return this.patternRepository.findById(p.getId())
-                .orElse(this.patternRepository.save(p));
+        if (null != p.getUri() && this.patternRepository.existsByUri(p.getUri())) {
+            return this.patternRepository.findByUri(p.getUri()).get();
+        } else {
+            return this.patternRepository.save(p);
+        }
     }
 
     public PatternLanguage createOrGetPatternLanguage(PatternLanguage patternLanguage) {
-        if (null != patternLanguage.getId() && this.patternLanguageRepository.existsById(patternLanguage.getId())) {
-            return this.patternLanguageRepository.findById(patternLanguage.getId()).get();
+        if (null != patternLanguage.getUri() && this.patternLanguageRepository.existsByUri(patternLanguage.getUri())) {
+            return this.patternLanguageRepository.findByUri(patternLanguage.getUri()).get();
         } else {
             return this.patternLanguageRepository.save(patternLanguage);
         }
