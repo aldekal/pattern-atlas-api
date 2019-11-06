@@ -10,7 +10,6 @@ import com.patternpedia.api.exception.PatternNotFoundException;
 import com.patternpedia.api.repositories.PatternLanguageRepository;
 import com.patternpedia.api.repositories.PatternRepository;
 import org.springframework.stereotype.Service;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +80,7 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
 
     @Override
     public void deletePatternLanguage(PatternLanguage patternLanguage) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
