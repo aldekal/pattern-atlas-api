@@ -28,9 +28,11 @@ public class Pattern extends EntityWithURI {
     @ManyToMany(mappedBy = "patterns")
     private List<PatternView> patternViews;
 
+    @JsonIgnore
     @ManyToOne
     private PatternSchema patternSchema;
 
+    @JsonIgnore
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
     private Object content;

@@ -20,7 +20,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
 @CrossOrigin
-@RequestMapping(value = "/patternLanguages", produces = "application/hal+json")
+@RequestMapping(value = "/patternlanguages", produces = "application/hal+json")
 public class PatternRelationDescriptorController {
 
     private PatternLanguageRepository patternLanguageRepository;

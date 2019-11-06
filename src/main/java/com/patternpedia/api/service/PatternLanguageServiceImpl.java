@@ -140,6 +140,12 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
     }
 
     @Override
+    public PatternLanguage getPatternLanguageByUri(String uri) {
+        return this.patternLanguageRepository.findByUri(uri)
+                .orElseThrow(() -> new PatternLanguageNotFoundException(String.format("PatternLanguage with URI %s not found!", uri)));
+    }
+
+    @Override
     public PatternSchema getPatternSchemaByPatternLanguageId(UUID patternLanguageId) {
         return this.getPatternLanguageById(patternLanguageId).getPatternSchema();
     }

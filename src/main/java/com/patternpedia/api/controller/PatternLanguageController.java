@@ -10,6 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -18,7 +22,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping(value = "/patternLanguages", produces = "application/hal+json")
 public class PatternLanguageController {
 
@@ -42,14 +46,28 @@ public class PatternLanguageController {
                 linkTo(methodOn(PatternLanguageController.class).getAllPatternLanguages()).withSelfRel());
     }
 
+    @GetMapping(value = "/search/findByUri", params = "encodedUri")
+    Resource<PatternLanguage> getAllPatternLanguages(@RequestParam String encodedUri) throws UnsupportedEncodingException {
+        String uri = URLDecoder.decode(encodedUri, StandardCharsets.UTF_8.toString());
+
+        PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageByUri(uri);
+
+        return new Resource<>(patternLanguage,
+                linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguage.getId())).withSelfRel(),
+                linkTo(methodOn(PatternLanguageController.class).getAllPatternsOfPatternLanguage(patternLanguage.getId())).withRel("patterns"),
+                linkTo(methodOn(PatternLanguageController.class).getAllPatternLanguages()).withRel("patternLanguages"));
+    }
+
     @GetMapping(value = "/{patternLanguageId}")
     Resource<PatternLanguage> getPatternLanguageById(@PathVariable UUID patternLanguageId) {
         PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
         return new Resource<>(patternLanguage,
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguage.getId())).withSelfRel(),
+                linkTo(methodOn(PatternLanguageController.class).getAllPatternsOfPatternLanguage(patternLanguage.getId())).withRel("patterns"),
                 linkTo(methodOn(PatternLanguageController.class).getAllPatternLanguages()).withRel("patternLanguages"));
     }
 
+    @CrossOrigin(exposedHeaders = "Location")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     ResponseEntity<PatternLanguage> createPatternLanguage(@RequestBody PatternLanguage patternLanguage) {
@@ -99,6 +117,7 @@ public class PatternLanguageController {
                 .stream()
                 .map(pattern -> new Resource<>(pattern,
                         linkTo(methodOn(PatternLanguageController.class).getPatternOfPatternLanguageById(pattern.getPatternLanguage().getId(), pattern.getId())).withSelfRel(),
+                        linkTo(methodOn(PatternLanguageController.class).getPatternContentOfPattern(patternLanguageId, pattern.getId())).withRel("content"),
                         linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(pattern.getPatternLanguage().getId())).withRel("patternLanguage")))
                 .collect(Collectors.toList());
         return new Resources<>(patterns,
@@ -135,8 +154,19 @@ public class PatternLanguageController {
 
         return new Resource<>(pattern,
                 linkTo(methodOn(PatternLanguageController.class).getPatternOfPatternLanguageById(patternLanguageId, patternId)).withSelfRel(),
+                linkTo(methodOn(PatternLanguageController.class).getPatternContentOfPattern(patternLanguageId, patternId)).withRel("content"),
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
 
+    }
+
+    @GetMapping(value = "/{patternLanguageId}/patterns/{patternId}/content")
+    Resource<Object> getPatternContentOfPattern(@PathVariable UUID patternLanguageId, @PathVariable UUID patternId) {
+
+        Pattern pattern = this.patternLanguageService.getPatternOfPatternLanguageById(patternLanguageId, patternId);
+        return new Resource<>(pattern.getContent(),
+                linkTo(methodOn(PatternLanguageController.class).getPatternContentOfPattern(patternLanguageId, patternId)).withSelfRel(),
+                linkTo(methodOn(PatternLanguageController.class).getPatternOfPatternLanguageById(patternLanguageId, patternId)).withRel("pattern"),
+                linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
     }
 
     @GetMapping(value = "/{patternLanguageId}/undirectedEdges/{undirectedEdgeId}")

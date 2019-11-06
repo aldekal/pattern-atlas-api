@@ -14,6 +14,8 @@ public interface PatternLanguageService {
 
     PatternLanguage getPatternLanguageById(UUID patternLanguageId);
 
+    PatternLanguage getPatternLanguageByUri(String uri);
+
     PatternLanguage updatePatternLanguage(PatternLanguage patternLanguage);
 
     void deletePatternLanguage(PatternLanguage patternLanguage);
