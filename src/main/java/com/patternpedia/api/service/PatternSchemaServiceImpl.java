@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.stream.Collectors.toList;
+
 @Service
 public class PatternSchemaServiceImpl implements PatternSchemaService {
 
@@ -30,7 +32,17 @@ public class PatternSchemaServiceImpl implements PatternSchemaService {
         if (null == patternSchema) {
             throw new NullPatternSchemaException();
         }
+        List<PatternSectionSchema> patternSectionSchemas = patternSchema.getPatternSectionSchemas();
+        patternSchema.setPatternSectionSchemas(new ArrayList<>());
+        patternSchema = this.patternSchemaRepository.save(patternSchema);
 
+        PatternSchema finalPatternSchema = patternSchema;
+        List<PatternSectionSchema> persistedSectionSchemas = patternSectionSchemas.stream()
+                .map(patternSectionSchema -> {
+                    patternSectionSchema.setPatternSchema(finalPatternSchema);
+                    return this.patternSectionSchemaRepository.save(patternSectionSchema);
+                }).collect(toList());
+        patternSchema.setPatternSectionSchemas(persistedSectionSchemas);
         return this.patternSchemaRepository.save(patternSchema);
     }
 
