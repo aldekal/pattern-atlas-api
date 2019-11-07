@@ -1,5 +1,6 @@
 package com.patternpedia.api.integration;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.patternpedia.api.entities.*;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -302,4 +304,36 @@ public class PatternLanguageControllerTest {
 
     }
 
+    @Test
+    public void getAllPatternFromPatternLanguageSucceeds() throws Exception {
+        PatternLanguage patternLanguage = new PatternLanguage();
+        patternLanguage.setName("TestPatternLanguage1");
+        patternLanguage.setUri("http://patternpedia.org/patternlanguages/TestPatternLanguage1");
+        patternLanguage = this.integrationTestHelper.createOrGetPatternLanguage(patternLanguage);
+
+        Pattern p1 = new Pattern();
+        p1.setUri("http://patternpedia.org/patternlanguages/TestPatternLanguage1/TestPattern1");
+        p1.setName("TestPattern1");
+        p1.setPatternLanguage(patternLanguage);
+        p1 = this.integrationTestHelper.createOrGetPattern(p1);
+
+        Pattern p2 = new Pattern();
+        p2.setUri("http://patternpedia.org/patternlanguages/TestPatternLanguage1/TestPattern2");
+        p2.setName("TestPattern2");
+        p2.setPatternLanguage(patternLanguage);
+        p2 = this.integrationTestHelper.createOrGetPattern(p2);
+        List<Pattern> patterns = new ArrayList<>();
+        patterns.add(p1);
+        patterns.add(p2);
+        patternLanguage.setPatterns(patterns);
+        this.patternLanguageRepository.save(patternLanguage);
+
+        String expectedContent = String.format("{\"_embedded\":{\"patterns\":[{\"id\": \"%s\"},{\"id\": \"%s\"}]}}",p1.getId(), p2.getId());
+        JsonNode expectedResult = this.objectMapper.readTree(expectedContent);
+
+        MvcResult getResult = this.mockMvc.perform(
+                get("/patternLanguages/{id}/patterns", patternLanguage.getId())
+        ).andExpect(status().isOk())
+                .andExpect(content().json(expectedResult.toString())).andReturn();
+    }
 }
