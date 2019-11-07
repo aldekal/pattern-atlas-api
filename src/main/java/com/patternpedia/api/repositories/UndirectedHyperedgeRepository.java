@@ -7,7 +7,5 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.UUID;
 
-@CrossOrigin
-@RepositoryRestResource
 public interface UndirectedHyperedgeRepository extends CrudRepository<UndirectedHyperedge, UUID> {
 }

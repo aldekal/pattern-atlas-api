@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import java.util.Optional;
 import java.util.UUID;
 
-@CrossOrigin
-@RepositoryRestResource
 public interface PatternViewRepository extends CrudRepository<PatternView, UUID> {
 
     public Optional<PatternView> findByUri(String uri);

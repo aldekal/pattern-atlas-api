@@ -7,7 +7,5 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.UUID;
 
-@CrossOrigin
-@RepositoryRestResource
 public interface UndirectedEdgeReository extends CrudRepository<UndirectedEdge, UUID> {
 }
