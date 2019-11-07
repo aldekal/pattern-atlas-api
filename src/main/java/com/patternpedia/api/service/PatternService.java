@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import java.util.UUID;
 
 public interface PatternService {
+
     Pattern createPattern(@Valid @PatternContentConstraint Pattern pattern);
 
     Pattern updatePattern(@Valid @PatternContentConstraint Pattern pattern);
@@ -14,5 +15,7 @@ public interface PatternService {
     void deletePattern(Pattern pattern);
 
     Pattern getPatternById(UUID patternId);
+
+    Pattern getPatternByUri(String uri);
 
 }

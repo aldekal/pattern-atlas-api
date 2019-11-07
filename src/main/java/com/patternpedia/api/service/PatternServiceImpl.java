@@ -60,4 +60,10 @@ public class PatternServiceImpl implements PatternService {
         return this.patternRepository.findById(patternId)
                 .orElseThrow(() -> new PatternNotFoundException(String.format("Pattern %s not found!", patternId)));
     }
+
+    @Override
+    public Pattern getPatternByUri(String uri) {
+        return this.patternRepository.findByUri(uri)
+                .orElseThrow(() -> new PatternNotFoundException(String.format("Pattern with URI %s not found!", uri)));
+    }
 }
