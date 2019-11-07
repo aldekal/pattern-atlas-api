@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.patternpedia.api.entities.*;
-import com.patternpedia.api.repositories.DirectedEdgeRepository;
-import com.patternpedia.api.repositories.PatternLanguageRepository;
-import com.patternpedia.api.repositories.PatternRepository;
+import com.patternpedia.api.repositories.*;
 import com.patternpedia.api.service.PatternLanguageService;
 import com.patternpedia.api.service.PatternService;
 import com.patternpedia.api.util.IntegrationTestHelper;
@@ -25,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -58,6 +55,12 @@ public class PatternLanguageControllerTest {
 
     @Autowired
     private IntegrationTestHelper integrationTestHelper;
+
+    @Autowired
+    private PatternSchemaRepository patternSchemaRepository;
+
+    @Autowired
+    private PatternSectionSchemaRepository patternSectionSchemaRepository;
 
     @Test
     public void addPatternToPatternLanguageSucceeds() throws Exception {
@@ -328,12 +331,43 @@ public class PatternLanguageControllerTest {
         patternLanguage.setPatterns(patterns);
         this.patternLanguageRepository.save(patternLanguage);
 
-        String expectedContent = String.format("{\"_embedded\":{\"patterns\":[{\"id\": \"%s\"},{\"id\": \"%s\"}]}}",p1.getId(), p2.getId());
+        String expectedContent = String.format("{\"_embedded\":{\"patterns\":[{\"id\": \"%s\"},{\"id\": \"%s\"}]}}", p1.getId(), p2.getId());
         JsonNode expectedResult = this.objectMapper.readTree(expectedContent);
 
-        MvcResult getResult = this.mockMvc.perform(
+        this.mockMvc.perform(
                 get("/patternLanguages/{id}/patterns", patternLanguage.getId())
         ).andExpect(status().isOk())
-                .andExpect(content().json(expectedResult.toString())).andReturn();
+                .andExpect(content().json(expectedResult.toString()));
     }
+
+    @Test
+    public void getPatternSchemaSucceeds() throws Exception {
+        PatternLanguage patternLanguage = new PatternLanguage();
+        patternLanguage.setName("TestPatternLanguage1");
+        patternLanguage.setUri("http://patternpedia.org/patternlanguages/TestPatternLanguage1");
+
+        PatternSchema patternSchema = new PatternSchema();
+        patternSchema.setPatternLanguage(patternLanguage);
+        patternLanguage.setPatternSchema(patternSchema);
+
+        PatternSectionSchema patternSectionSchema = new PatternSectionSchema();
+        patternSectionSchema.setPatternSchema(patternSchema);
+        patternSectionSchema.setLabel("Test");
+        patternSectionSchema.setName("Test");
+        patternSectionSchema.setPosition(0);
+
+        List<PatternSectionSchema> patternSectionSchemas = new ArrayList<>();
+        patternSectionSchemas.add(patternSectionSchema);
+        patternSchema.setPatternSectionSchemas(patternSectionSchemas);
+        this.patternLanguageRepository.save(patternLanguage);
+
+        MvcResult result = this.mockMvc.perform(
+                get("/patternLanguages/{id}/patternSchema", patternLanguage.getId())
+        ).andExpect(status().isOk()).andReturn();
+
+        System.out.println(result.getResponse().getContentAsString());
+
+    }
+
+
 }
