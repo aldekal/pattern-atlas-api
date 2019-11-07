@@ -1,13 +1,12 @@
 package com.patternpedia.api.service;
 
-import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.entities.PatternLanguage;
-import com.patternpedia.api.entities.PatternSchema;
+import com.patternpedia.api.entities.*;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface PatternLanguageService {
+
     PatternLanguage createPatternLanguage(PatternLanguage patternLanguage);
 
     List<PatternLanguage> getAllPatternLanguages();
@@ -31,5 +30,9 @@ public interface PatternLanguageService {
     PatternSchema getPatternSchemaByPatternLanguageId(UUID patternLanguageId);
 
     PatternSchema updatePatternSchemaByPatternLanguageId(UUID patternLanguageId, PatternSchema patternSchema);
+
+    List<DirectedEdge> getDirectedEdgesByPatternLanguageId(UUID patternLanguageId);
+
+    List<UndirectedEdge> getUndirectedEdgesByPatternLanguageId(UUID patternLanguageId);
 
 }

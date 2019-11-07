@@ -1,8 +1,6 @@
 package com.patternpedia.api.service;
 
-import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.entities.PatternLanguage;
-import com.patternpedia.api.entities.PatternSchema;
+import com.patternpedia.api.entities.*;
 import com.patternpedia.api.exception.NullPatternLanguageException;
 import com.patternpedia.api.exception.NullPatternSchemaException;
 import com.patternpedia.api.exception.PatternLanguageNotFoundException;
@@ -23,11 +21,14 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
 
     private PatternLanguageRepository patternLanguageRepository;
     private PatternRepository patternRepository;
+    private PatternService patternService;
 
     public PatternLanguageServiceImpl(PatternSchemaService patternSchemaService,
+                                      PatternService patternService,
                                       PatternLanguageRepository patternLanguageRepository,
                                       PatternRepository patternRepository) {
         this.patternSchemaService = patternSchemaService;
+        this.patternService = patternService;
         this.patternLanguageRepository = patternLanguageRepository;
         this.patternRepository = patternRepository;
     }
@@ -52,6 +53,8 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
 
     @Override
     public PatternLanguage updatePatternLanguage(PatternLanguage patternLanguage) {
+        // At the moment we just support updating fields of PatternLanguage but no sub resources such as Patterns or PatternSchema.
+        // So we just ignore patterns, schema and edges contained in given patternLanguage.
         if (null == patternLanguage) {
             throw new NullPatternLanguageException();
         }
@@ -60,20 +63,11 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
             throw new PatternLanguageNotFoundException(String.format("PatternLanguage %s not found", patternLanguage.getId()));
         }
 
-        // Persist new patterns
-        if (null != patternLanguage.getPatterns()) {
-            List<Pattern> patterns = patternLanguage.getPatterns().stream()
-                    .map(pattern -> {
-                        if (!this.patternRepository.existsById(pattern.getId())) {
-                            pattern.setPatternLanguage(patternLanguage);
-                            return this.patternRepository.save(pattern);
-                        } else {
-                            return pattern;
-                        }
-                    })
-                    .collect(Collectors.toList());
-            patternLanguage.setPatterns(patterns);
-        }
+        // Here we reset patternSchema, patterns, undirectedEdges and directedEdges to what is already stored
+        patternLanguage.setPatternSchema(this.getPatternSchemaByPatternLanguageId(patternLanguage.getId()));
+        patternLanguage.setPatterns(this.getAllPatternsOfPatternLanguage(patternLanguage.getId()));
+        patternLanguage.setUndirectedEdges(this.getUndirectedEdgesByPatternLanguageId(patternLanguage.getId()));
+        patternLanguage.setDirectedEdges(this.getDirectedEdgesByPatternLanguageId(patternLanguage.getId()));
 
         return this.patternLanguageRepository.save(patternLanguage);
     }
@@ -157,6 +151,18 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
         PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
         patternSchema.setPatternLanguage(patternLanguage);
         return this.patternSchemaService.updatePatternSchema(patternSchema);
+    }
+
+    @Override
+    public List<DirectedEdge> getDirectedEdgesByPatternLanguageId(UUID patternLanguageId) {
+        PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
+        return patternLanguage.getDirectedEdges();
+    }
+
+    @Override
+    public List<UndirectedEdge> getUndirectedEdgesByPatternLanguageId(UUID patternLanguageId) {
+        PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
+        return patternLanguage.getUndirectedEdges();
     }
 
 }
