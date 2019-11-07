@@ -105,7 +105,6 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
 
         // first clean up foreign key mappings
         pattern.setPatternLanguage(null);
-        pattern.setPatternSchema(null);
         pattern.setPatternViews(new ArrayList<>());
         // Todo: Remove pattern from pattern views
         this.patternRepository.save(pattern);
