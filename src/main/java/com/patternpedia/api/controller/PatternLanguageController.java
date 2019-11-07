@@ -43,6 +43,7 @@ public class PatternLanguageController {
                         linkTo(methodOn(PatternLanguageController.class).getAllPatternLanguages()).withRel("patternLanguages")))
                 .collect(Collectors.toList());
         return new Resources<>(patternLanguages,
+                linkTo(methodOn(PatternLanguageController.class).getAllPatternLanguages()).withRel("/search/findByUri"),
                 linkTo(methodOn(PatternLanguageController.class).getAllPatternLanguages()).withSelfRel());
     }
 
