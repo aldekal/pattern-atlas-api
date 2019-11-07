@@ -17,7 +17,7 @@ public class PatternSchema {
     @Id
     private UUID id;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "patternSchema", cascade = CascadeType.ALL)
     @OrderBy("position ASC")
     private List<PatternSectionSchema> patternSectionSchemas;
 
@@ -26,10 +26,4 @@ public class PatternSchema {
     @OneToOne
     @MapsId
     private PatternLanguage patternLanguage;
-
-    @JsonIgnore
-    @ToString.Exclude
-    @OneToMany
-    private List<Pattern> patterns;
-
 }
