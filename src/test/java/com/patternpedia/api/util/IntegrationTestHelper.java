@@ -32,4 +32,11 @@ public class IntegrationTestHelper {
         }
     }
 
+    public PatternLanguage getDefaultPatternLanguage() {
+        PatternLanguage patternLanguage = new PatternLanguage();
+        patternLanguage.setName("TestPatternLanguage1");
+        patternLanguage.setUri("http://patternpedia.org/patternlanguages/TestPatternLanguage1");
+        return this.createOrGetPatternLanguage(patternLanguage);
+    }
+
 }
