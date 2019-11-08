@@ -1,18 +1,12 @@
 package com.patternpedia.api.rest.controller;
 
 import com.patternpedia.api.entities.DirectedEdge;
-import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.UndirectedEdge;
-import com.patternpedia.api.repositories.DirectedEdgeRepository;
-import com.patternpedia.api.repositories.PatternLanguageRepository;
-import com.patternpedia.api.repositories.UndirectedEdgeReository;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import com.patternpedia.api.service.PatternRelationDescriptorService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -20,61 +14,29 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @CrossOrigin
-@RequestMapping(value = "/patternlanguages", produces = "application/hal+json")
+@RequestMapping(produces = "application/hal+json")
 public class PatternRelationDescriptorController {
 
-    private PatternLanguageRepository patternLanguageRepository;
-    private DirectedEdgeRepository directedEdgeRepository;
-    private UndirectedEdgeReository undirectedEdgeReository;
+    private PatternRelationDescriptorService patternRelationDescriptorService;
 
-    public PatternRelationDescriptorController(PatternLanguageRepository patternLanguageRepository,
-                                               DirectedEdgeRepository directedEdgeRepository,
-                                               UndirectedEdgeReository undirectedEdgeReository) {
-        this.patternLanguageRepository = patternLanguageRepository;
-        this.directedEdgeRepository = directedEdgeRepository;
-        this.undirectedEdgeReository = undirectedEdgeReository;
+    public PatternRelationDescriptorController(PatternRelationDescriptorService patternRelationDescriptorService) {
+        this.patternRelationDescriptorService = patternRelationDescriptorService;
     }
 
-    @PostMapping(value = "/{patternLanguageId}/directedEdges")
+    @PostMapping(value = "/patternLanguages/{patternLanguageId}/directedEdges")
     @ResponseStatus(HttpStatus.CREATED)
     ResponseEntity<?> createDirectedEdge(@PathVariable UUID patternLanguageId, @RequestBody DirectedEdge directedEdge) {
-        PatternLanguage patternLanguage = this.patternLanguageRepository.findById(patternLanguageId)
-                .orElseThrow(() -> new ResourceNotFoundException("Pattern Language not found: " + patternLanguageId));
-
-        directedEdge.setPatternLanguage(patternLanguage);
-        this.directedEdgeRepository.save(directedEdge);
-
-        if (patternLanguage.getDirectedEdges() != null) {
-            patternLanguage.getDirectedEdges().add(directedEdge);
-        } else {
-            List<DirectedEdge> directedEdges = new ArrayList<>();
-            directedEdges.add(directedEdge);
-            patternLanguage.setDirectedEdges(directedEdges);
-        }
-        this.patternLanguageRepository.save(patternLanguage);
+        directedEdge = this.patternRelationDescriptorService.createDirectedEdge(directedEdge, patternLanguageId);
 
         return ResponseEntity
                 .created(linkTo(methodOn(PatternLanguageController.class).getDirectedEdgeOfPatternLanguageById(patternLanguageId, directedEdge.getId())).toUri())
                 .body(directedEdge);
     }
 
-    @PostMapping(value = "/{patternLanguageId}/undirectedEdges")
+    @PostMapping(value = "/patternLanguages/{patternLanguageId}/undirectedEdges")
     @ResponseStatus(HttpStatus.CREATED)
     ResponseEntity<?> createUndirectedEdge(@PathVariable UUID patternLanguageId, @RequestBody UndirectedEdge undirectedEdge) {
-        PatternLanguage patternLanguage = this.patternLanguageRepository.findById(patternLanguageId)
-                .orElseThrow(() -> new ResourceNotFoundException("Pattern Language not found: " + patternLanguageId));
-
-        undirectedEdge.setPatternLanguage(patternLanguage);
-        this.undirectedEdgeReository.save(undirectedEdge);
-
-        if (patternLanguage.getUndirectedEdges() != null) {
-            patternLanguage.getUndirectedEdges().add(undirectedEdge);
-        } else {
-            List<UndirectedEdge> undirectedEdges = new ArrayList<>();
-            undirectedEdges.add(undirectedEdge);
-            patternLanguage.setUndirectedEdges(undirectedEdges);
-        }
-        this.patternLanguageRepository.save(patternLanguage);
+        undirectedEdge = this.patternRelationDescriptorService.createUndirectedEdge(undirectedEdge, patternLanguageId);
 
         return ResponseEntity
                 .created(linkTo(methodOn(PatternLanguageController.class).getUndirectedEdgeOfPatternLanguageById(patternLanguageId, undirectedEdge.getId())).toUri())
