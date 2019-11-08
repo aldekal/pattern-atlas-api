@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class PatternLanguageServiceImpl implements PatternLanguageService {
@@ -73,7 +72,7 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
     }
 
     @Override
-    public void deletePatternLanguage(PatternLanguage patternLanguage) {
+    public void deletePatternLanguage(UUID patternLanguageId) {
         throw new UnsupportedOperationException();
     }
 

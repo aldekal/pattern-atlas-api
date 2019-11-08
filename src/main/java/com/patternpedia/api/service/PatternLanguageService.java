@@ -17,7 +17,7 @@ public interface PatternLanguageService {
 
     PatternLanguage updatePatternLanguage(PatternLanguage patternLanguage);
 
-    void deletePatternLanguage(PatternLanguage patternLanguage);
+    void deletePatternLanguage(UUID patternLanguageId);
 
     List<Pattern> getAllPatternsOfPatternLanguage(UUID patternLanguageId);
 
