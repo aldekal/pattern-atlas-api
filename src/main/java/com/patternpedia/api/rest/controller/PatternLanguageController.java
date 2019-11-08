@@ -1,11 +1,13 @@
-package com.patternpedia.api.controller;
+package com.patternpedia.api.rest.controller;
 
-import com.patternpedia.api.entities.*;
+import com.patternpedia.api.entities.DirectedEdge;
+import com.patternpedia.api.entities.PatternLanguage;
+import com.patternpedia.api.entities.PatternSchema;
+import com.patternpedia.api.entities.UndirectedEdge;
 import com.patternpedia.api.service.PatternLanguageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,24 +38,34 @@ public class PatternLanguageController {
         List<EntityModel<PatternLanguage>> patternLanguages = this.patternLanguageService.getAllPatternLanguages()
                 .stream()
                 .map(patternLanguage -> new EntityModel<>(patternLanguage,
-                        linkTo(methodOn(PatternLanguageController.class).getAllPatternsOfPatternLanguage(patternLanguage.getId())).withRel("patterns"),
+                        linkTo(methodOn(PatternController.class).getAllPatternsOfPatternLanguage(patternLanguage.getId())).withRel("patterns"),
                         linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguage.getId())).withSelfRel(),
                         linkTo(methodOn(PatternLanguageController.class).getAllPatternLanguages()).withRel("patternLanguages")))
                 .collect(Collectors.toList());
+
+        UriTemplate uriTemplate = UriTemplate.of("/findByUri")
+                .with(new TemplateVariable("uri", TemplateVariable.VariableType.REQUEST_PARAM));
+        Link findByUriLink = null;
+        try {
+            findByUriLink = linkTo(methodOn(PatternLanguageController.class).findPatternLangaugeByUri(null)).withRel("findByUri");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
         return new CollectionModel<>(patternLanguages,
-                linkTo(methodOn(PatternLanguageController.class).getAllPatternLanguages()).withRel("/findByUri"),
+                findByUriLink,
                 linkTo(methodOn(PatternLanguageController.class).getAllPatternLanguages()).withSelfRel());
     }
 
-    @GetMapping(value = "/findByUri", params = "encodedUri")
-    EntityModel<PatternLanguage> getAllPatternLanguages(@RequestParam String encodedUri) throws UnsupportedEncodingException {
+    @GetMapping(value = "/findByUri")
+    EntityModel<PatternLanguage> findPatternLangaugeByUri(@RequestParam String encodedUri) throws UnsupportedEncodingException {
         String uri = URLDecoder.decode(encodedUri, StandardCharsets.UTF_8.toString());
 
         PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageByUri(uri);
 
         return new EntityModel<>(patternLanguage,
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguage.getId())).withSelfRel(),
-                linkTo(methodOn(PatternLanguageController.class).getAllPatternsOfPatternLanguage(patternLanguage.getId())).withRel("patterns"),
+                linkTo(methodOn(PatternController.class).getAllPatternsOfPatternLanguage(patternLanguage.getId())).withRel("patterns"),
                 linkTo(methodOn(PatternLanguageController.class).getAllPatternLanguages()).withRel("patternLanguages"));
     }
 
@@ -62,12 +74,12 @@ public class PatternLanguageController {
         PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
         return new EntityModel<>(patternLanguage,
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguage.getId())).withSelfRel(),
-                linkTo(methodOn(PatternLanguageController.class).getAllPatternsOfPatternLanguage(patternLanguage.getId())).withRel("patterns"),
+                linkTo(methodOn(PatternController.class).getAllPatternsOfPatternLanguage(patternLanguage.getId())).withRel("patterns"),
                 linkTo(methodOn(PatternLanguageController.class).getAllPatternLanguages()).withRel("patternLanguages"));
     }
 
-    @CrossOrigin(exposedHeaders = "Location")
     @PostMapping
+    @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
     ResponseEntity<PatternLanguage> createPatternLanguage(@RequestBody PatternLanguage patternLanguage) {
         PatternLanguage createdPatternLanguage = this.patternLanguageService.createPatternLanguage(patternLanguage);
@@ -93,7 +105,7 @@ public class PatternLanguageController {
 
         return new EntityModel<>(schema,
                 linkTo(methodOn(PatternLanguageController.class).getPatternSchema(patternLanguageId)).withSelfRel()
-                .andAffordance(afford(methodOn(PatternLanguageController.class).updatePatternSchema(patternLanguageId, null))),
+                        .andAffordance(afford(methodOn(PatternLanguageController.class).updatePatternSchema(patternLanguageId, null))),
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
     }
 
@@ -113,65 +125,6 @@ public class PatternLanguageController {
     ResponseEntity<PatternSchema> updatePatternSchema(@PathVariable UUID patternLanguageId, @RequestBody PatternSchema patternSchema) {
         PatternSchema schema = this.patternLanguageService.updatePatternSchemaByPatternLanguageId(patternLanguageId, patternSchema);
         return ResponseEntity.ok(schema);
-    }
-
-    // Todo Implement Integration Test for getAllPatternsOfPatternLanguage
-    @GetMapping(value = "/{patternLanguageId}/patterns")
-    CollectionModel<EntityModel<Pattern>> getAllPatternsOfPatternLanguage(@PathVariable UUID patternLanguageId) {
-        List<EntityModel<Pattern>> patterns = this.patternLanguageService.getAllPatternsOfPatternLanguage(patternLanguageId)
-                .stream()
-                .map(pattern -> new EntityModel<>(pattern,
-                        linkTo(methodOn(PatternLanguageController.class).getPatternOfPatternLanguageById(pattern.getPatternLanguage().getId(), pattern.getId())).withSelfRel(),
-                        linkTo(methodOn(PatternLanguageController.class).getPatternContentOfPattern(patternLanguageId, pattern.getId())).withRel("content"),
-                        linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(pattern.getPatternLanguage().getId())).withRel("patternLanguage")))
-                .collect(Collectors.toList());
-        return new CollectionModel<>(patterns,
-                linkTo(methodOn(PatternLanguageController.class).getAllPatternsOfPatternLanguage(patternLanguageId)).withSelfRel(),
-                linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
-
-    }
-
-    @PostMapping(value = "/{patternLanguageId}/patterns")
-    @ResponseStatus(HttpStatus.CREATED)
-    ResponseEntity<?> addPatternToPatternLanguage(@PathVariable UUID patternLanguageId, @RequestBody Pattern pattern) {
-        PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
-
-        pattern.setPatternLanguage(patternLanguage);
-        patternLanguage.getPatterns().add(pattern);
-        this.patternLanguageService.updatePatternLanguage(patternLanguage);
-        return ResponseEntity
-                .created(linkTo(methodOn(PatternLanguageController.class).getPatternOfPatternLanguageById(patternLanguageId, pattern.getId())).toUri())
-                .body(pattern);
-    }
-
-    // Todo Implement Integration Test for deletePatternOfPatternLanguage
-    @DeleteMapping(value = "/{patternLanguageId}/patterns/{patternId}")
-    ResponseEntity<?> deletePatternOfPatternLanguage(@PathVariable UUID patternLanguageId, @PathVariable UUID patternId) {
-        this.patternLanguageService.deletePatternOfPatternLanguage(patternLanguageId, patternId);
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-    // Todo Implement Integration Test for getPatternOfPatternLanguageById
-    @GetMapping(value = "/{patternLanguageId}/patterns/{patternId}")
-    EntityModel<Pattern> getPatternOfPatternLanguageById(@PathVariable UUID patternLanguageId, @PathVariable UUID patternId) {
-
-        Pattern pattern = this.patternLanguageService.getPatternOfPatternLanguageById(patternLanguageId, patternId);
-
-        return new EntityModel<>(pattern,
-                linkTo(methodOn(PatternLanguageController.class).getPatternOfPatternLanguageById(patternLanguageId, patternId)).withSelfRel(),
-                linkTo(methodOn(PatternLanguageController.class).getPatternContentOfPattern(patternLanguageId, patternId)).withRel("content"),
-                linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
-
-    }
-
-    @GetMapping(value = "/{patternLanguageId}/patterns/{patternId}/content")
-    EntityModel<Object> getPatternContentOfPattern(@PathVariable UUID patternLanguageId, @PathVariable UUID patternId) {
-
-        Pattern pattern = this.patternLanguageService.getPatternOfPatternLanguageById(patternLanguageId, patternId);
-        return new EntityModel<>(pattern.getContent(),
-                linkTo(methodOn(PatternLanguageController.class).getPatternContentOfPattern(patternLanguageId, patternId)).withSelfRel(),
-                linkTo(methodOn(PatternLanguageController.class).getPatternOfPatternLanguageById(patternLanguageId, patternId)).withRel("pattern"),
-                linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
     }
 
     @GetMapping(value = "/{patternLanguageId}/undirectedEdges/{undirectedEdgeId}")

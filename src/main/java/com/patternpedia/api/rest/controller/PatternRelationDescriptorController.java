@@ -1,4 +1,4 @@
-package com.patternpedia.api.controller;
+package com.patternpedia.api.rest.controller;
 
 import com.patternpedia.api.entities.DirectedEdge;
 import com.patternpedia.api.entities.PatternLanguage;

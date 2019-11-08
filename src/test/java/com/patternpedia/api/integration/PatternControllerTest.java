@@ -3,18 +3,21 @@ package com.patternpedia.api.integration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.patternpedia.api.entities.Pattern;
+import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.repositories.PatternRepository;
+import com.patternpedia.api.util.IntegrationTestHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -31,11 +34,17 @@ public class PatternControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private IntegrationTestHelper integrationTestHelper;
+
     @Test
-    public void testPatternRepositoryCreateSucceeds() {
+    public void createPatternSucceeds() throws Exception {
+        PatternLanguage patternLanguage = this.integrationTestHelper.getDefaultPatternLanguage();
+
         Pattern pattern = new Pattern();
-        pattern.setUri("http://patternpedia.org/testPatterns/TestPattern1");
-        pattern.setName("TestPattern1");
+        pattern.setUri("http://patternpedia.org/testPatterns/TestPattern3");
+        pattern.setName("TestPattern3");
+        pattern.setPatternLanguage(patternLanguage);
 
         ObjectNode content = this.objectMapper.createObjectNode();
 
@@ -44,30 +53,29 @@ public class PatternControllerTest {
 
         pattern.setContent(content);
 
-        this.patternRepository.save(pattern);
+        MvcResult result = this.mockMvc.perform(
+                post("/patternLanguages/{id}/patterns", patternLanguage.getId().toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(pattern))
+        ).andExpect(status().isCreated())
+                .andReturn();
+
+        String location = result.getResponse().getHeader("Location");
+
+        this.mockMvc.perform(
+                get(location)
+        ).andExpect(status().isOk());
     }
 
     @Test
-    public void testGetPatternById() throws Exception {
-        Pattern pattern = new Pattern();
-        pattern.setUri("http://patternpedia.org/testPatterns/TestPattern2");
-        pattern.setName("TestPattern2");
-
-        ObjectNode content = this.objectMapper.createObjectNode();
-        content.put("Field1", "FieldValue1");
-        content.put("Field2", 123);
-
-        pattern.setContent(content);
-
-        Pattern managedPattern = this.patternRepository.save(pattern);
-
-        ObjectNode expectedJson = this.objectMapper.valueToTree(managedPattern);
-        expectedJson.remove("id");
+    public void findPatternById() throws Exception {
+        PatternLanguage patternLanguage = this.integrationTestHelper.getDefaultPatternLanguageWithPattern();
 
         MvcResult getResult = this.mockMvc.perform(
-                get("/patterns/{id}", managedPattern.getId().toString())
+                get("/patternLanguages/{plId}/patterns/{pId}",
+                        patternLanguage.getId().toString(),
+                        patternLanguage.getPatterns().get(0).getId().toString())
         ).andExpect(status().isOk())
-                .andExpect(content().json(this.objectMapper.writeValueAsString(expectedJson)))
                 .andReturn();
     }
 

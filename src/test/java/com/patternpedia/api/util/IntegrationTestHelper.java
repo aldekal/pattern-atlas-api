@@ -7,6 +7,8 @@ import com.patternpedia.api.repositories.PatternRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+
 @Service
 public class IntegrationTestHelper {
 
@@ -37,6 +39,27 @@ public class IntegrationTestHelper {
         patternLanguage.setName("TestPatternLanguage1");
         patternLanguage.setUri("http://patternpedia.org/patternlanguages/TestPatternLanguage1");
         return this.createOrGetPatternLanguage(patternLanguage);
+    }
+
+    public PatternLanguage getDefaultPatternLanguageWithPattern() {
+        PatternLanguage patternLanguage = this.getDefaultPatternLanguage();
+        Pattern pattern = new Pattern();
+        pattern.setUri("https://patternpedia.org/patterns/TestPattern");
+        pattern.setName("TestPattern");
+        pattern.setPatternLanguage(patternLanguage);
+        if (this.patternRepository.existsByUri(pattern.getUri())) {
+            pattern = this.patternRepository.findByUri(pattern.getUri()).get();
+        } else {
+            pattern = this.patternRepository.save(pattern);
+        }
+        if (null != patternLanguage.getPatterns()) {
+            patternLanguage.getPatterns().add(pattern);
+        } else {
+            patternLanguage.setPatterns(Collections.singletonList(pattern));
+        }
+        this.patternLanguageRepository.save(patternLanguage);
+
+        return patternLanguage;
     }
 
 }
