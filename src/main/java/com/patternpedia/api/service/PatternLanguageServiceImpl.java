@@ -6,11 +6,11 @@ import com.patternpedia.api.exception.NullPatternSchemaException;
 import com.patternpedia.api.exception.PatternLanguageNotFoundException;
 import com.patternpedia.api.exception.PatternNotFoundException;
 import com.patternpedia.api.repositories.PatternLanguageRepository;
-import com.patternpedia.api.repositories.PatternRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,16 +19,16 @@ import java.util.UUID;
 public class PatternLanguageServiceImpl implements PatternLanguageService {
 
     private PatternSchemaService patternSchemaService;
+    private PatternService patternService;
 
     private PatternLanguageRepository patternLanguageRepository;
-    private PatternRepository patternRepository;
 
     public PatternLanguageServiceImpl(PatternSchemaService patternSchemaService,
-                                      PatternLanguageRepository patternLanguageRepository,
-                                      PatternRepository patternRepository) {
+                                      PatternService patternService,
+                                      PatternLanguageRepository patternLanguageRepository) {
         this.patternSchemaService = patternSchemaService;
+        this.patternService = patternService;
         this.patternLanguageRepository = patternLanguageRepository;
-        this.patternRepository = patternRepository;
     }
 
     @Override
@@ -41,13 +41,14 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
         PatternSchema patternSchema = patternLanguage.getPatternSchema();
         patternLanguage.setPatternSchema(null);
         patternLanguage = this.patternLanguageRepository.save(patternLanguage);
+
         if (null != patternSchema) {
             patternSchema.setPatternLanguage(patternLanguage);
+            patternSchema = this.patternSchemaService.createPatternSchema(patternSchema);
             patternLanguage.setPatternSchema(patternSchema);
-            return this.patternLanguageRepository.save(patternLanguage);
-        } else {
-            return this.patternLanguageRepository.save(patternLanguage);
         }
+
+        return this.patternLanguageRepository.save(patternLanguage);
     }
 
     @Override
@@ -82,7 +83,9 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
     @Transactional(readOnly = true)
     public List<Pattern> getAllPatternsOfPatternLanguage(UUID patternLanguageId) {
         PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
-
+        if (null == patternLanguage.getPatterns()) {
+            patternLanguage.setPatterns(Collections.emptyList());
+        }
         return patternLanguage.getPatterns();
     }
 
@@ -90,6 +93,12 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
     @Transactional(readOnly = true)
     public Pattern getPatternOfPatternLanguageById(UUID patternLanguageId, UUID patternId) {
         PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
+        if (null == patternLanguage.getPatterns()) {
+            throw new PatternNotFoundException(
+                    String.format("Pattern %s is not part of PatternLanguage %s", patternId.toString(), patternLanguageId.toString())
+            );
+        }
+
         return patternLanguage.getPatterns()
                 .stream()
                 .filter(pattern -> pattern.getId().equals(patternId)).findFirst()
@@ -104,17 +113,27 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
         if (!this.patternLanguageRepository.existsById(patternLanguageId)) {
             throw new PatternLanguageNotFoundException(String.format("PatternLanguage %s not found!", patternLanguageId));
         }
-        Pattern pattern = this.patternRepository.findById(patternId)
-                .orElseThrow(() -> new PatternNotFoundException(String.format("Pattern %s not found!", patternId)));
 
-        // first clean up foreign key mappings
-        pattern.setPatternLanguage(null);
-        pattern.setPatternViews(new ArrayList<>());
-        // Todo: Remove pattern from pattern views
-        this.patternRepository.save(pattern);
+        Pattern pattern = this.patternService.getPatternById(patternId);
+        // Todo: Remove pattern from pattern views once they are implemented
+        this.patternService.deletePattern(pattern);
+    }
 
-        // then remove the pattern
-        this.patternRepository.deleteById(pattern.getId());
+    @Override
+    public Pattern createPatternAndAddToPatternLanguage(UUID patternLanguageId, Pattern pattern) {
+        PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
+
+        pattern.setPatternLanguage(patternLanguage);
+
+        pattern = this.patternService.createPattern(pattern);
+        if (null != patternLanguage.getPatterns()) {
+            patternLanguage.getPatterns().add(pattern);
+        } else {
+            patternLanguage.setPatterns(new ArrayList<>(Collections.singletonList(pattern)));
+        }
+        this.patternLanguageRepository.save(patternLanguage);
+
+        return pattern;
     }
 
     @Override

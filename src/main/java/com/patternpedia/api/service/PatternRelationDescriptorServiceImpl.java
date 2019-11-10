@@ -11,6 +11,7 @@ import com.patternpedia.api.repositories.UndirectedEdgeReository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.UUID;
 
@@ -43,7 +44,7 @@ public class PatternRelationDescriptorServiceImpl implements PatternRelationDesc
         if (null != patternLanguage.getDirectedEdges()) {
             patternLanguage.getDirectedEdges().add(directedEdge);
         } else {
-            patternLanguage.setDirectedEdges(Collections.singletonList(directedEdge));
+            patternLanguage.setDirectedEdges(new ArrayList<>(Collections.singletonList(directedEdge)));
         }
         this.patternLanguageService.updatePatternLanguage(patternLanguage);
         return directedEdge;
@@ -85,7 +86,7 @@ public class PatternRelationDescriptorServiceImpl implements PatternRelationDesc
         if (null != patternLanguage.getDirectedEdges()) {
             patternLanguage.getUndirectedEdges().add(undirectedEdge);
         } else {
-            patternLanguage.setUndirectedEdges(Collections.singletonList(undirectedEdge));
+            patternLanguage.setUndirectedEdges(new ArrayList<>(Collections.singletonList(undirectedEdge)));
         }
         this.patternLanguageService.updatePatternLanguage(patternLanguage);
         return undirectedEdge;

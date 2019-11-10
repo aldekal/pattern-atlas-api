@@ -25,6 +25,8 @@ public interface PatternLanguageService {
 
     void deletePatternOfPatternLanguage(UUID patternLanguageId, UUID patternId);
 
+    Pattern createPatternAndAddToPatternLanguage(UUID patternLanguageId, Pattern pattern);
+
     PatternSchema createPatternSchemaAndAddToPatternLanguage(UUID patternLanguageId, PatternSchema patternSchema);
 
     PatternSchema getPatternSchemaByPatternLanguageId(UUID patternLanguageId);

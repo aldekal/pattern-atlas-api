@@ -36,16 +36,18 @@ public class PatternSchemaServiceImpl implements PatternSchemaService {
             throw new NullPatternSchemaException();
         }
         List<PatternSectionSchema> patternSectionSchemas = patternSchema.getPatternSectionSchemas();
-        patternSchema.setPatternSectionSchemas(new ArrayList<>());
+        patternSchema.setPatternSectionSchemas(null);
         patternSchema = this.patternSchemaRepository.save(patternSchema);
 
-        PatternSchema finalPatternSchema = patternSchema;
-        List<PatternSectionSchema> persistedSectionSchemas = patternSectionSchemas.stream()
-                .map(patternSectionSchema -> {
-                    patternSectionSchema.setPatternSchema(finalPatternSchema);
-                    return this.patternSectionSchemaRepository.save(patternSectionSchema);
-                }).collect(toList());
-        patternSchema.setPatternSectionSchemas(persistedSectionSchemas);
+        if (null != patternSectionSchemas) {
+            PatternSchema finalPatternSchema = patternSchema;
+            List<PatternSectionSchema> persistedSectionSchemas = patternSectionSchemas.stream()
+                    .map(patternSectionSchema -> {
+                        patternSectionSchema.setPatternSchema(finalPatternSchema);
+                        return this.patternSectionSchemaRepository.save(patternSectionSchema);
+                    }).collect(toList());
+            patternSchema.setPatternSectionSchemas(persistedSectionSchemas);
+        }
         return this.patternSchemaRepository.save(patternSchema);
     }
 
