@@ -110,6 +110,7 @@ public class PatternLanguageController {
     }
 
     @PostMapping(value = "/{patternLanguageId/patternSchema")
+    @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
     ResponseEntity<PatternSchema> createPatternSchema(@PathVariable UUID patternLanguageId, @RequestBody PatternSchema patternSchema) {
         // Todo Implement Integration Test for createPatternSchema
@@ -125,29 +126,5 @@ public class PatternLanguageController {
     ResponseEntity<PatternSchema> updatePatternSchema(@PathVariable UUID patternLanguageId, @RequestBody PatternSchema patternSchema) {
         PatternSchema schema = this.patternLanguageService.updatePatternSchemaByPatternLanguageId(patternLanguageId, patternSchema);
         return ResponseEntity.ok(schema);
-    }
-
-    @GetMapping(value = "/{patternLanguageId}/undirectedEdges/{undirectedEdgeId}")
-    EntityModel<UndirectedEdge> getUndirectedEdgeOfPatternLanguageById(@PathVariable UUID patternLanguageId, @PathVariable UUID undirectedEdgeId) {
-        PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
-
-        UndirectedEdge result = patternLanguage.getUndirectedEdges().stream()
-                .filter(undirectedEdge -> undirectedEdge.getId().equals(undirectedEdgeId)).findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("UndirectedEdge %s not contained in PatternLanguage %s", undirectedEdgeId, patternLanguageId)));
-        return new EntityModel<>(result,
-                linkTo(methodOn(PatternLanguageController.class).getUndirectedEdgeOfPatternLanguageById(patternLanguageId, undirectedEdgeId)).withSelfRel(),
-                linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
-    }
-
-    @GetMapping(value = "/{patternLanguageId}/directedEdges/{directedEdgeId}")
-    EntityModel<DirectedEdge> getDirectedEdgeOfPatternLanguageById(@PathVariable UUID patternLanguageId, @PathVariable UUID directedEdgeId) {
-        PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
-
-        DirectedEdge result = patternLanguage.getDirectedEdges().stream()
-                .filter(directedEdge -> directedEdge.getId().equals(directedEdgeId)).findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("DirectedEdge %s not contained in PatternLanguage %s", directedEdgeId, patternLanguageId)));
-        return new EntityModel<>(result,
-                linkTo(methodOn(PatternLanguageController.class).getDirectedEdgeOfPatternLanguageById(patternLanguageId, directedEdgeId)).withSelfRel(),
-                linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
     }
 }
