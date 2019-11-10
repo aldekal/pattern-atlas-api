@@ -12,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -38,38 +40,30 @@ public class PatternControllerTest {
     private IntegrationTestHelper integrationTestHelper;
 
     @Test
-    public void createPatternSucceeds() throws Exception {
+    @Transactional
+    public void addPatternToPatternLanguageSucceeds() throws Exception {
         PatternLanguage patternLanguage = this.integrationTestHelper.getDefaultPatternLanguage();
 
-        Pattern pattern = new Pattern();
-        pattern.setUri("http://patternpedia.org/testPatterns/TestPattern3");
-        pattern.setName("TestPattern3");
-        pattern.setPatternLanguage(patternLanguage);
+        Pattern pattern = this.integrationTestHelper.getDefaultPattern();
 
-        ObjectNode content = this.objectMapper.createObjectNode();
-
-        content.put("Field1", "FieldValue1");
-        content.put("Field2", 123);
-
-        pattern.setContent(content);
-
-        MvcResult result = this.mockMvc.perform(
-                post("/patternLanguages/{id}/patterns", patternLanguage.getId().toString())
+        MvcResult postResult = this.mockMvc.perform(
+                post("/patternLanguages/{id}/patterns", patternLanguage.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(this.objectMapper.writeValueAsString(pattern))
         ).andExpect(status().isCreated())
                 .andReturn();
 
-        String location = result.getResponse().getHeader("Location");
+        String patternLocation = postResult.getResponse().getHeader("Location");
 
         this.mockMvc.perform(
-                get(location)
+                get(patternLocation)
         ).andExpect(status().isOk());
     }
 
     @Test
+    @Transactional
     public void findPatternById() throws Exception {
-        PatternLanguage patternLanguage = this.integrationTestHelper.getDefaultPatternLanguageWithPattern();
+        PatternLanguage patternLanguage = this.integrationTestHelper.getDefaultPatternLanguageWithPatterns(1);
 
         MvcResult getResult = this.mockMvc.perform(
                 get("/patternLanguages/{plId}/patterns/{pId}",

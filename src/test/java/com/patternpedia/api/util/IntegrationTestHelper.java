@@ -1,5 +1,7 @@
 package com.patternpedia.api.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.repositories.PatternLanguageRepository;
@@ -7,6 +9,7 @@ import com.patternpedia.api.repositories.PatternRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 
 @Service
@@ -18,12 +21,28 @@ public class IntegrationTestHelper {
     @Autowired
     private PatternLanguageRepository patternLanguageRepository;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     public Pattern createOrGetPattern(Pattern p) {
         if (null != p.getUri() && this.patternRepository.existsByUri(p.getUri())) {
             return this.patternRepository.findByUri(p.getUri()).get();
         } else {
             return this.patternRepository.save(p);
         }
+    }
+
+    public Pattern getDefaultPattern() {
+        Pattern pattern = new Pattern();
+        pattern.setUri("http://patternpedia.org/testPatterns/TestPattern1");
+        pattern.setName("TestPattern1");
+
+        ObjectNode content = this.objectMapper.createObjectNode();
+        content.put("Field1", "FieldValue1");
+        content.put("Field2", 123);
+        pattern.setContent(content);
+
+        return this.createOrGetPattern(pattern);
     }
 
     public PatternLanguage createOrGetPatternLanguage(PatternLanguage patternLanguage) {
@@ -36,29 +55,30 @@ public class IntegrationTestHelper {
 
     public PatternLanguage getDefaultPatternLanguage() {
         PatternLanguage patternLanguage = new PatternLanguage();
-        patternLanguage.setName("TestPatternLanguage1");
-        patternLanguage.setUri("http://patternpedia.org/patternlanguages/TestPatternLanguage1");
+        patternLanguage.setName("DefaultTestPatternLanguage");
+        patternLanguage.setUri("http://patternpedia.org/patternlanguages/DefaultTestPatternLanguage");
         return this.createOrGetPatternLanguage(patternLanguage);
     }
 
-    public PatternLanguage getDefaultPatternLanguageWithPattern() {
+    public PatternLanguage getDefaultPatternLanguageWithPatterns(int numberOfPatterns) {
         PatternLanguage patternLanguage = this.getDefaultPatternLanguage();
-        Pattern pattern = new Pattern();
-        pattern.setUri("https://patternpedia.org/patterns/TestPattern");
-        pattern.setName("TestPattern");
-        pattern.setPatternLanguage(patternLanguage);
-        if (this.patternRepository.existsByUri(pattern.getUri())) {
-            pattern = this.patternRepository.findByUri(pattern.getUri()).get();
-        } else {
-            pattern = this.patternRepository.save(pattern);
-        }
-        if (null != patternLanguage.getPatterns()) {
-            patternLanguage.getPatterns().add(pattern);
-        } else {
-            patternLanguage.setPatterns(Collections.singletonList(pattern));
-        }
-        this.patternLanguageRepository.save(patternLanguage);
+        if (numberOfPatterns > 0) {
+            for (int i = 0; i < numberOfPatterns; i++) {
+                Pattern pattern = new Pattern();
+                pattern.setUri("https://patternpedia.org/patterns/TestPattern" + (i + 1));
+                pattern.setName("TestPattern" + (i + 1));
+                pattern.setPatternLanguage(patternLanguage);
 
+                pattern = this.createOrGetPattern(pattern);
+
+                if (null != patternLanguage.getPatterns()) {
+                    patternLanguage.getPatterns().add(pattern);
+                } else {
+                    patternLanguage.setPatterns(new ArrayList<>(Collections.singletonList(pattern)));
+                }
+            }
+            patternLanguage = this.patternLanguageRepository.save(patternLanguage);
+        }
         return patternLanguage;
     }
 
