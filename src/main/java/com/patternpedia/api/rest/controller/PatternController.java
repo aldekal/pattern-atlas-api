@@ -57,14 +57,12 @@ public class PatternController {
                 .body(pattern);
     }
 
-    // Todo Implement Integration Test for deletePatternOfPatternLanguage
     @DeleteMapping(value = "/patternLanguages/{patternLanguageId}/patterns/{patternId}")
     ResponseEntity<?> deletePatternOfPatternLanguage(@PathVariable UUID patternLanguageId, @PathVariable UUID patternId) {
         this.patternLanguageService.deletePatternOfPatternLanguage(patternLanguageId, patternId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    // Todo Implement Integration Test for getPatternOfPatternLanguageById
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/patterns/{patternId}")
     EntityModel<Pattern> getPatternOfPatternLanguageById(@PathVariable UUID patternLanguageId, @PathVariable UUID patternId) {
 

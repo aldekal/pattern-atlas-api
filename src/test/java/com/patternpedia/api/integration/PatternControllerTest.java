@@ -1,9 +1,9 @@
 package com.patternpedia.api.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternLanguage;
+import com.patternpedia.api.repositories.PatternLanguageRepository;
 import com.patternpedia.api.repositories.PatternRepository;
 import com.patternpedia.api.util.IntegrationTestHelper;
 import org.junit.Test;
@@ -18,8 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -34,10 +34,14 @@ public class PatternControllerTest {
     private PatternRepository patternRepository;
 
     @Autowired
+    private PatternLanguageRepository patternLanguageRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
     private IntegrationTestHelper integrationTestHelper;
+
 
     @Test
     @Transactional
@@ -73,5 +77,16 @@ public class PatternControllerTest {
                 .andReturn();
     }
 
+    @Test
+    @Transactional
+    public void deletePatternFromPatternLanguageSucceeds() throws Exception {
+        PatternLanguage patternLanguage = this.integrationTestHelper.getDefaultPatternLanguageWithPatterns(2);
+
+        Pattern pattern = patternLanguage.getPatterns().get(0);
+
+        this.mockMvc.perform(
+                delete("/patternLanguages/{plId}/patterns/{pId}", patternLanguage.getId(), pattern.getId())
+        ).andExpect(status().isOk());
+    }
 
 }
