@@ -50,16 +50,11 @@ public class PatternController {
     @ResponseStatus(HttpStatus.CREATED)
     ResponseEntity<?> addPatternToPatternLanguage(@PathVariable UUID patternLanguageId, @RequestBody Pattern pattern) {
         PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
-
-        pattern.setPatternLanguage(patternLanguage);
-        pattern = this.patternService.createPattern(pattern);
-
-        patternLanguage.getPatterns().add(pattern);
-        this.patternLanguageService.updatePatternLanguage(patternLanguage);
+        pattern = this.patternLanguageService.createPatternAndAddToPatternLanguage(patternLanguageId, pattern);
 
         return ResponseEntity
                 .created(linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(patternLanguageId, pattern.getId())).toUri())
-                .build();
+                .body(pattern);
     }
 
     // Todo Implement Integration Test for deletePatternOfPatternLanguage
