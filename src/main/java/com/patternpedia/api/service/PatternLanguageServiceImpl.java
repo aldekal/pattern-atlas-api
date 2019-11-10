@@ -8,31 +8,31 @@ import com.patternpedia.api.exception.PatternNotFoundException;
 import com.patternpedia.api.repositories.PatternLanguageRepository;
 import com.patternpedia.api.repositories.PatternRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class PatternLanguageServiceImpl implements PatternLanguageService {
 
     private PatternSchemaService patternSchemaService;
 
     private PatternLanguageRepository patternLanguageRepository;
     private PatternRepository patternRepository;
-    private PatternService patternService;
 
     public PatternLanguageServiceImpl(PatternSchemaService patternSchemaService,
-                                      PatternService patternService,
                                       PatternLanguageRepository patternLanguageRepository,
                                       PatternRepository patternRepository) {
         this.patternSchemaService = patternSchemaService;
-        this.patternService = patternService;
         this.patternLanguageRepository = patternLanguageRepository;
         this.patternRepository = patternRepository;
     }
 
     @Override
+    @Transactional
     public PatternLanguage createPatternLanguage(PatternLanguage patternLanguage) {
         if (null == patternLanguage) {
             throw new NullPatternLanguageException("PatternLanguage is null");
@@ -51,6 +51,7 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
     }
 
     @Override
+    @Transactional
     public PatternLanguage updatePatternLanguage(PatternLanguage patternLanguage) {
         // At the moment we just support updating fields of PatternLanguage but no sub resources such as Patterns or PatternSchema.
         // So we just ignore patterns, schema and edges contained in given patternLanguage.
@@ -72,11 +73,13 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
     }
 
     @Override
+    @Transactional
     public void deletePatternLanguage(UUID patternLanguageId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Pattern> getAllPatternsOfPatternLanguage(UUID patternLanguageId) {
         PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
 
@@ -84,6 +87,7 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Pattern getPatternOfPatternLanguageById(UUID patternLanguageId, UUID patternId) {
         PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
         return patternLanguage.getPatterns()
@@ -95,6 +99,7 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
     }
 
     @Override
+    @Transactional
     public void deletePatternOfPatternLanguage(UUID patternLanguageId, UUID patternId) {
         if (!this.patternLanguageRepository.existsById(patternLanguageId)) {
             throw new PatternLanguageNotFoundException(String.format("PatternLanguage %s not found!", patternLanguageId));
@@ -113,11 +118,13 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<PatternLanguage> getAllPatternLanguages() {
         return this.patternLanguageRepository.findAll();
     }
 
     @Override
+    @Transactional
     public PatternSchema createPatternSchemaAndAddToPatternLanguage(UUID patternLanguageId, PatternSchema patternSchema) {
         PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
         patternSchema.setPatternLanguage(patternLanguage);
@@ -125,23 +132,27 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PatternLanguage getPatternLanguageById(UUID patternLanguageId) {
         return this.patternLanguageRepository.findById(patternLanguageId)
                 .orElseThrow(() -> new PatternLanguageNotFoundException(String.format("PatternLanguage %s not found!", patternLanguageId)));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PatternLanguage getPatternLanguageByUri(String uri) {
         return this.patternLanguageRepository.findByUri(uri)
                 .orElseThrow(() -> new PatternLanguageNotFoundException(String.format("PatternLanguage with URI %s not found!", uri)));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PatternSchema getPatternSchemaByPatternLanguageId(UUID patternLanguageId) {
         return this.getPatternLanguageById(patternLanguageId).getPatternSchema();
     }
 
     @Override
+    @Transactional
     public PatternSchema updatePatternSchemaByPatternLanguageId(UUID patternLanguageId, PatternSchema patternSchema) {
         if (null == patternSchema) {
             throw new NullPatternSchemaException();
@@ -152,12 +163,14 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<DirectedEdge> getDirectedEdgesByPatternLanguageId(UUID patternLanguageId) {
         PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
         return patternLanguage.getDirectedEdges();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UndirectedEdge> getUndirectedEdgesByPatternLanguageId(UUID patternLanguageId) {
         PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
         return patternLanguage.getUndirectedEdges();

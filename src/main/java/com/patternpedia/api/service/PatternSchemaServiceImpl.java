@@ -7,6 +7,7 @@ import com.patternpedia.api.exception.PatternSchemaNotFoundException;
 import com.patternpedia.api.repositories.PatternSchemaRepository;
 import com.patternpedia.api.repositories.PatternSectionSchemaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.UUID;
 import static java.util.stream.Collectors.toList;
 
 @Service
+@Transactional
 public class PatternSchemaServiceImpl implements PatternSchemaService {
 
     private PatternSchemaRepository patternSchemaRepository;
@@ -28,6 +30,7 @@ public class PatternSchemaServiceImpl implements PatternSchemaService {
     }
 
     @Override
+    @Transactional
     public PatternSchema createPatternSchema(PatternSchema patternSchema) {
         if (null == patternSchema) {
             throw new NullPatternSchemaException();
@@ -47,6 +50,7 @@ public class PatternSchemaServiceImpl implements PatternSchemaService {
     }
 
     @Override
+    @Transactional
     public PatternSchema updatePatternSchema(PatternSchema patternSchema) {
         if (null == patternSchema) {
             throw new NullPatternSchemaException("PatternSchema is null");
@@ -60,12 +64,14 @@ public class PatternSchemaServiceImpl implements PatternSchemaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PatternSchema getPatternSchemaById(UUID id) {
         return this.patternSchemaRepository.findById(id)
                 .orElseThrow(() -> new PatternSchemaNotFoundException(String.format("PatternSchema not found: %s", id)));
     }
 
     @Override
+    @Transactional
     public void deletePatternSchemaById(UUID id) {
         this.patternSchemaRepository.deleteById(id);
     }

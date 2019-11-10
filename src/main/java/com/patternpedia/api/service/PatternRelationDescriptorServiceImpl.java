@@ -9,11 +9,13 @@ import com.patternpedia.api.exception.UndirectedEdgeNotFoundException;
 import com.patternpedia.api.repositories.DirectedEdgeRepository;
 import com.patternpedia.api.repositories.UndirectedEdgeReository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class PatternRelationDescriptorServiceImpl implements PatternRelationDescriptorService {
 
     private DirectedEdgeRepository directedEdgeRepository;
@@ -31,6 +33,7 @@ public class PatternRelationDescriptorServiceImpl implements PatternRelationDesc
     }
 
     @Override
+    @Transactional
     public DirectedEdge createDirectedEdge(DirectedEdge directedEdge, UUID patternLanguageId) {
         PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
         directedEdge.setPatternLanguage(patternLanguage);
@@ -47,12 +50,14 @@ public class PatternRelationDescriptorServiceImpl implements PatternRelationDesc
     }
 
     @Override
+    @Transactional(readOnly = true)
     public DirectedEdge getDirectedEdgeById(UUID id) {
         return this.directedEdgeRepository.findById(id)
                 .orElseThrow(() -> new DirectedEdgeNotFoundException(String.format("DirectedEdge %s not found!", id.toString())));
     }
 
     @Override
+    @Transactional
     public void deleteDirectedEdge(UUID directedEdgeId) {
         DirectedEdge directedEdge = this.getDirectedEdgeById(directedEdgeId);
 
@@ -70,6 +75,7 @@ public class PatternRelationDescriptorServiceImpl implements PatternRelationDesc
     }
 
     @Override
+    @Transactional
     public UndirectedEdge createUndirectedEdge(UndirectedEdge undirectedEdge, UUID patternLanguageId) {
         PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
         undirectedEdge.setPatternLanguage(patternLanguage);
@@ -86,12 +92,14 @@ public class PatternRelationDescriptorServiceImpl implements PatternRelationDesc
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UndirectedEdge getUndirectedEdgeById(UUID id) {
         return this.undirectedEdgeReository.findById(id)
                 .orElseThrow(() -> new UndirectedEdgeNotFoundException(String.format("UndirectedEdge %s not found!", id.toString())));
     }
 
     @Override
+    @Transactional
     public void deleteUndirectedEdge(UUID undirectedEdgeId) {
         UndirectedEdge undirectedEdge = this.getUndirectedEdgeById(undirectedEdgeId);
 
