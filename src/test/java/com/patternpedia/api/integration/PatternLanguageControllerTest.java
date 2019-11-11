@@ -191,12 +191,10 @@ public class PatternLanguageControllerTest {
         patternSectionSchema.setPosition(0);
         patternSchema.setPatternSectionSchemas(new ArrayList<>(Collections.singletonList(patternSectionSchema)));
 
-        // patternSchema = this.patternLanguageService.createPatternSchemaAndAddToPatternLanguage(patternLanguage.getId(), patternSchema);
-
         MvcResult postResult = this.mockMvc.perform(
                 post("/patternLanguages/{id}/patternSchema", patternLanguage.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(this.objectMapper.writeValueAsString(patternSchema)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(patternSchema)))
                 .andExpect(status().isCreated()).andReturn();
 
         String location = postResult.getResponse().getHeader("Location");
