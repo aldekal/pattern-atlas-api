@@ -178,33 +178,35 @@ public class PatternLanguageControllerTest {
     }
 
     @Test
-    public void getPatternSchemaSucceeds() throws Exception {
+    public void createAndGetPatternSchemaSucceeds() throws Exception {
         PatternLanguage patternLanguage = this.integrationTestHelper.getDefaultPatternLanguage();
 
         PatternSchema patternSchema = new PatternSchema();
         patternSchema.setPatternLanguage(patternLanguage);
-        patternSchema = this.patternLanguageService.createPatternSchemaAndAddToPatternLanguage(patternLanguage.getId(), patternSchema);
 
         PatternSectionSchema patternSectionSchema = new PatternSectionSchema();
         patternSectionSchema.setPatternSchema(patternSchema);
         patternSectionSchema.setLabel("Test");
         patternSectionSchema.setName("Test");
         patternSectionSchema.setPosition(0);
-        patternSectionSchema = this.patternSectionSchemaRepository.save(patternSectionSchema);
-
         patternSchema.setPatternSectionSchemas(new ArrayList<>(Collections.singletonList(patternSectionSchema)));
-        this.patternSchemaRepository.save(patternSchema);
 
-        patternLanguage.setPatternSchema(patternSchema);
-        this.patternLanguageRepository.save(patternLanguage);
+        // patternSchema = this.patternLanguageService.createPatternSchemaAndAddToPatternLanguage(patternLanguage.getId(), patternSchema);
+
+        MvcResult postResult = this.mockMvc.perform(
+                post("/patternLanguages/{id}/patternSchema", patternLanguage.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.objectMapper.writeValueAsString(patternSchema)))
+                .andExpect(status().isCreated()).andReturn();
+
+        String location = postResult.getResponse().getHeader("Location");
 
         MvcResult result = this.mockMvc.perform(
-                get("/patternLanguages/{id}/patternSchema", patternLanguage.getId())
+                get(location)
         ).andExpect(status().isOk()).andReturn();
 
         PatternSchema patternSchemaResult = this.objectMapper.readValue(result.getResponse().getContentAsString(), PatternSchema.class);
         assertThat(patternSchemaResult.getPatternSectionSchemas()).hasSize(1);
-        assertThat(patternSchemaResult).hasFieldOrPropertyWithValue("id", patternSchema.getId());
         assertThat(patternSchemaResult.getPatternSectionSchemas().get(0)).hasFieldOrPropertyWithValue("label", "Test");
         assertThat(patternSchemaResult.getPatternSectionSchemas().get(0)).hasFieldOrPropertyWithValue("name", "Test");
         assertThat(patternSchemaResult.getPatternSectionSchemas().get(0)).hasFieldOrPropertyWithValue("position", 0);
