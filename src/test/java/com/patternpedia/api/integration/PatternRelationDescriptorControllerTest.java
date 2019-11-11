@@ -43,8 +43,6 @@ public class PatternRelationDescriptorControllerTest {
 
 
     @Test
-    @Transactional
-    @Commit
     public void addDirectedEdgeSucceeds() throws Exception {
         PatternLanguage patternLanguage = this.integrationTestHelper.getDefaultPatternLanguageWithPatterns(2);
 
@@ -68,8 +66,6 @@ public class PatternRelationDescriptorControllerTest {
     }
 
     @Test
-    @Transactional
-    @Commit
     public void addUndirectedEdgeSucceeds() throws Exception {
         PatternLanguage patternLanguage = this.integrationTestHelper.getDefaultPatternLanguageWithPatterns(2);
 

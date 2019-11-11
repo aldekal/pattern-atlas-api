@@ -3,7 +3,10 @@ package com.patternpedia.api.integration;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.patternpedia.api.entities.*;
+import com.patternpedia.api.entities.Pattern;
+import com.patternpedia.api.entities.PatternLanguage;
+import com.patternpedia.api.entities.PatternSchema;
+import com.patternpedia.api.entities.PatternSectionSchema;
 import com.patternpedia.api.repositories.*;
 import com.patternpedia.api.service.PatternLanguageService;
 import com.patternpedia.api.service.PatternService;
@@ -14,11 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -67,7 +68,6 @@ public class PatternLanguageControllerTest {
     private PatternSectionSchemaRepository patternSectionSchemaRepository;
 
     @Test
-    @Transactional
     public void addPatternLanguageSucceeds() throws Exception {
         PatternLanguage patternLanguage = new PatternLanguage();
         patternLanguage.setName("TestPatternLanguage5");
@@ -89,7 +89,6 @@ public class PatternLanguageControllerTest {
     }
 
     @Test
-    @Transactional
     public void updatePatternLanguageSucceeds() throws Exception {
         PatternLanguage patternLanguage = this.integrationTestHelper.getDefaultPatternLanguage();
 
@@ -111,7 +110,6 @@ public class PatternLanguageControllerTest {
     }
 
     @Test
-    @Transactional
     public void createPatternLanguageViaPutFails() throws Exception {
         PatternLanguage patternLanguage = new PatternLanguage();
         patternLanguage.setName("PutTestPatternLanguage");
@@ -127,7 +125,6 @@ public class PatternLanguageControllerTest {
     }
 
     @Test
-    @Transactional
     public void createPatternLanguageWithPatternSchemaSucceeds() throws Exception {
         PatternLanguage patternLanguage = new PatternLanguage();
         patternLanguage.setName("TestPatternLanguage1");
@@ -165,8 +162,7 @@ public class PatternLanguageControllerTest {
     }
 
     @Test
-    @Transactional
-    public void getAllPatternFromPatternLanguageSucceeds() throws Exception {
+    public void getAllPatternsFromPatternLanguageSucceeds() throws Exception {
         PatternLanguage patternLanguage = this.integrationTestHelper.getDefaultPatternLanguageWithPatterns(2);
 
         Pattern p1 = patternLanguage.getPatterns().get(0);
@@ -182,14 +178,12 @@ public class PatternLanguageControllerTest {
     }
 
     @Test
-    @Transactional
     public void getPatternSchemaSucceeds() throws Exception {
         PatternLanguage patternLanguage = this.integrationTestHelper.getDefaultPatternLanguage();
 
         PatternSchema patternSchema = new PatternSchema();
         patternSchema.setPatternLanguage(patternLanguage);
-
-        patternSchema = this.patternSchemaRepository.save(patternSchema);
+        patternSchema = this.patternLanguageService.createPatternSchemaAndAddToPatternLanguage(patternLanguage.getId(), patternSchema);
 
         PatternSectionSchema patternSectionSchema = new PatternSectionSchema();
         patternSectionSchema.setPatternSchema(patternSchema);
@@ -210,7 +204,9 @@ public class PatternLanguageControllerTest {
 
         PatternSchema patternSchemaResult = this.objectMapper.readValue(result.getResponse().getContentAsString(), PatternSchema.class);
         assertThat(patternSchemaResult.getPatternSectionSchemas()).hasSize(1);
+        assertThat(patternSchemaResult).hasFieldOrPropertyWithValue("id", patternSchema.getId());
+        assertThat(patternSchemaResult.getPatternSectionSchemas().get(0)).hasFieldOrPropertyWithValue("label", "Test");
+        assertThat(patternSchemaResult.getPatternSectionSchemas().get(0)).hasFieldOrPropertyWithValue("name", "Test");
+        assertThat(patternSchemaResult.getPatternSectionSchemas().get(0)).hasFieldOrPropertyWithValue("position", 0);
     }
-
-
 }
