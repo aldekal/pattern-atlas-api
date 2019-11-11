@@ -1,12 +1,9 @@
 package com.patternpedia.api.rest.controller;
 
-import com.patternpedia.api.entities.DirectedEdge;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.PatternSchema;
-import com.patternpedia.api.entities.UndirectedEdge;
 import com.patternpedia.api.service.PatternLanguageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.hateoas.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -103,17 +100,19 @@ public class PatternLanguageController {
 
         PatternSchema schema = this.patternLanguageService.getPatternSchemaByPatternLanguageId(patternLanguageId);
 
+        Link selfLink = linkTo(methodOn(PatternLanguageController.class).getPatternSchema(patternLanguageId)).withSelfRel();
+        selfLink.andAffordance(afford(methodOn(PatternLanguageController.class).updatePatternSchema(patternLanguageId, null)));
+        selfLink.andAffordance(afford((methodOn(PatternLanguageController.class).createPatternSchema(patternLanguageId, null))));
+
         return new EntityModel<>(schema,
-                linkTo(methodOn(PatternLanguageController.class).getPatternSchema(patternLanguageId)).withSelfRel()
-                        .andAffordance(afford(methodOn(PatternLanguageController.class).updatePatternSchema(patternLanguageId, null))),
+                selfLink,
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
     }
 
-    @PostMapping(value = "/{patternLanguageId/patternSchema")
+    @PostMapping(value = "/{patternLanguageId}/patternSchema")
     @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
     ResponseEntity<PatternSchema> createPatternSchema(@PathVariable UUID patternLanguageId, @RequestBody PatternSchema patternSchema) {
-        // Todo Implement Integration Test for createPatternSchema
         PatternSchema createdSchema = this.patternLanguageService.createPatternSchemaAndAddToPatternLanguage(patternLanguageId, patternSchema);
 
         return ResponseEntity
