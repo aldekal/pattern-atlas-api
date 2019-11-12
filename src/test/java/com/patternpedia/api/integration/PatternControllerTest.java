@@ -1,6 +1,8 @@
 package com.patternpedia.api.integration;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.repositories.PatternLanguageRepository;
@@ -44,21 +46,33 @@ public class PatternControllerTest {
     @Test
     public void addPatternToPatternLanguageSucceeds() throws Exception {
         PatternLanguage patternLanguage = this.integrationTestHelper.getDefaultPatternLanguage();
+        Pattern pattern = this.integrationTestHelper.getUnpersistedDefaultPattern();
 
-        Pattern pattern = this.integrationTestHelper.getDefaultPattern();
+        String postContent = this.objectMapper.writerWithView(Pattern.PatternWithContent.class).writeValueAsString(pattern);
 
         MvcResult postResult = this.mockMvc.perform(
                 post("/patternLanguages/{id}/patterns", patternLanguage.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(this.objectMapper.writeValueAsString(pattern))
+                        .content(postContent)
         ).andExpect(status().isCreated())
                 .andReturn();
 
         String patternLocation = postResult.getResponse().getHeader("Location");
-
-        this.mockMvc.perform(
+        MvcResult getResult = this.mockMvc.perform(
                 get(patternLocation)
-        ).andExpect(status().isOk());
+        ).andExpect(status().isOk()).andReturn();
+
+        JsonNode patternJson = this.objectMapper.readTree(getResult.getResponse().getContentAsByteArray());
+        String contentUri = patternJson.get("_links").get("content").get("href").textValue();
+
+        MvcResult patternContentMvcResult = this.mockMvc.perform(
+                get(contentUri)
+        ).andExpect(status().isOk())
+                .andReturn();
+
+        JsonNode result = this.objectMapper.readTree(patternContentMvcResult.getResponse().getContentAsByteArray());
+        assertThat(result.get("content")).isNotNull();
+        assertThat(result.get("content").toString()).isEqualTo(this.integrationTestHelper.getDefaultPatternContent().toString());
     }
 
     @Test

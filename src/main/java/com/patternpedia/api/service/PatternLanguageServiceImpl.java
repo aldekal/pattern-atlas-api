@@ -1,5 +1,6 @@
 package com.patternpedia.api.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patternpedia.api.entities.*;
 import com.patternpedia.api.exception.NullPatternLanguageException;
 import com.patternpedia.api.exception.NullPatternSchemaException;
@@ -20,15 +21,17 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
 
     private PatternSchemaService patternSchemaService;
     private PatternService patternService;
-
     private PatternLanguageRepository patternLanguageRepository;
+    private ObjectMapper objectMapper;
 
     public PatternLanguageServiceImpl(PatternSchemaService patternSchemaService,
                                       PatternService patternService,
-                                      PatternLanguageRepository patternLanguageRepository) {
+                                      PatternLanguageRepository patternLanguageRepository,
+                                      ObjectMapper objectMapper) {
         this.patternSchemaService = patternSchemaService;
         this.patternService = patternService;
         this.patternLanguageRepository = patternLanguageRepository;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -54,8 +57,8 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
     @Override
     @Transactional
     public PatternLanguage updatePatternLanguage(PatternLanguage patternLanguage) {
-        // At the moment we just support updating fields of PatternLanguage but no sub resources such as Patterns or PatternSchema.
-        // So we just ignore patterns, schema and edges contained in given patternLanguage.
+        // We just support updating fields of PatternLanguage but we don't support updates of sub resources such as Patterns or PatternSchema.
+        // So we ignore patterns, schema and edges contained in given patternLanguage.
         if (null == patternLanguage) {
             throw new NullPatternLanguageException();
         }
@@ -102,6 +105,12 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
         return patternLanguage.getPatterns()
                 .stream()
                 .filter(pattern -> pattern.getId().equals(patternId)).findFirst()
+                .map(pattern -> {
+                    if (null == pattern.getContent()) {
+                        pattern.setContent(this.objectMapper.createObjectNode());
+                    }
+                    return pattern;
+                })
                 .orElseThrow(() -> new PatternNotFoundException(
                         String.format("Pattern %s is not part of PatternLanguage %s", patternId.toString(), patternLanguageId.toString())
                 ));
@@ -120,8 +129,10 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
     }
 
     @Override
+    @Transactional
     public Pattern createPatternAndAddToPatternLanguage(UUID patternLanguageId, Pattern pattern) {
         PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
+        // Todo: Check if pattern is not yet present in database, else throw exception
 
         pattern.setPatternLanguage(patternLanguage);
 

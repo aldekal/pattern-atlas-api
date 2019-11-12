@@ -153,6 +153,7 @@ public class PatternLanguageControllerTest {
                 .andExpect(status().isCreated())
                 .andReturn();
 
+        // Todo: Rewrite test -> check the content of MvcResult
         assertThat(patternLanguage).hasFieldOrPropertyWithValue("name", "TestPatternLanguage1");
         assertThat(patternLanguage.getPatternSchema()).isNotNull();
         assertThat(patternLanguage.getPatternSchema().getPatternSectionSchemas()).isNotNull();

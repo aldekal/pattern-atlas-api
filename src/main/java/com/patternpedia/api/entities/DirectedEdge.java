@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import java.util.List;
 
 @Entity
 @Data
@@ -26,4 +28,8 @@ public class DirectedEdge extends PatternRelationDescriptor {
     @ManyToOne
     private PatternLanguage patternLanguage;
 
+    @JsonIgnore
+    @ToString.Exclude
+    @ManyToMany(mappedBy = "directedEdges")
+    private List<PatternView> patternViews;
 }

@@ -3,6 +3,7 @@ package com.patternpedia.api.rest.controller;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.PatternSchema;
 import com.patternpedia.api.service.PatternLanguageService;
+import org.apache.commons.text.CaseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.*;
 import org.springframework.http.HttpStatus;
@@ -79,6 +80,11 @@ public class PatternLanguageController {
     @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
     ResponseEntity<PatternLanguage> createPatternLanguage(@RequestBody PatternLanguage patternLanguage) {
+        // Todo: Generate Uri by camelCased PatternLanguage Name
+        String patternLanguageNameAsCamelCase = CaseUtils.toCamelCase(patternLanguage.getName(), false);
+        String uri = String.format("patternpedia.org/patternLanguages/%s", patternLanguageNameAsCamelCase);
+        patternLanguage.setUri(uri);
+
         PatternLanguage createdPatternLanguage = this.patternLanguageService.createPatternLanguage(patternLanguage);
         return ResponseEntity
                 .created(linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(createdPatternLanguage.getId())).toUri())

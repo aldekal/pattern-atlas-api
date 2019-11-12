@@ -20,4 +20,8 @@ public class UndirectedHyperedge extends PatternRelationDescriptor {
     @OneToMany
     private Set<Pattern> patterns;
 
+    private String type;
+
+    private String label;
+
 }

@@ -2,6 +2,7 @@ package com.patternpedia.api.service;
 
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternLanguage;
+import org.apache.commons.text.CaseUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,5 +34,11 @@ public class PatternServiceTest {
 
         this.patternService.createPattern(p);
 
+    }
+
+    @Test
+    public void testCamelCaseConversion() {
+        String testString = CaseUtils.toCamelCase("Hallo welt Name", false);
+        System.out.println(testString);
     }
 }

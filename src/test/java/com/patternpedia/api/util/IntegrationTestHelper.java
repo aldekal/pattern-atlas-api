@@ -8,14 +8,11 @@ import com.patternpedia.api.repositories.PatternLanguageRepository;
 import com.patternpedia.api.repositories.PatternRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 @Service
-@Transactional(propagation = Propagation.REQUIRES_NEW)
 public class IntegrationTestHelper {
 
     @Autowired
@@ -35,17 +32,26 @@ public class IntegrationTestHelper {
         }
     }
 
+    public ObjectNode getDefaultPatternContent() {
+        ObjectNode content = this.objectMapper.createObjectNode();
+        content.put("Field1", "FieldValue1");
+        content.put("Field2", 123);
+        return content;
+    }
+
     public Pattern getDefaultPattern() {
+        Pattern pattern = this.getUnpersistedDefaultPattern();
+        return this.createOrGetPattern(pattern);
+    }
+
+    public Pattern getUnpersistedDefaultPattern() {
         Pattern pattern = new Pattern();
         pattern.setUri("http://patternpedia.org/testPatterns/TestPattern1");
         pattern.setName("TestPattern1");
 
-        ObjectNode content = this.objectMapper.createObjectNode();
-        content.put("Field1", "FieldValue1");
-        content.put("Field2", 123);
+        ObjectNode content = this.getDefaultPatternContent();
         pattern.setContent(content);
-
-        return this.createOrGetPattern(pattern);
+        return pattern;
     }
 
     public PatternLanguage createOrGetPatternLanguage(PatternLanguage patternLanguage) {
