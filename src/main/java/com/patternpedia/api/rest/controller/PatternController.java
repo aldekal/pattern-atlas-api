@@ -1,6 +1,7 @@
 package com.patternpedia.api.rest.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.patternpedia.api.entities.EntityWithURI;
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.service.PatternLanguageService;
@@ -37,6 +38,7 @@ public class PatternController {
         this.patternViewService = patternViewService;
     }
 
+    @JsonView(EntityWithURI.EntityWithURIAllFields.class)
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/patterns")
     CollectionModel<EntityModel<Pattern>> getAllPatternsOfPatternLanguage(@PathVariable UUID patternLanguageId) {
         List<EntityModel<Pattern>> patterns = this.patternLanguageService.getAllPatternsOfPatternLanguage(patternLanguageId)
@@ -52,6 +54,7 @@ public class PatternController {
 
     }
 
+    @JsonView(EntityWithURI.EntityWithURIAllFields.class)
     @GetMapping(value = "/patternViews/{patternViewId}/patterns")
     CollectionModel<EntityModel<Pattern>> getAllPatternsOfPatternView(@PathVariable UUID patternViewId) {
         List<EntityModel<Pattern>> patterns = this.patternViewService.getAllPatternsOfPatternView(patternViewId)
@@ -67,6 +70,7 @@ public class PatternController {
 
     }
 
+    @JsonView(Pattern.PatternWithContent.class)
     @GetMapping(value = "/patternViews/{patternViewId}/patterns/{patternId}")
     EntityModel<Pattern> getPatternOfPatternViewById(UUID patternViewId, UUID patternId) {
         return null;
@@ -93,6 +97,7 @@ public class PatternController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @JsonView(Pattern.PatternWithContent.class)
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/patterns/{patternId}")
     EntityModel<Pattern> getPatternOfPatternLanguageById(@PathVariable UUID patternLanguageId, @PathVariable UUID patternId) {
 
