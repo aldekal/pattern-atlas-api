@@ -1,7 +1,5 @@
 package com.patternpedia.api.rest.controller;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import com.patternpedia.api.entities.EntityWithURI;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.PatternSchema;
 import com.patternpedia.api.service.PatternLanguageService;
@@ -33,10 +31,18 @@ public class PatternLanguageController {
         this.patternLanguageService = patternLanguageService;
     }
 
-    @JsonView(EntityWithURI.EntityWithURIAllFields.class)
     @GetMapping
     CollectionModel<EntityModel<PatternLanguage>> getAllPatternLanguages() {
-        List<EntityModel<PatternLanguage>> patternLanguages = this.patternLanguageService.getAllPatternLanguages()
+
+        // Todo: This is a hack. How can we influence serialization to prevent embedding content of patterns
+        List<PatternLanguage> preparedList = this.patternLanguageService.getAllPatternLanguages();
+        for (PatternLanguage patternLanguage : preparedList) {
+            if (null != patternLanguage.getPatterns()) {
+                patternLanguage.setPatterns(PatternController.removeContentFromPatterns(patternLanguage.getPatterns()));
+            }
+        }
+
+        List<EntityModel<PatternLanguage>> patternLanguages = preparedList
                 .stream()
                 .map(patternLanguage -> new EntityModel<>(patternLanguage,
                         linkTo(methodOn(PatternController.class).getAllPatternsOfPatternLanguage(patternLanguage.getId())).withRel("patterns"),
@@ -63,6 +69,9 @@ public class PatternLanguageController {
         String uri = URLDecoder.decode(encodedUri, StandardCharsets.UTF_8.toString());
 
         PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageByUri(uri);
+        if (null != patternLanguage.getPatterns()) {
+            patternLanguage.setPatterns(PatternController.removeContentFromPatterns(patternLanguage.getPatterns()));
+        }
 
         return new EntityModel<>(patternLanguage,
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguage.getId())).withSelfRel(),
@@ -73,6 +82,10 @@ public class PatternLanguageController {
     @GetMapping(value = "/{patternLanguageId}")
     EntityModel<PatternLanguage> getPatternLanguageById(@PathVariable UUID patternLanguageId) {
         PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
+        if (null != patternLanguage.getPatterns()) {
+            patternLanguage.setPatterns(PatternController.removeContentFromPatterns(patternLanguage.getPatterns()));
+        }
+
         return new EntityModel<>(patternLanguage,
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguage.getId())).withSelfRel(),
                 linkTo(methodOn(PatternController.class).getAllPatternsOfPatternLanguage(patternLanguage.getId())).withRel("patterns"),

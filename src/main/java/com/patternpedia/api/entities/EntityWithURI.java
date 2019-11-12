@@ -23,17 +23,14 @@ import java.util.UUID;
 })
 public abstract class EntityWithURI {
 
-    @JsonView(EntityWithURIAllFields.class)
     @Id
     @GeneratedValue(generator = "pg-uuid")
     private UUID id;
 
-    @JsonView(EntityWithURIAllFields.class)
     @NaturalId(mutable = true)
     @Column(nullable = false, unique = true)
     private String uri;
 
-    @JsonView(EntityWithURIAllFields.class)
     @Column(nullable = false)
     private String name;
 
@@ -52,6 +49,4 @@ public abstract class EntityWithURI {
         return Objects.hash(id, uri, name);
     }
 
-    public static class EntityWithURIAllFields {
-    }
 }

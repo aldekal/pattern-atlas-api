@@ -48,7 +48,7 @@ public class PatternControllerTest {
         PatternLanguage patternLanguage = this.integrationTestHelper.getDefaultPatternLanguage();
         Pattern pattern = this.integrationTestHelper.getUnpersistedDefaultPattern();
 
-        String postContent = this.objectMapper.writerWithView(Pattern.PatternWithContent.class).writeValueAsString(pattern);
+        String postContent = this.objectMapper.writeValueAsString(pattern);
 
         MvcResult postResult = this.mockMvc.perform(
                 post("/patternLanguages/{id}/patterns", patternLanguage.getId())

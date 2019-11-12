@@ -1,7 +1,6 @@
 package com.patternpedia.api.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -30,12 +29,9 @@ public class Pattern extends EntityWithURI {
     @ManyToMany(mappedBy = "patterns")
     private List<PatternView> patternViews;
 
-    @JsonView(PatternWithContent.class)
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
     @NotNull
     private Object content;
 
-    public static class PatternWithContent extends EntityWithURIAllFields {
-    }
 }
