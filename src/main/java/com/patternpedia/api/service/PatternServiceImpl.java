@@ -57,6 +57,7 @@ public class PatternServiceImpl implements PatternService {
         if (null == pattern) {
             throw new NullPatternException();
         }
+
         this.patternRepository.deleteById(pattern.getId());
     }
 

@@ -2,6 +2,7 @@ package com.patternpedia.api.rest.controller;
 
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.PatternSchema;
+import com.patternpedia.api.rest.assembler.PatternLanguageModelAssembler;
 import com.patternpedia.api.service.PatternLanguageService;
 import org.apache.commons.text.CaseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,6 @@ public class PatternLanguageController {
     CollectionModel<EntityModel<PatternLanguage>> getAllPatternLanguages() {
 
         // Todo: This is a hack. How can we influence serialization to prevent embedding content of patterns
-
         List<PatternLanguage> preparedList = this.patternLanguageService.getAllPatternLanguages();
         for (PatternLanguage patternLanguage : preparedList) {
             if (null != patternLanguage.getPatterns()) {

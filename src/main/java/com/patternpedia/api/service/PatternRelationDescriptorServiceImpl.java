@@ -1,6 +1,7 @@
 package com.patternpedia.api.service;
 
 import com.patternpedia.api.entities.DirectedEdge;
+import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.UndirectedEdge;
 import com.patternpedia.api.exception.DirectedEdgeNotFoundException;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -55,6 +57,18 @@ public class PatternRelationDescriptorServiceImpl implements PatternRelationDesc
     public DirectedEdge getDirectedEdgeById(UUID id) {
         return this.directedEdgeRepository.findById(id)
                 .orElseThrow(() -> new DirectedEdgeNotFoundException(String.format("DirectedEdge %s not found!", id.toString())));
+    }
+
+    @Override
+    public List<DirectedEdge> findDirectedEdgeBySource(Pattern pattern) {
+        return this.directedEdgeRepository.findBySource(pattern)
+                .orElseThrow(() -> new DirectedEdgeNotFoundException(String.format("No DirectedEdge found with Pattern %s as source", pattern.getId())));
+    }
+
+    @Override
+    public List<DirectedEdge> findDirectedEdgeByTarget(Pattern pattern) {
+        return this.directedEdgeRepository.findByTarget(pattern)
+                .orElseThrow(() -> new DirectedEdgeNotFoundException(String.format("No DirectedEdge found with Pattern %s as target", pattern.getId())));
     }
 
     @Override

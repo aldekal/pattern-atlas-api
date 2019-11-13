@@ -28,6 +28,9 @@ public class IntegrationTestHelper {
         if (null != p.getUri() && this.patternRepository.existsByUri(p.getUri())) {
             return this.patternRepository.findByUri(p.getUri()).get();
         } else {
+            if (null == p.getContent()) {
+                p.setContent(this.getDefaultPatternContent());
+            }
             return this.patternRepository.save(p);
         }
     }

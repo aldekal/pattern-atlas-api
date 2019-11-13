@@ -82,7 +82,7 @@ public class PatternController {
 
     @GetMapping(value = "/patternViews/{patternViewId}/patterns/{patternId}")
     EntityModel<Pattern> getPatternOfPatternViewById(UUID patternViewId, UUID patternId) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @PostMapping(value = "/patternLanguages/{patternLanguageId}/patterns")
@@ -96,6 +96,24 @@ public class PatternController {
         return ResponseEntity
                 .created(linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(patternLanguageId, pattern.getId())).toUri())
                 .build();
+    }
+
+    @PutMapping(value = "/patternLanguages/{patternLanguageId}/patterns/{patternId}")
+    EntityModel<Pattern> updatePatternViaPut(@PathVariable UUID patternLanguageId, @PathVariable UUID patternId, @Valid @RequestBody Pattern pattern) {
+        pattern = this.patternService.updatePattern(pattern);
+        return new EntityModel<>(pattern,
+                linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(patternLanguageId, patternId)).withSelfRel(),
+                linkTo(methodOn(PatternController.class).getPatternContentOfPattern(patternLanguageId, patternId)).withRel("content"),
+                linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
+    }
+
+    @PatchMapping(value = "/patternLanguages/{patternLanguageId}/patterns/{patternId}")
+    EntityModel<Pattern> updatePatternViaPatch(@PathVariable UUID patternLanguageId, @PathVariable UUID patternId, @Valid @RequestBody Pattern pattern) {
+        pattern = this.patternService.updatePattern(pattern);
+        return new EntityModel<>(pattern,
+                linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(patternLanguageId, patternId)).withSelfRel(),
+                linkTo(methodOn(PatternController.class).getPatternContentOfPattern(patternLanguageId, patternId)).withRel("content"),
+                linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
     }
 
     @DeleteMapping(value = "/patternLanguages/{patternLanguageId}/patterns/{patternId}")
