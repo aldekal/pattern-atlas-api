@@ -1,6 +1,5 @@
 package com.patternpedia.api.entities;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.Data;
 import lombok.NoArgsConstructor;

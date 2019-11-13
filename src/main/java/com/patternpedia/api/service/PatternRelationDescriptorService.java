@@ -1,9 +1,6 @@
 package com.patternpedia.api.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.patternpedia.api.entities.DirectedEdge;
-import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.UndirectedEdge;
 
 import java.util.UUID;

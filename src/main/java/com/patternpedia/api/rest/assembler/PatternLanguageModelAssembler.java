@@ -2,7 +2,7 @@ package com.patternpedia.api.rest.assembler;
 
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.rest.controller.PatternLanguageController;
-import com.patternpedia.api.rest.representationModel.PatternLanguageModel;
+import com.patternpedia.api.rest.representation.PatternLanguageModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 
 public class PatternLanguageModelAssembler extends RepresentationModelAssemblerSupport<PatternLanguage, PatternLanguageModel> {
@@ -19,7 +19,7 @@ public class PatternLanguageModelAssembler extends RepresentationModelAssemblerS
         patternLanguageModel.setName(patternLanguage.getName());
         patternLanguageModel.setLogo(patternLanguage.getLogo());
         PatternModelAssembler patternModelAssembler = new PatternModelAssembler();
-        patternLanguageModel.setPatterns(patternModelAssembler.toCollectionModel(patternLanguage.getPatterns()));
+        patternLanguageModel.setPatternModels(patternModelAssembler.toCollectionModel(patternLanguage.getPatterns()));
         return patternLanguageModel;
     }
 }

@@ -35,6 +35,7 @@ public class PatternLanguageController {
     CollectionModel<EntityModel<PatternLanguage>> getAllPatternLanguages() {
 
         // Todo: This is a hack. How can we influence serialization to prevent embedding content of patterns
+
         List<PatternLanguage> preparedList = this.patternLanguageService.getAllPatternLanguages();
         for (PatternLanguage patternLanguage : preparedList) {
             if (null != patternLanguage.getPatterns()) {
