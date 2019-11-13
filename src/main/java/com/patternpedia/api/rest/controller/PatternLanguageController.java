@@ -48,7 +48,9 @@ public class PatternLanguageController {
                 .map(patternLanguage -> new EntityModel<>(patternLanguage,
                         linkTo(methodOn(PatternController.class).getAllPatternsOfPatternLanguage(patternLanguage.getId())).withRel("patterns"),
                         linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguage.getId())).withSelfRel(),
-                        linkTo(methodOn(PatternLanguageController.class).getAllPatternLanguages()).withRel("patternLanguages")))
+                        linkTo(methodOn(PatternLanguageController.class).getAllPatternLanguages()).withRel("patternLanguages"),
+                        linkTo(methodOn(PatternRelationDescriptorController.class).getDirectedEdgesOfPatternLanguage(patternLanguage.getId())).withRel("directedEdges"),
+                        linkTo(methodOn(PatternRelationDescriptorController.class).getUndirectedEdgesOfPatternLanguage(patternLanguage.getId())).withRel("undirectedEdges")))
                 .collect(Collectors.toList());
 
         UriTemplate uriTemplate = UriTemplate.of("/findByUri")
@@ -77,7 +79,9 @@ public class PatternLanguageController {
         return new EntityModel<>(patternLanguage,
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguage.getId())).withSelfRel(),
                 linkTo(methodOn(PatternController.class).getAllPatternsOfPatternLanguage(patternLanguage.getId())).withRel("patterns"),
-                linkTo(methodOn(PatternLanguageController.class).getAllPatternLanguages()).withRel("patternLanguages"));
+                linkTo(methodOn(PatternLanguageController.class).getAllPatternLanguages()).withRel("patternLanguages"),
+                linkTo(methodOn(PatternRelationDescriptorController.class).getDirectedEdgesOfPatternLanguage(patternLanguage.getId())).withRel("directedEdges"),
+                linkTo(methodOn(PatternRelationDescriptorController.class).getUndirectedEdgesOfPatternLanguage(patternLanguage.getId())).withRel("undirectedEdges"));
     }
 
     @GetMapping(value = "/{patternLanguageId}")
@@ -90,7 +94,9 @@ public class PatternLanguageController {
         return new EntityModel<>(patternLanguage,
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguage.getId())).withSelfRel(),
                 linkTo(methodOn(PatternController.class).getAllPatternsOfPatternLanguage(patternLanguage.getId())).withRel("patterns"),
-                linkTo(methodOn(PatternLanguageController.class).getAllPatternLanguages()).withRel("patternLanguages"));
+                linkTo(methodOn(PatternLanguageController.class).getAllPatternLanguages()).withRel("patternLanguages"),
+                linkTo(methodOn(PatternRelationDescriptorController.class).getDirectedEdgesOfPatternLanguage(patternLanguage.getId())).withRel("directedEdges"),
+                linkTo(methodOn(PatternRelationDescriptorController.class).getUndirectedEdgesOfPatternLanguage(patternLanguage.getId())).withRel("undirectedEdges"));
     }
 
     @PostMapping

@@ -6,12 +6,15 @@ import com.patternpedia.api.entities.UndirectedEdge;
 import com.patternpedia.api.service.PatternLanguageService;
 import com.patternpedia.api.service.PatternRelationDescriptorService;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -30,6 +33,22 @@ public class PatternRelationDescriptorController {
         this.patternLanguageService = patternLanguageService;
     }
 
+    @GetMapping(value = "/patternLanguages/{patternLanguageId}/directedEdges")
+    CollectionModel<EntityModel<DirectedEdge>> getDirectedEdgesOfPatternLanguage(@PathVariable UUID patternLanguageId) {
+        List<EntityModel<DirectedEdge>> directedEdges = this.patternLanguageService.getDirectedEdgesByPatternLanguageId(patternLanguageId)
+                .stream()
+                .map(directedEdge -> new EntityModel<>(directedEdge,
+                        linkTo(methodOn(PatternRelationDescriptorController.class).getDirectedEdgeOfPatternLanguageById(patternLanguageId, directedEdge.getId())).withSelfRel(),
+                        linkTo(methodOn(PatternRelationDescriptorController.class).getDirectedEdgesOfPatternLanguage(patternLanguageId)).withRel("directedEdges"),
+                        linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(patternLanguageId, directedEdge.getSource().getId())).withRel("source"),
+                        linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(patternLanguageId, directedEdge.getTarget().getId())).withRel("target"))
+                ).collect(Collectors.toList());
+        return new CollectionModel<>(directedEdges,
+                linkTo(methodOn(PatternRelationDescriptorController.class).getDirectedEdgesOfPatternLanguage(patternLanguageId)).withSelfRel(),
+                linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage")
+        );
+    }
+
     @PostMapping(value = "/patternLanguages/{patternLanguageId}/directedEdges")
     @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
@@ -39,6 +58,22 @@ public class PatternRelationDescriptorController {
         return ResponseEntity
                 .created(linkTo(methodOn(PatternRelationDescriptorController.class).getDirectedEdgeOfPatternLanguageById(patternLanguageId, directedEdge.getId())).toUri())
                 .body(directedEdge);
+    }
+
+    @GetMapping(value = "/patternLanguages/{patternLanguageId}/undirectedEdges")
+    CollectionModel<EntityModel<UndirectedEdge>> getUndirectedEdgesOfPatternLanguage(@PathVariable UUID patternLanguageId) {
+        List<EntityModel<UndirectedEdge>> undirectedEdges = this.patternLanguageService.getUndirectedEdgesByPatternLanguageId(patternLanguageId)
+                .stream()
+                .map(undirectedEdge -> new EntityModel<>(undirectedEdge,
+                        linkTo(methodOn(PatternRelationDescriptorController.class).getDirectedEdgeOfPatternLanguageById(patternLanguageId, undirectedEdge.getId())).withSelfRel(),
+                        linkTo(methodOn(PatternRelationDescriptorController.class).getDirectedEdgesOfPatternLanguage(patternLanguageId)).withRel("directedEdges"),
+                        linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(patternLanguageId, undirectedEdge.getP1().getId())).withRel("pattern1"),
+                        linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(patternLanguageId, undirectedEdge.getP2().getId())).withRel("pattern2"))
+                ).collect(Collectors.toList());
+        return new CollectionModel<>(undirectedEdges,
+                linkTo(methodOn(PatternRelationDescriptorController.class).getDirectedEdgesOfPatternLanguage(patternLanguageId)).withSelfRel(),
+                linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage")
+        );
     }
 
     @PostMapping(value = "/patternLanguages/{patternLanguageId}/undirectedEdges")
