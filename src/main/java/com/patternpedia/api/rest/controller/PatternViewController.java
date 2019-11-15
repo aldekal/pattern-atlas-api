@@ -2,18 +2,23 @@ package com.patternpedia.api.rest.controller;
 
 import com.patternpedia.api.entities.PatternView;
 import com.patternpedia.api.service.PatternViewService;
-import org.springframework.hateoas.*;
+import org.apache.commons.text.CaseUtils;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
@@ -28,46 +33,113 @@ public class PatternViewController {
 
     @GetMapping
     public CollectionModel<EntityModel<PatternView>> getAllPatternViews() {
-        List<EntityModel<PatternView>> patternViews = this.patternViewService.getAllPatternViews()
-                .stream()
-                .map(patternView -> new EntityModel<>(patternView,
-                        linkTo(methodOn(PatternController.class).getAllPatternsOfPatternView(patternView.getId())).withRel("patterns"),
-                        linkTo(methodOn(PatternViewController.class).getPatternViewById(patternView.getId())).withSelfRel(),
-                        linkTo(methodOn(PatternViewController.class).getAllPatternViews()).withRel("patternViews")))
-                .collect(Collectors.toList());
 
-        UriTemplate uriTemplate = UriTemplate.of("/findByUri")
-                .with(new TemplateVariable("uri", TemplateVariable.VariableType.REQUEST_PARAM));
-        Link findByUriLink = null;
-        try {
-            findByUriLink = linkTo(methodOn(PatternViewController.class).findPatternViewByUri(null)).withRel("findByUri");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+        // Todo: This is a hack. How can we influence serialization to prevent embedding content of patterns (--> master assembler)
+        List<PatternView> preparedViews = this.patternViewService.getAllPatternViews();
+        for (PatternView patternView : preparedViews) {
+            patternView.setPatterns(PatternController.removeContentFromPatterns(patternView.getPatterns()));
         }
 
-        return new CollectionModel<>(patternViews,
-                findByUriLink,
-                linkTo(methodOn(PatternViewController.class).getAllPatternViews()).withSelfRel());
+        List<EntityModel<PatternView>> patternViews = preparedViews
+                .stream()
+                .map(patternView -> new EntityModel<>(patternView,
+                        this.getPatternViewLinks(patternView)))
+                .collect(Collectors.toList());
+
+        return new CollectionModel<>(patternViews, this.getPatternViewCollectionLinks());
+    }
+
+    @PostMapping
+    @CrossOrigin(exposedHeaders = "Location")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<?> createPatternView(@RequestBody PatternView patternView) {
+        String patternViewNameAsCamelCase = CaseUtils.toCamelCase(patternView.getName(), false);
+        String uri = String.format("https://patternpedia.org/patternLanguages/%s", patternViewNameAsCamelCase);
+        patternView.setUri(uri);
+
+        PatternView createdPatternView = this.patternViewService.createPatternView(patternView);
+        return ResponseEntity
+                .created(linkTo(methodOn(PatternViewController.class).getPatternViewById(createdPatternView.getId())).toUri())
+                .build();
     }
 
     @GetMapping(value = "/{patternViewId}")
     public EntityModel<PatternView> getPatternViewById(@PathVariable UUID patternViewId) {
         PatternView patternView = this.patternViewService.getPatternViewById(patternViewId);
 
-        return new EntityModel<>(patternView,
-                linkTo(methodOn(PatternViewController.class).getPatternViewById(patternViewId)).withSelfRel(),
-                linkTo(methodOn(PatternViewController.class).getAllPatternViews()).withRel("patternViews"));
+        // Todo: This is a hack. How can we influence serialization to prevent embedding content of patterns (--> master assembler)
+        if (null != patternView.getPatterns()) {
+            patternView.setPatterns(PatternController.removeContentFromPatterns(patternView.getPatterns()));
+        }
+
+        return new EntityModel<>(patternView, this.getPatternViewLinks(patternView));
     }
 
     @GetMapping(value = "/findByUri")
     public EntityModel<PatternView> findPatternViewByUri(@RequestParam String encodedUri) throws UnsupportedEncodingException {
         String uri = URLDecoder.decode(encodedUri, StandardCharsets.UTF_8.toString());
-
         PatternView patternView = this.patternViewService.getPatternViewByUri(uri);
 
-        return new EntityModel<>(patternView,
-                linkTo(methodOn(PatternViewController.class).getPatternViewById(patternView.getId())).withSelfRel(),
-                linkTo(methodOn(PatternController.class).getAllPatternsOfPatternView(patternView.getId())).withRel("patterns"),
-                linkTo(methodOn(PatternViewController.class).getAllPatternViews()).withRel("patternViews"));
+        // Todo: This is a hack. How can we influence serialization to prevent embedding content of patterns (--> master assembler)
+        if (null != patternView.getPatterns()) {
+            patternView.setPatterns(PatternController.removeContentFromPatterns(patternView.getPatterns()));
+        }
+
+        return new EntityModel<>(patternView, this.getPatternViewLinks(patternView));
+    }
+
+    @PutMapping(value = "/{patternViewId}")
+    public ResponseEntity<?> putPatternView(@PathVariable UUID patternViewId, @RequestBody PatternView patternView) {
+        patternView = this.patternViewService.updatePatternView(patternView);
+
+        // Todo: This is a hack. How can we influence serialization to prevent embedding content of patterns (--> master assembler)
+        if (null != patternView.getPatterns()) {
+            patternView.setPatterns(PatternController.removeContentFromPatterns(patternView.getPatterns()));
+        }
+
+        return ResponseEntity.ok(patternView);
+    }
+
+    @PatchMapping(value = "/{patternViewId}")
+    public ResponseEntity<?> patchPatternView(@PathVariable UUID patternViewId, @RequestBody PatternView patternView) {
+        return this.putPatternView(patternViewId, patternView);
+    }
+
+    @DeleteMapping(value = "/{patternViewId}")
+    public ResponseEntity<?> deletePatternView(@PathVariable UUID patternViewId) {
+        this.patternViewService.deletePatternView(patternViewId);
+        return ResponseEntity.ok().build();
+    }
+
+    private List<Link> getPatternViewCollectionLinks() {
+        List<Link> links = new ArrayList<>();
+
+        try {
+            Link findByUriLink = linkTo(methodOn(PatternViewController.class).findPatternViewByUri(null)).withRel("findByUri");
+            links.add(findByUriLink);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        links.add(linkTo(methodOn(PatternViewController.class).getAllPatternViews()).withSelfRel()
+                .andAffordance(afford(methodOn(PatternViewController.class).createPatternView(null))));
+        links.add(linkTo(methodOn(PatternViewController.class).getAllPatternViews()).withRel("patternViews"));
+
+        return links;
+    }
+
+    private List<Link> getPatternViewLinks(PatternView patternView) {
+        List<Link> links = new ArrayList<>();
+
+        links.add(
+                linkTo(methodOn(PatternViewController.class).getPatternViewById(patternView.getId())).withSelfRel()
+                        .andAffordance(afford(methodOn(PatternViewController.class).putPatternView(patternView.getId(), null)))
+                        .andAffordance(afford(methodOn(PatternViewController.class).patchPatternView(patternView.getId(), null)))
+                        .andAffordance(afford(methodOn(PatternViewController.class).deletePatternView(patternView.getId())))
+        );
+        links.add(linkTo(methodOn(PatternViewController.class).getAllPatternViews()).withRel("patternViews"));
+        links.add(linkTo(methodOn(PatternController.class).getAllPatternsOfPatternView(patternView.getId())).withRel("patterns"));
+
+        return links;
     }
 }
