@@ -39,7 +39,7 @@ public class PatternLanguageController {
     CollectionModel<EntityModel<PatternLanguage>> getAllPatternLanguages() {
 
         // Todo: This is a hack. How can we influence serialization to prevent embedding content of patterns (--> master assembler)
-        List<PatternLanguage> preparedList = this.patternLanguageService.getAllPatternLanguages();
+        List<PatternLanguage> preparedList = this.patternLanguageService.getPatternLanguages();
         for (PatternLanguage patternLanguage : preparedList) {
             if (null != patternLanguage.getPatterns()) {
                 patternLanguage.setPatterns(PatternController.removeContentFromPatterns(patternLanguage.getPatterns()));
@@ -49,10 +49,10 @@ public class PatternLanguageController {
         List<EntityModel<PatternLanguage>> patternLanguages = preparedList
                 .stream()
                 .map(patternLanguage -> new EntityModel<>(patternLanguage,
-                        this.getPatternLanguageLinks(patternLanguage.getId())))
+                        getPatternLanguageLinks(patternLanguage.getId())))
                 .collect(Collectors.toList());
 
-        return new CollectionModel<>(patternLanguages, this.getPatternLanguageCollectionLinks());
+        return new CollectionModel<>(patternLanguages, getPatternLanguageCollectionLinks());
     }
 
     @GetMapping(value = "/findByUri")
@@ -64,7 +64,7 @@ public class PatternLanguageController {
             patternLanguage.setPatterns(PatternController.removeContentFromPatterns(patternLanguage.getPatterns()));
         }
 
-        return new EntityModel<>(patternLanguage, this.getPatternLanguageLinks(patternLanguage.getId()));
+        return new EntityModel<>(patternLanguage, getPatternLanguageLinks(patternLanguage.getId()));
     }
 
     @GetMapping(value = "/{patternLanguageId}")
@@ -74,7 +74,7 @@ public class PatternLanguageController {
             patternLanguage.setPatterns(PatternController.removeContentFromPatterns(patternLanguage.getPatterns()));
         }
 
-        return new EntityModel<>(patternLanguage, this.getPatternLanguageLinks(patternLanguage.getId()));
+        return new EntityModel<>(patternLanguage, getPatternLanguageLinks(patternLanguage.getId()));
     }
 
     @PostMapping
@@ -141,11 +141,11 @@ public class PatternLanguageController {
 
     @PutMapping(value = "/{patternLanguageId}/patternSchema")
     ResponseEntity<PatternSchema> updatePatternSchema(@PathVariable UUID patternLanguageId, @RequestBody PatternSchema patternSchema) {
-        PatternSchema schema = this.patternLanguageService.updatePatternSchemaByPatternLanguageId(patternLanguageId, patternSchema);
+        PatternSchema schema = this.patternLanguageService.updatePatternSchemaOfPatternLanguage(patternLanguageId, patternSchema);
         return ResponseEntity.ok(schema);
     }
 
-    private List<Link> getPatternLanguageCollectionLinks() {
+    private static List<Link> getPatternLanguageCollectionLinks() {
         List<Link> links = new ArrayList<>();
 
         try {
@@ -160,7 +160,7 @@ public class PatternLanguageController {
         return links;
     }
 
-    private List<Link> getPatternLanguageLinks(UUID patternLanguageId) {
+    private static List<Link> getPatternLanguageLinks(UUID patternLanguageId) {
         List<Link> links = new ArrayList<>();
         links.add(linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withSelfRel()
                 .andAffordance(afford(methodOn(PatternLanguageController.class).putPatternLanguage(patternLanguageId, null)))

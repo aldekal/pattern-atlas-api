@@ -43,10 +43,10 @@ public class PatternViewController {
         List<EntityModel<PatternView>> patternViews = preparedViews
                 .stream()
                 .map(patternView -> new EntityModel<>(patternView,
-                        this.getPatternViewLinks(patternView)))
+                        getPatternViewLinks(patternView)))
                 .collect(Collectors.toList());
 
-        return new CollectionModel<>(patternViews, this.getPatternViewCollectionLinks());
+        return new CollectionModel<>(patternViews, getPatternViewCollectionLinks());
     }
 
     @PostMapping
@@ -72,7 +72,7 @@ public class PatternViewController {
             patternView.setPatterns(PatternController.removeContentFromPatterns(patternView.getPatterns()));
         }
 
-        return new EntityModel<>(patternView, this.getPatternViewLinks(patternView));
+        return new EntityModel<>(patternView, getPatternViewLinks(patternView));
     }
 
     @GetMapping(value = "/findByUri")
@@ -85,7 +85,7 @@ public class PatternViewController {
             patternView.setPatterns(PatternController.removeContentFromPatterns(patternView.getPatterns()));
         }
 
-        return new EntityModel<>(patternView, this.getPatternViewLinks(patternView));
+        return new EntityModel<>(patternView, getPatternViewLinks(patternView));
     }
 
     @PutMapping(value = "/{patternViewId}")
@@ -111,7 +111,7 @@ public class PatternViewController {
         return ResponseEntity.ok().build();
     }
 
-    private List<Link> getPatternViewCollectionLinks() {
+    private static List<Link> getPatternViewCollectionLinks() {
         List<Link> links = new ArrayList<>();
 
         try {
@@ -128,7 +128,7 @@ public class PatternViewController {
         return links;
     }
 
-    private List<Link> getPatternViewLinks(PatternView patternView) {
+    private static List<Link> getPatternViewLinks(PatternView patternView) {
         List<Link> links = new ArrayList<>();
 
         links.add(

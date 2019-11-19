@@ -48,25 +48,25 @@ public class PatternController {
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/patterns")
     CollectionModel<EntityModel<Pattern>> getAllPatternsOfPatternLanguage(@PathVariable UUID patternLanguageId) {
         // Todo: This is a hack. How can we influence serialization to prevent embedding content of patterns (--> master assembler)
-        List<Pattern> preparedList = removeContentFromPatterns(this.patternLanguageService.getAllPatternsOfPatternLanguage(patternLanguageId));
+        List<Pattern> preparedList = removeContentFromPatterns(this.patternLanguageService.getPatternsOfPatternLanguage(patternLanguageId));
 
         List<EntityModel<Pattern>> patterns = preparedList
                 .stream()
-                .map(pattern -> new EntityModel<>(pattern, this.getPatternLinks(pattern)))
+                .map(pattern -> new EntityModel<>(pattern, getPatternLinks(pattern)))
                 .collect(Collectors.toList());
 
-        return new CollectionModel<>(patterns, this.getPatternCollectionLinks(patternLanguageId));
+        return new CollectionModel<>(patterns, getPatternCollectionLinks(patternLanguageId));
     }
 
     @GetMapping(value = "/patternViews/{patternViewId}/patterns")
     CollectionModel<EntityModel<Pattern>> getAllPatternsOfPatternView(@PathVariable UUID patternViewId) {
 
         // Todo: This is a hack. How can we influence serialization to prevent embedding content of patterns
-        List<Pattern> preparedList = removeContentFromPatterns(this.patternViewService.getAllPatternsOfPatternView(patternViewId));
+        List<Pattern> preparedList = removeContentFromPatterns(this.patternViewService.getPatternsOfPatternView(patternViewId));
 
         List<EntityModel<Pattern>> patterns = preparedList
                 .stream()
-                .map(pattern -> new EntityModel<>(pattern, this.getPatternLinks(pattern)))
+                .map(pattern -> new EntityModel<>(pattern, getPatternLinks(pattern)))
                 .collect(Collectors.toList());
         return new CollectionModel<>(patterns,
                 linkTo(methodOn(PatternController.class).getAllPatternsOfPatternView(patternViewId)).withSelfRel(),
@@ -76,16 +76,14 @@ public class PatternController {
 
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/patterns/{patternId}")
     EntityModel<Pattern> getPatternOfPatternLanguageById(@PathVariable UUID patternLanguageId, @PathVariable UUID patternId) {
-
         Pattern pattern = this.patternLanguageService.getPatternOfPatternLanguageById(patternLanguageId, patternId);
-
-        return new EntityModel<>(pattern, this.getPatternLinks(pattern));
-
+        return new EntityModel<>(pattern, getPatternLinks(pattern));
     }
 
     @GetMapping(value = "/patternViews/{patternViewId}/patterns/{patternId}")
     EntityModel<Pattern> getPatternOfPatternViewById(UUID patternViewId, UUID patternId) {
-        throw new UnsupportedOperationException();
+        Pattern pattern = this.patternViewService.getPatternOfPatternViewById(patternViewId, patternId);
+        return new EntityModel<>(pattern, getPatternLinks(pattern));
     }
 
     @PostMapping(value = "/patternLanguages/{patternLanguageId}/patterns")
@@ -136,7 +134,7 @@ public class PatternController {
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
     }
 
-    private List<Link> getPatternLinks(Pattern pattern) {
+    private static List<Link> getPatternLinks(Pattern pattern) {
         List<Link> links = new ArrayList<>();
 
         links.add(linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(pattern.getPatternLanguage().getId(), pattern.getId())).withSelfRel()
@@ -155,7 +153,7 @@ public class PatternController {
         return links;
     }
 
-    private List<Link> getPatternCollectionLinks(UUID patternLanguageId) {
+    private static List<Link> getPatternCollectionLinks(UUID patternLanguageId) {
         ArrayList<Link> links = new ArrayList<>();
 
         links.add(linkTo(methodOn(PatternController.class).getAllPatternsOfPatternLanguage(patternLanguageId)).withSelfRel()

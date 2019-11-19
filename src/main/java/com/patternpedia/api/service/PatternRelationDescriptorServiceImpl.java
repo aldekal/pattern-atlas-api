@@ -2,7 +2,6 @@ package com.patternpedia.api.service;
 
 import com.patternpedia.api.entities.DirectedEdge;
 import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.UndirectedEdge;
 import com.patternpedia.api.exception.DirectedEdgeNotFoundException;
 import com.patternpedia.api.exception.NullPatternLanguageException;
@@ -25,31 +24,20 @@ public class PatternRelationDescriptorServiceImpl implements PatternRelationDesc
 
     private UndirectedEdgeReository undirectedEdgeReository;
 
-    private PatternLanguageService patternLanguageService;
-
     public PatternRelationDescriptorServiceImpl(DirectedEdgeRepository directedEdgeRepository,
-                                                UndirectedEdgeReository undirectedEdgeReository,
-                                                PatternLanguageService patternLanguageService) {
+                                                UndirectedEdgeReository undirectedEdgeReository) {
         this.directedEdgeRepository = directedEdgeRepository;
         this.undirectedEdgeReository = undirectedEdgeReository;
-        this.patternLanguageService = patternLanguageService;
     }
 
     @Override
     @Transactional
-    public DirectedEdge createDirectedEdge(DirectedEdge directedEdge, UUID patternLanguageId) {
-        PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
-        directedEdge.setPatternLanguage(patternLanguage);
-
-        directedEdge = this.directedEdgeRepository.save(directedEdge);
-
-        if (null != patternLanguage.getDirectedEdges()) {
-            patternLanguage.getDirectedEdges().add(directedEdge);
-        } else {
-            patternLanguage.setDirectedEdges(new ArrayList<>(Collections.singletonList(directedEdge)));
+    public DirectedEdge createDirectedEdge(DirectedEdge directedEdge) {
+        if (null == directedEdge.getPatternLanguage()) {
+            throw new NullPatternLanguageException();
         }
-        this.patternLanguageService.updatePatternLanguage(patternLanguage);
-        return directedEdge;
+
+        return this.directedEdgeRepository.save(directedEdge);
     }
 
     @Override
@@ -60,12 +48,14 @@ public class PatternRelationDescriptorServiceImpl implements PatternRelationDesc
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<DirectedEdge> findDirectedEdgeBySource(Pattern pattern) {
         return this.directedEdgeRepository.findBySource(pattern)
                 .orElseThrow(() -> new DirectedEdgeNotFoundException(String.format("No DirectedEdge found with Pattern %s as source", pattern.getId())));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<DirectedEdge> findDirectedEdgeByTarget(Pattern pattern) {
         return this.directedEdgeRepository.findByTarget(pattern)
                 .orElseThrow(() -> new DirectedEdgeNotFoundException(String.format("No DirectedEdge found with Pattern %s as target", pattern.getId())));
@@ -73,37 +63,37 @@ public class PatternRelationDescriptorServiceImpl implements PatternRelationDesc
 
     @Override
     @Transactional
-    public void deleteDirectedEdge(UUID directedEdgeId) {
+    public DirectedEdge updateDirectedEdge(DirectedEdge directedEdge) {
+        return this.directedEdgeRepository.save(directedEdge);
+    }
+
+    @Override
+    @Transactional
+    public void deleteDirectedEdgeById(UUID directedEdgeId) {
         DirectedEdge directedEdge = this.getDirectedEdgeById(directedEdgeId);
+        this.deleteDirectedEdge(directedEdge);
+    }
 
-        if (null == directedEdge.getPatternLanguage()) {
-            throw new NullPatternLanguageException();
-        }
-
-        PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(directedEdge.getPatternLanguage().getId());
-        if (null != patternLanguage.getDirectedEdges()) {
-            patternLanguage.getDirectedEdges().remove(directedEdge);
-        }
-        this.patternLanguageService.updatePatternLanguage(patternLanguage);
-
+    @Override
+    @Transactional
+    public void deleteDirectedEdge(DirectedEdge directedEdge) {
+        directedEdge.setPatternViews(null);
+        this.updateDirectedEdge(directedEdge);
         this.directedEdgeRepository.delete(directedEdge);
     }
 
     @Override
     @Transactional
-    public UndirectedEdge createUndirectedEdge(UndirectedEdge undirectedEdge, UUID patternLanguageId) {
-        PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
-        undirectedEdge.setPatternLanguage(patternLanguage);
-
-        undirectedEdge = this.undirectedEdgeReository.save(undirectedEdge);
-
-        if (null != patternLanguage.getDirectedEdges()) {
-            patternLanguage.getUndirectedEdges().add(undirectedEdge);
-        } else {
-            patternLanguage.setUndirectedEdges(new ArrayList<>(Collections.singletonList(undirectedEdge)));
+    public void deleteAllDirectedEdges(Iterable<DirectedEdge> directedEdges) {
+        for (DirectedEdge directedEdge : directedEdges) {
+            this.deleteDirectedEdge(directedEdge);
         }
-        this.patternLanguageService.updatePatternLanguage(patternLanguage);
-        return undirectedEdge;
+    }
+
+    @Override
+    @Transactional
+    public UndirectedEdge createUndirectedEdge(UndirectedEdge undirectedEdge) {
+        return this.undirectedEdgeReository.save(undirectedEdge);
     }
 
     @Override
@@ -114,22 +104,53 @@ public class PatternRelationDescriptorServiceImpl implements PatternRelationDesc
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<UndirectedEdge> findUndirectedEdgeByPattern(Pattern pattern) {
+        List<UndirectedEdge> undirectedEdges = new ArrayList<>();
+        undirectedEdges.addAll(this.findUndirectedEdgeByP1(pattern));
+        undirectedEdges.addAll(this.findUndirectedEdgeByP2(pattern));
+        if (0 == undirectedEdges.size()) {
+            throw new DirectedEdgeNotFoundException(String.format("No DirectedEdge found with Pattern %s as target", pattern.getId()));
+        }
+        return undirectedEdges;
+    }
+
+    @Override
     @Transactional
-    public void deleteUndirectedEdge(UUID undirectedEdgeId) {
+    public UndirectedEdge updateUndirectedEdge(UndirectedEdge undirectedEdge) {
+        return this.undirectedEdgeReository.save(undirectedEdge);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUndirectedEdgeById(UUID undirectedEdgeId) {
         UndirectedEdge undirectedEdge = this.getUndirectedEdgeById(undirectedEdgeId);
+        this.deleteUndirectedEdge(undirectedEdge);
+    }
 
-        if (null == undirectedEdge.getPatternLanguage()) {
-            throw new NullPatternLanguageException();
-        }
-
-        undirectedEdge = this.getUndirectedEdgeById(undirectedEdge.getId());
-
-        PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(undirectedEdge.getPatternLanguage().getId());
-        if (null != patternLanguage.getDirectedEdges()) {
-            patternLanguage.getUndirectedEdges().remove(undirectedEdge);
-        }
-        this.patternLanguageService.updatePatternLanguage(patternLanguage);
-
+    @Override
+    @Transactional
+    public void deleteUndirectedEdge(UndirectedEdge undirectedEdge) {
+        undirectedEdge.setPatternViews(null);
+        this.updateUndirectedEdge(undirectedEdge);
         this.undirectedEdgeReository.delete(undirectedEdge);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllUndirectedEdges(Iterable<UndirectedEdge> undirectedEdges) {
+        for (UndirectedEdge undirectedEdge : undirectedEdges) {
+            this.deleteUndirectedEdge(undirectedEdge);
+        }
+    }
+
+    private List<UndirectedEdge> findUndirectedEdgeByP1(Pattern pattern) {
+        return this.undirectedEdgeReository.findByP1(pattern)
+                .orElse(Collections.emptyList());
+    }
+
+    private List<UndirectedEdge> findUndirectedEdgeByP2(Pattern pattern) {
+        return this.undirectedEdgeReository.findByP2(pattern)
+                .orElse(Collections.emptyList());
     }
 }

@@ -17,7 +17,6 @@ import java.util.UUID;
 @Validated
 @Transactional
 public class PatternServiceImpl implements PatternService {
-    // Todo Add Validator for pattern creation, which checks if pattern is compliant to PatternSchema
 
     private PatternRepository patternRepository;
 

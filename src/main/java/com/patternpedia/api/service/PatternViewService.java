@@ -22,31 +22,38 @@ public interface PatternViewService {
 
     void deletePatternView(UUID patternViewId);
 
-    List<Pattern> getAllPatternsOfPatternView(UUID patternViewId);
+
+    void addPatternToPatternView(UUID patternViewId, UUID patternId);
+
+    List<Pattern> getPatternsOfPatternView(UUID patternViewId);
 
     Pattern getPatternOfPatternViewById(UUID patternViewId, UUID patternId);
 
     void removePatternFromPatternView(UUID patternViewId, UUID patternId);
 
-    void addPatternToPatternView(UUID patternViewId, UUID patternId);
+
+    void addDirectedEdgeToPatternView(UUID patternViewId, UUID directedEdgeId);
+
+    DirectedEdge createDirectedEdgeAndAddToPatternView(UUID patternViewId, DirectedEdge directedEdge);
 
     List<DirectedEdge> getDirectedEdgesByPatternViewId(UUID patternViewId);
 
     DirectedEdge getDirectedEdgeOfPatternViewById(UUID patternViewId, UUID directedEdgeId);
 
-    DirectedEdge createDirectedEdgeAndAddToPatternView(UUID patternViewId, DirectedEdge directedEdge);
-
-    void addDirectedEdgeToPatternView(UUID patternViewId, UUID directedEdgeId);
+    DirectedEdge updateDirectedEdgeOfPatternView(UUID patternViewId, DirectedEdge directedEdge);
 
     void removeDirectedEdgeFromPatternView(UUID patternViewId, UUID directedEdgeId);
+
+
+    void addUndirectedEdgeToPatternView(UUID patternViewId, UUID undirectedEdgeId);
+
+    UndirectedEdge createUndirectedEdgeAndAddToPatternView(UUID patternViewId, UndirectedEdge undirectedEdge);
 
     List<UndirectedEdge> getUndirectedEdgesByPatternViewId(UUID patternViewId);
 
     UndirectedEdge getUndirectedEdgeOfPatternViewById(UUID patternViewId, UUID undirectedEdgeId);
 
-    UndirectedEdge createUndirectedEdgeAndAddToPatternView(UUID patternViewId, UndirectedEdge undirectedEdge);
-
-    UndirectedEdge addUndirectedEdgeToPatternView(UUID patternViewId, UUID undirectedEdgeId);
+    UndirectedEdge updateUndirectedEdgeOfPatternView(UUID patternViewId, UndirectedEdge undirectedEdge);
 
     void removeUndirectedEdgeFromPatternView(UUID patternViewId, UUID undirectedEdgeId);
 }

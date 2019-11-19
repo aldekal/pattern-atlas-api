@@ -4,7 +4,6 @@ import com.patternpedia.api.entities.DirectedEdge;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.UndirectedEdge;
 import com.patternpedia.api.service.PatternLanguageService;
-import com.patternpedia.api.service.PatternRelationDescriptorService;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -24,18 +23,15 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping(produces = "application/hal+json")
 public class PatternRelationDescriptorController {
 
-    private PatternRelationDescriptorService patternRelationDescriptorService;
     private PatternLanguageService patternLanguageService;
 
-    public PatternRelationDescriptorController(PatternRelationDescriptorService patternRelationDescriptorService,
-                                               PatternLanguageService patternLanguageService) {
-        this.patternRelationDescriptorService = patternRelationDescriptorService;
+    public PatternRelationDescriptorController(PatternLanguageService patternLanguageService) {
         this.patternLanguageService = patternLanguageService;
     }
 
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/directedEdges")
     CollectionModel<EntityModel<DirectedEdge>> getDirectedEdgesOfPatternLanguage(@PathVariable UUID patternLanguageId) {
-        List<EntityModel<DirectedEdge>> directedEdges = this.patternLanguageService.getDirectedEdgesByPatternLanguageId(patternLanguageId)
+        List<EntityModel<DirectedEdge>> directedEdges = this.patternLanguageService.getDirectedEdgesOfPatternLanguage(patternLanguageId)
                 .stream()
                 .map(directedEdge -> new EntityModel<>(directedEdge,
                         linkTo(methodOn(PatternRelationDescriptorController.class).getDirectedEdgeOfPatternLanguageById(patternLanguageId, directedEdge.getId())).withSelfRel(),
@@ -53,7 +49,7 @@ public class PatternRelationDescriptorController {
     @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
     ResponseEntity<?> createDirectedEdge(@PathVariable UUID patternLanguageId, @RequestBody DirectedEdge directedEdge) {
-        directedEdge = this.patternRelationDescriptorService.createDirectedEdge(directedEdge, patternLanguageId);
+        directedEdge = this.patternLanguageService.createDirectedEdgeAndAddToPatternLanguage(patternLanguageId, directedEdge);
 
         return ResponseEntity
                 .created(linkTo(methodOn(PatternRelationDescriptorController.class).getDirectedEdgeOfPatternLanguageById(patternLanguageId, directedEdge.getId())).toUri())
@@ -62,7 +58,7 @@ public class PatternRelationDescriptorController {
 
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/undirectedEdges")
     CollectionModel<EntityModel<UndirectedEdge>> getUndirectedEdgesOfPatternLanguage(@PathVariable UUID patternLanguageId) {
-        List<EntityModel<UndirectedEdge>> undirectedEdges = this.patternLanguageService.getUndirectedEdgesByPatternLanguageId(patternLanguageId)
+        List<EntityModel<UndirectedEdge>> undirectedEdges = this.patternLanguageService.getUndirectedEdgesOfPatternLanguage(patternLanguageId)
                 .stream()
                 .map(undirectedEdge -> new EntityModel<>(undirectedEdge,
                         linkTo(methodOn(PatternRelationDescriptorController.class).getDirectedEdgeOfPatternLanguageById(patternLanguageId, undirectedEdge.getId())).withSelfRel(),
@@ -80,7 +76,7 @@ public class PatternRelationDescriptorController {
     @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
     ResponseEntity<?> createUndirectedEdge(@PathVariable UUID patternLanguageId, @RequestBody UndirectedEdge undirectedEdge) {
-        undirectedEdge = this.patternRelationDescriptorService.createUndirectedEdge(undirectedEdge, patternLanguageId);
+        undirectedEdge = this.patternLanguageService.createUndirectedEdgeAndAddToPatternLanguage(patternLanguageId, undirectedEdge);
 
         return ResponseEntity
                 .created(linkTo(methodOn(PatternRelationDescriptorController.class).getUndirectedEdgeOfPatternLanguageById(patternLanguageId, undirectedEdge.getId())).toUri())
