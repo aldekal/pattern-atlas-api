@@ -128,7 +128,7 @@ public class PatternController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> addPatternToPatternView(@PathVariable UUID patternViewId, @RequestBody Pattern pattern) {
         this.patternViewService.addPatternToPatternView(patternViewId, pattern.getId());
-        return ResponseEntity.created(linkTo(methodOn(PatternViewController.class)
+        return ResponseEntity.created(linkTo(methodOn(PatternController.class)
                 .getPatternOfPatternViewById(patternViewId, pattern.getId())).toUri()).build();
     }
 

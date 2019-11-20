@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternView;
 import com.patternpedia.api.service.PatternViewService;
 
@@ -156,12 +155,5 @@ public class PatternViewController {
     public ResponseEntity<?> deletePatternView(@PathVariable UUID patternViewId) {
         this.patternViewService.deletePatternView(patternViewId);
         return ResponseEntity.ok().build();
-    }
-
-    @GetMapping(value = "/{patternViewId}/patterns/{patternId}")
-    public EntityModel<Pattern> getPatternOfPatternViewById(@PathVariable UUID patternViewId, @PathVariable UUID patternId) {
-        Pattern pattern = this.patternViewService.getPatternOfPatternViewById(patternViewId, patternId);
-
-        return new EntityModel<>(pattern, PatternController.getPatternLinks(pattern));
     }
 }
