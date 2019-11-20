@@ -1,18 +1,18 @@
 package com.patternpedia.api.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import org.hibernate.annotations.Type;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
-import java.util.List;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.hibernate.annotations.Type;
 
 @Entity
 @Data
@@ -33,5 +33,4 @@ public class Pattern extends EntityWithURI {
     @Column(columnDefinition = "jsonb")
     @NotNull
     private Object content;
-
 }

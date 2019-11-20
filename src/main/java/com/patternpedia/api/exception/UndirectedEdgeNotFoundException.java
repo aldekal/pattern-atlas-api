@@ -1,9 +1,9 @@
 package com.patternpedia.api.exception;
 
+import java.util.UUID;
+
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.PatternView;
-
-import java.util.UUID;
 
 public class UndirectedEdgeNotFoundException extends RuntimeException {
     public UndirectedEdgeNotFoundException(String message) {

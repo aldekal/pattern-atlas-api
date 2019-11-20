@@ -35,5 +35,4 @@ public class PatternPediaAPI implements CommandLineRunner {
                     .oauth2ResourceServer().jwt();
         }
     }*/
-
 }

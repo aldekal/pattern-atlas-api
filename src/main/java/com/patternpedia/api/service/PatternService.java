@@ -1,10 +1,11 @@
 package com.patternpedia.api.service;
 
+import java.util.UUID;
+
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.validator.PatternContentConstraint;
 
 import javax.validation.Valid;
-import java.util.UUID;
 
 public interface PatternService {
 
@@ -17,5 +18,4 @@ public interface PatternService {
     Pattern getPatternById(UUID patternId);
 
     Pattern getPatternByUri(String uri);
-
 }

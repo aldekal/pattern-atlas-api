@@ -1,13 +1,17 @@
 package com.patternpedia.api.entities;
 
+import java.util.UUID;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
-
-import javax.persistence.*;
-import java.util.UUID;
 
 @Entity
 @Data
@@ -30,5 +34,4 @@ public abstract class PatternRelationDescriptor {
     public void setDescription(Object description) {
         this.description = mapper.valueToTree(description);
     }
-
 }

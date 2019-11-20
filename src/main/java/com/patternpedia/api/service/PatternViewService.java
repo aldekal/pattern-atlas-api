@@ -1,12 +1,12 @@
 package com.patternpedia.api.service;
 
+import java.util.List;
+import java.util.UUID;
+
 import com.patternpedia.api.entities.DirectedEdge;
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternView;
 import com.patternpedia.api.entities.UndirectedEdge;
-
-import java.util.List;
-import java.util.UUID;
 
 public interface PatternViewService {
 
@@ -22,7 +22,6 @@ public interface PatternViewService {
 
     void deletePatternView(UUID patternViewId);
 
-
     void addPatternToPatternView(UUID patternViewId, UUID patternId);
 
     List<Pattern> getPatternsOfPatternView(UUID patternViewId);
@@ -30,7 +29,6 @@ public interface PatternViewService {
     Pattern getPatternOfPatternViewById(UUID patternViewId, UUID patternId);
 
     void removePatternFromPatternView(UUID patternViewId, UUID patternId);
-
 
     void addDirectedEdgeToPatternView(UUID patternViewId, UUID directedEdgeId);
 
@@ -43,7 +41,6 @@ public interface PatternViewService {
     DirectedEdge updateDirectedEdgeOfPatternView(UUID patternViewId, DirectedEdge directedEdge);
 
     void removeDirectedEdgeFromPatternView(UUID patternViewId, UUID directedEdgeId);
-
 
     void addUndirectedEdgeToPatternView(UUID patternViewId, UUID undirectedEdgeId);
 

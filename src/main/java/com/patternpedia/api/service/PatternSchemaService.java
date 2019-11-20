@@ -1,8 +1,8 @@
 package com.patternpedia.api.service;
 
-import com.patternpedia.api.entities.PatternSchema;
-
 import java.util.UUID;
+
+import com.patternpedia.api.entities.PatternSchema;
 
 public interface PatternSchemaService {
 

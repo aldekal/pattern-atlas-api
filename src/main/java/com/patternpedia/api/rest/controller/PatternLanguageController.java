@@ -1,18 +1,5 @@
 package com.patternpedia.api.rest.controller;
 
-import com.patternpedia.api.entities.PatternLanguage;
-import com.patternpedia.api.entities.PatternSchema;
-import com.patternpedia.api.exception.PatternLanguageNotFoundException;
-import com.patternpedia.api.service.PatternLanguageService;
-import org.apache.commons.text.CaseUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -21,7 +8,34 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import com.patternpedia.api.entities.PatternLanguage;
+import com.patternpedia.api.entities.PatternSchema;
+import com.patternpedia.api.exception.PatternLanguageNotFoundException;
+import com.patternpedia.api.service.PatternLanguageService;
+
+import org.apache.commons.text.CaseUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
@@ -33,6 +47,34 @@ public class PatternLanguageController {
     @Autowired
     public PatternLanguageController(PatternLanguageService patternLanguageService) {
         this.patternLanguageService = patternLanguageService;
+    }
+
+    private static List<Link> getPatternLanguageCollectionLinks() {
+        List<Link> links = new ArrayList<>();
+
+        try {
+            Link findByUriLink = linkTo(methodOn(PatternLanguageController.class).findPatternLanguageByUri(null)).withRel("findByUri");
+            links.add(findByUriLink);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        links.add(linkTo(methodOn(PatternLanguageController.class).getAllPatternLanguages()).withSelfRel()
+                .andAffordance(afford(methodOn(PatternLanguageController.class).createPatternLanguage(null))));
+        return links;
+    }
+
+    private static List<Link> getPatternLanguageLinks(UUID patternLanguageId) {
+        List<Link> links = new ArrayList<>();
+        links.add(linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withSelfRel()
+                .andAffordance(afford(methodOn(PatternLanguageController.class).putPatternLanguage(patternLanguageId, null)))
+                .andAffordance(afford(methodOn(PatternLanguageController.class).deletePatternLanguage(patternLanguageId)))
+        );
+        links.add(linkTo(methodOn(PatternController.class).getPatternsOfPatternLanguage(patternLanguageId)).withRel("patterns"));
+        links.add(linkTo(methodOn(PatternLanguageController.class).getAllPatternLanguages()).withRel("patternLanguages"));
+        links.add(linkTo(methodOn(PatternRelationDescriptorController.class).getDirectedEdgesOfPatternLanguage(patternLanguageId)).withRel("directedEdges"));
+        links.add(linkTo(methodOn(PatternRelationDescriptorController.class).getUndirectedEdgesOfPatternLanguage(patternLanguageId)).withRel("undirectedEdges"));
+        return links;
     }
 
     @GetMapping
@@ -106,7 +148,6 @@ public class PatternLanguageController {
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
     }
 
     @PatchMapping(value = "/{patternLanguageId}")
@@ -143,33 +184,5 @@ public class PatternLanguageController {
     ResponseEntity<PatternSchema> updatePatternSchema(@PathVariable UUID patternLanguageId, @RequestBody PatternSchema patternSchema) {
         PatternSchema schema = this.patternLanguageService.updatePatternSchemaOfPatternLanguage(patternLanguageId, patternSchema);
         return ResponseEntity.ok(schema);
-    }
-
-    private static List<Link> getPatternLanguageCollectionLinks() {
-        List<Link> links = new ArrayList<>();
-
-        try {
-            Link findByUriLink = linkTo(methodOn(PatternLanguageController.class).findPatternLanguageByUri(null)).withRel("findByUri");
-            links.add(findByUriLink);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        links.add(linkTo(methodOn(PatternLanguageController.class).getAllPatternLanguages()).withSelfRel()
-                .andAffordance(afford(methodOn(PatternLanguageController.class).createPatternLanguage(null))));
-        return links;
-    }
-
-    private static List<Link> getPatternLanguageLinks(UUID patternLanguageId) {
-        List<Link> links = new ArrayList<>();
-        links.add(linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withSelfRel()
-                .andAffordance(afford(methodOn(PatternLanguageController.class).putPatternLanguage(patternLanguageId, null)))
-                .andAffordance(afford(methodOn(PatternLanguageController.class).deletePatternLanguage(patternLanguageId)))
-        );
-        links.add(linkTo(methodOn(PatternController.class).getAllPatternsOfPatternLanguage(patternLanguageId)).withRel("patterns"));
-        links.add(linkTo(methodOn(PatternLanguageController.class).getAllPatternLanguages()).withRel("patternLanguages"));
-        links.add(linkTo(methodOn(PatternRelationDescriptorController.class).getDirectedEdgesOfPatternLanguage(patternLanguageId)).withRel("directedEdges"));
-        links.add(linkTo(methodOn(PatternRelationDescriptorController.class).getUndirectedEdgesOfPatternLanguage(patternLanguageId)).withRel("undirectedEdges"));
-        return links;
     }
 }

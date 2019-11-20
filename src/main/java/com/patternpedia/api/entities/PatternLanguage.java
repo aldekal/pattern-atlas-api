@@ -1,12 +1,16 @@
 package com.patternpedia.api.entities;
 
+import java.net.URL;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.net.URL;
-import java.util.List;
 
 @Entity
 @Data

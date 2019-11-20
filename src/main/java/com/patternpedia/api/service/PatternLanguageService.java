@@ -1,10 +1,15 @@
 package com.patternpedia.api.service;
 
-import com.patternpedia.api.entities.*;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.UUID;
+
+import com.patternpedia.api.entities.DirectedEdge;
+import com.patternpedia.api.entities.Pattern;
+import com.patternpedia.api.entities.PatternLanguage;
+import com.patternpedia.api.entities.PatternSchema;
+import com.patternpedia.api.entities.UndirectedEdge;
+
+import org.springframework.transaction.annotation.Transactional;
 
 public interface PatternLanguageService {
 
@@ -26,8 +31,6 @@ public interface PatternLanguageService {
     @Transactional
     void deletePatternLanguage(UUID patternLanguageId);
 
-
-
     @Transactional
     Pattern createPatternAndAddToPatternLanguage(UUID patternLanguageId, Pattern pattern);
 
@@ -40,8 +43,6 @@ public interface PatternLanguageService {
     @Transactional
     void deletePatternOfPatternLanguage(UUID patternLanguageId, UUID patternId);
 
-
-
     @Transactional
     PatternSchema createPatternSchemaAndAddToPatternLanguage(UUID patternLanguageId, PatternSchema patternSchema);
 
@@ -50,8 +51,6 @@ public interface PatternLanguageService {
 
     @Transactional
     PatternSchema updatePatternSchemaOfPatternLanguage(UUID patternLanguageId, PatternSchema patternSchema);
-
-
 
     @Transactional
     DirectedEdge createDirectedEdgeAndAddToPatternLanguage(UUID patternLanguageId, DirectedEdge directedEdge);
@@ -64,5 +63,4 @@ public interface PatternLanguageService {
 
     @Transactional(readOnly = true)
     List<UndirectedEdge> getUndirectedEdgesOfPatternLanguage(UUID patternLanguageId);
-
 }

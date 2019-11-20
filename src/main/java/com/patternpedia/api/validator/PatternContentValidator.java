@@ -1,17 +1,18 @@
 package com.patternpedia.api.validator;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.Iterator;
+import java.util.Map;
+
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternSchema;
 import com.patternpedia.api.entities.PatternSectionSchema;
 import com.patternpedia.api.service.PatternLanguageService;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.util.Iterator;
-import java.util.Map;
 
 public class PatternContentValidator implements ConstraintValidator<PatternContentConstraint, Pattern> {
 
@@ -76,5 +77,4 @@ public class PatternContentValidator implements ConstraintValidator<PatternConte
         }
         return false;
     }
-
 }

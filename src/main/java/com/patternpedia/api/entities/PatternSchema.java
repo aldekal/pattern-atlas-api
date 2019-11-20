@@ -1,13 +1,19 @@
 package com.patternpedia.api.entities;
 
+import java.util.List;
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.MapsId;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-
-import javax.persistence.*;
-import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Data

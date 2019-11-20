@@ -1,13 +1,13 @@
 package com.patternpedia.api.service;
 
+import java.util.List;
+import java.util.UUID;
+
 import com.patternpedia.api.entities.DirectedEdge;
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.UndirectedEdge;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface PatternRelationDescriptorService {
 

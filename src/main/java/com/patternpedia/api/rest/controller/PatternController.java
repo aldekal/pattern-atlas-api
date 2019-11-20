@@ -1,25 +1,38 @@
 package com.patternpedia.api.rest.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.PatternView;
 import com.patternpedia.api.service.PatternLanguageService;
 import com.patternpedia.api.service.PatternService;
 import com.patternpedia.api.service.PatternViewService;
+
+import javax.validation.Valid;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
@@ -38,15 +51,54 @@ public class PatternController {
         this.patternViewService = patternViewService;
     }
 
-    public static List<Pattern> removeContentFromPatterns(List<Pattern> patterns) {
+    static List<Pattern> removeContentFromPatterns(List<Pattern> patterns) {
         for (Pattern pattern : patterns) {
             pattern.setContent(null);
         }
         return patterns;
     }
 
+    static List<Link> getPatternLinks(Pattern pattern) {
+        List<Link> links = new ArrayList<>();
+
+        links.add(linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(pattern.getPatternLanguage().getId(), pattern.getId())).withSelfRel()
+                .andAffordance(afford(methodOn(PatternController.class).updatePatternViaPut(pattern.getPatternLanguage().getId(), pattern.getId(), null)))
+                .andAffordance(afford(methodOn(PatternController.class).updatePatternViaPatch(pattern.getPatternLanguage().getId(), pattern.getId(), null)))
+                .andAffordance(afford(methodOn(PatternController.class).deletePatternOfPatternLanguage(pattern.getPatternLanguage().getId(), pattern.getId()))));
+        links.add(linkTo(methodOn(PatternController.class).getPatternContentOfPattern(pattern.getPatternLanguage().getId(), pattern.getId())).withRel("content"));
+        links.add(linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(pattern.getPatternLanguage().getId())).withRel("patternLanguage"));
+
+        if (null != pattern.getPatternViews()) {
+            for (PatternView patternView : pattern.getPatternViews()) {
+                links.add(linkTo(methodOn(PatternViewController.class).getPatternViewById(patternView.getId())).withRel("patternView"));
+            }
+        }
+
+        return links;
+    }
+
+    static List<Link> getPatternLanguagePatternCollectionLinks(UUID patternLanguageId) {
+        ArrayList<Link> links = new ArrayList<>();
+
+        links.add(linkTo(methodOn(PatternController.class).getPatternsOfPatternLanguage(patternLanguageId)).withSelfRel()
+                .andAffordance(afford(methodOn(PatternController.class).addPatternToPatternLanguage(patternLanguageId, null))));
+        links.add(linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
+
+        return links;
+    }
+
+    static List<Link> getPatternViewPatternCollectionLinks(UUID patternViewId) {
+        List<Link> links = new ArrayList<>();
+        links.add(
+                linkTo(methodOn(PatternController.class).getPatternsOfPatternView(patternViewId)).withSelfRel()
+                        .andAffordance(afford(methodOn(PatternController.class).addPatternToPatternView(patternViewId, null)))
+        );
+        links.add(linkTo(methodOn(PatternViewController.class).getPatternViewById(patternViewId)).withRel("patternView"));
+        return links;
+    }
+
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/patterns")
-    CollectionModel<EntityModel<Pattern>> getAllPatternsOfPatternLanguage(@PathVariable UUID patternLanguageId) {
+    CollectionModel<EntityModel<Pattern>> getPatternsOfPatternLanguage(@PathVariable UUID patternLanguageId) {
         // Todo: This is a hack. How can we influence serialization to prevent embedding content of patterns (--> master assembler)
         List<Pattern> preparedList = removeContentFromPatterns(this.patternLanguageService.getPatternsOfPatternLanguage(patternLanguageId));
 
@@ -55,11 +107,11 @@ public class PatternController {
                 .map(pattern -> new EntityModel<>(pattern, getPatternLinks(pattern)))
                 .collect(Collectors.toList());
 
-        return new CollectionModel<>(patterns, getPatternCollectionLinks(patternLanguageId));
+        return new CollectionModel<>(patterns, getPatternLanguagePatternCollectionLinks(patternLanguageId));
     }
 
     @GetMapping(value = "/patternViews/{patternViewId}/patterns")
-    CollectionModel<EntityModel<Pattern>> getAllPatternsOfPatternView(@PathVariable UUID patternViewId) {
+    CollectionModel<EntityModel<Pattern>> getPatternsOfPatternView(@PathVariable UUID patternViewId) {
 
         // Todo: This is a hack. How can we influence serialization to prevent embedding content of patterns
         List<Pattern> preparedList = removeContentFromPatterns(this.patternViewService.getPatternsOfPatternView(patternViewId));
@@ -68,10 +120,16 @@ public class PatternController {
                 .stream()
                 .map(pattern -> new EntityModel<>(pattern, getPatternLinks(pattern)))
                 .collect(Collectors.toList());
-        return new CollectionModel<>(patterns,
-                linkTo(methodOn(PatternController.class).getAllPatternsOfPatternView(patternViewId)).withSelfRel(),
-                linkTo(methodOn(PatternViewController.class).getPatternViewById(patternViewId)).withRel("patternView"));
+        return new CollectionModel<>(patterns, getPatternViewPatternCollectionLinks(patternViewId));
+    }
 
+    @PostMapping(value = "/patternViews/{patternViewId}/patterns")
+    @CrossOrigin(exposedHeaders = "Location")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<?> addPatternToPatternView(@PathVariable UUID patternViewId, @RequestBody Pattern pattern) {
+        this.patternViewService.addPatternToPatternView(patternViewId, pattern.getId());
+        return ResponseEntity.created(linkTo(methodOn(PatternViewController.class)
+                .getPatternOfPatternViewById(patternViewId, pattern.getId())).toUri()).build();
     }
 
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/patterns/{patternId}")
@@ -133,34 +191,4 @@ public class PatternController {
                 linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(patternLanguageId, patternId)).withRel("pattern"),
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
     }
-
-    static List<Link> getPatternLinks(Pattern pattern) {
-        List<Link> links = new ArrayList<>();
-
-        links.add(linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(pattern.getPatternLanguage().getId(), pattern.getId())).withSelfRel()
-                .andAffordance(afford(methodOn(PatternController.class).updatePatternViaPut(pattern.getPatternLanguage().getId(), pattern.getId(), null)))
-                .andAffordance(afford(methodOn(PatternController.class).updatePatternViaPatch(pattern.getPatternLanguage().getId(), pattern.getId(), null)))
-                .andAffordance(afford(methodOn(PatternController.class).deletePatternOfPatternLanguage(pattern.getPatternLanguage().getId(), pattern.getId()))));
-        links.add(linkTo(methodOn(PatternController.class).getPatternContentOfPattern(pattern.getPatternLanguage().getId(), pattern.getId())).withRel("content"));
-        links.add(linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(pattern.getPatternLanguage().getId())).withRel("patternLanguage"));
-
-        if (null != pattern.getPatternViews()) {
-            for (PatternView patternView : pattern.getPatternViews()) {
-                links.add(linkTo(methodOn(PatternViewController.class).getPatternViewById(patternView.getId())).withRel("patternView"));
-            }
-        }
-
-        return links;
-    }
-
-    static List<Link> getPatternCollectionLinks(UUID patternLanguageId) {
-        ArrayList<Link> links = new ArrayList<>();
-
-        links.add(linkTo(methodOn(PatternController.class).getAllPatternsOfPatternLanguage(patternLanguageId)).withSelfRel()
-                .andAffordance(afford(methodOn(PatternController.class).addPatternToPatternLanguage(patternLanguageId, null))));
-        links.add(linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
-
-        return links;
-    }
-
 }

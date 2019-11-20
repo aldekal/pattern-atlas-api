@@ -1,20 +1,25 @@
 package com.patternpedia.api.service;
 
-import com.patternpedia.api.entities.DirectedEdge;
-import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.entities.PatternView;
-import com.patternpedia.api.entities.UndirectedEdge;
-import com.patternpedia.api.exception.*;
-import com.patternpedia.api.repositories.DirectedEdgeRepository;
-import com.patternpedia.api.repositories.PatternViewRepository;
-import com.patternpedia.api.repositories.UndirectedEdgeReository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+
+import com.patternpedia.api.entities.DirectedEdge;
+import com.patternpedia.api.entities.Pattern;
+import com.patternpedia.api.entities.PatternView;
+import com.patternpedia.api.entities.UndirectedEdge;
+import com.patternpedia.api.exception.DirectedEdgeNotFoundException;
+import com.patternpedia.api.exception.NullPatternViewException;
+import com.patternpedia.api.exception.PatternNotFoundException;
+import com.patternpedia.api.exception.PatternViewNotFoundException;
+import com.patternpedia.api.exception.UndirectedEdgeNotFoundException;
+import com.patternpedia.api.repositories.DirectedEdgeRepository;
+import com.patternpedia.api.repositories.PatternViewRepository;
+import com.patternpedia.api.repositories.UndirectedEdgeReository;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -115,7 +120,6 @@ public class PatternViewServiceImpl implements PatternViewService {
         this.patternViewRepository.delete(patternView);
     }
 
-
     // Pattern Handling
 
     @Override
@@ -169,7 +173,6 @@ public class PatternViewServiceImpl implements PatternViewService {
             this.patternViewRepository.save(patternView);
         }
     }
-
 
     // DirectedEdge Handling
 
@@ -283,7 +286,6 @@ public class PatternViewServiceImpl implements PatternViewService {
             }
         }
     }
-
 
     // UndirectedEdge Handling
 

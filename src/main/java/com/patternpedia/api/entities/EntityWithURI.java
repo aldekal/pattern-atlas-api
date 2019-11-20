@@ -1,23 +1,23 @@
 package com.patternpedia.api.entities;
 
+import java.util.Objects;
+import java.util.UUID;
+
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import java.util.Objects;
-import java.util.UUID;
-
 @MappedSuperclass
 @Data
 @NoArgsConstructor
-@TypeDefs({
+@TypeDefs( {
         @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 })
 public abstract class EntityWithURI {
@@ -47,5 +47,4 @@ public abstract class EntityWithURI {
     public int hashCode() {
         return Objects.hash(id, uri, name);
     }
-
 }

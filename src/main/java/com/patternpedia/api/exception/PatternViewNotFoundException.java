@@ -1,8 +1,8 @@
 package com.patternpedia.api.exception;
 
-import com.patternpedia.api.entities.PatternView;
-
 import java.util.UUID;
+
+import com.patternpedia.api.entities.PatternView;
 
 public class PatternViewNotFoundException extends RuntimeException {
 

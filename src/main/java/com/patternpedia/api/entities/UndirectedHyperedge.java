@@ -1,13 +1,13 @@
 package com.patternpedia.api.entities;
 
+import java.util.Set;
+
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import java.util.Set;
 
 @Entity
 @Data
@@ -22,5 +22,4 @@ public class UndirectedHyperedge extends PatternRelationDescriptor {
     private String type;
 
     private String label;
-
 }

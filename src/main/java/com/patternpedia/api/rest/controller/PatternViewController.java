@@ -1,16 +1,5 @@
 package com.patternpedia.api.rest.controller;
 
-import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.entities.PatternView;
-import com.patternpedia.api.service.PatternViewService;
-import org.apache.commons.text.CaseUtils;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -19,7 +8,32 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import com.patternpedia.api.entities.Pattern;
+import com.patternpedia.api.entities.PatternView;
+import com.patternpedia.api.service.PatternViewService;
+
+import org.apache.commons.text.CaseUtils;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
@@ -59,7 +73,7 @@ public class PatternViewController {
                         .andAffordance(afford(methodOn(PatternViewController.class).deletePatternView(patternView.getId())))
         );
         links.add(linkTo(methodOn(PatternViewController.class).getAllPatternViews()).withRel("patternViews"));
-        links.add(linkTo(methodOn(PatternController.class).getAllPatternsOfPatternView(patternView.getId())).withRel("patterns"));
+        links.add(linkTo(methodOn(PatternController.class).getPatternsOfPatternView(patternView.getId())).withRel("patterns"));
 
         return links;
     }
@@ -144,20 +158,10 @@ public class PatternViewController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(value = "/{patternViewId}/patterns")
-    @CrossOrigin(exposedHeaders = "Location")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> addPatternToPatternView(@PathVariable UUID patternViewId, @RequestBody Pattern pattern) {
-        this.patternViewService.addPatternToPatternView(patternViewId, pattern.getId());
-        return ResponseEntity.created(linkTo(methodOn(PatternViewController.class)
-                .getPatternOfPatternViewById(patternViewId, pattern.getId())).toUri()).build();
-    }
-
     @GetMapping(value = "/{patternViewId}/patterns/{patternId}")
     public EntityModel<Pattern> getPatternOfPatternViewById(@PathVariable UUID patternViewId, @PathVariable UUID patternId) {
         Pattern pattern = this.patternViewService.getPatternOfPatternViewById(patternViewId, patternId);
 
         return new EntityModel<>(pattern, PatternController.getPatternLinks(pattern));
     }
-
 }
