@@ -4,13 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternLanguage;
+import com.patternpedia.api.entities.PatternSchema;
+import com.patternpedia.api.entities.PatternSectionSchema;
 import com.patternpedia.api.repositories.PatternLanguageRepository;
 import com.patternpedia.api.repositories.PatternRepository;
+import com.patternpedia.api.repositories.PatternSchemaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 @Service
 public class IntegrationTestHelper {
@@ -20,6 +24,9 @@ public class IntegrationTestHelper {
 
     @Autowired
     private PatternLanguageRepository patternLanguageRepository;
+
+    @Autowired
+    private PatternSchemaRepository patternSchemaRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -61,7 +68,8 @@ public class IntegrationTestHelper {
         if (null != patternLanguage.getUri() && this.patternLanguageRepository.existsByUri(patternLanguage.getUri())) {
             return this.patternLanguageRepository.findByUri(patternLanguage.getUri()).get();
         } else {
-            return this.patternLanguageRepository.save(patternLanguage);
+            patternLanguage = this.patternLanguageRepository.save(patternLanguage);
+            return patternLanguage;
         }
     }
 
@@ -69,7 +77,32 @@ public class IntegrationTestHelper {
         PatternLanguage patternLanguage = new PatternLanguage();
         patternLanguage.setName("DefaultTestPatternLanguage");
         patternLanguage.setUri("http://patternpedia.org/patternlanguages/DefaultTestPatternLanguage");
+        patternLanguage.setPatternSchema(this.getUnpersistedDefaultPatternSchema());
         return this.createOrGetPatternLanguage(patternLanguage);
+    }
+
+    public PatternSchema getUnpersistedDefaultPatternSchema() {
+        PatternSchema patternSchema = new PatternSchema();
+
+        PatternSectionSchema patternSectionSchema1 = new PatternSectionSchema();
+        patternSectionSchema1.setName("Field1");
+        patternSectionSchema1.setLabel("Field1");
+        patternSectionSchema1.setPosition(0);
+        patternSectionSchema1.setType("string");
+        patternSectionSchema1.setPatternSchema(patternSchema);
+
+        PatternSectionSchema patternSectionSchema2 = new PatternSectionSchema();
+        patternSectionSchema2.setName("Field2");
+        patternSectionSchema2.setLabel("Field2");
+        patternSectionSchema2.setPosition(0);
+        patternSectionSchema2.setType("number");
+        patternSectionSchema2.setPatternSchema(patternSchema);
+
+        List<PatternSectionSchema> patternSectionSchemas = new ArrayList<>();
+        patternSectionSchemas.add(patternSectionSchema1);
+        patternSectionSchemas.add(patternSectionSchema2);
+        patternSchema.setPatternSectionSchemas(patternSectionSchemas);
+        return patternSchema;
     }
 
     public PatternLanguage getDefaultPatternLanguageWithPatterns(int numberOfPatterns) {

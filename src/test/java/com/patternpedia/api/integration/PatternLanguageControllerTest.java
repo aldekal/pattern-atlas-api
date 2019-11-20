@@ -68,11 +68,38 @@ public class PatternLanguageControllerTest {
     private PatternSectionSchemaRepository patternSectionSchemaRepository;
 
     @Test
+    public void addPatternLanguageFailsDueToMissingSchema() throws Exception {
+        PatternLanguage patternLanguage = new PatternLanguage();
+        patternLanguage.setName("TestPatternLanguage5");
+        patternLanguage.setUri("http://patternpedia.org/testPatternLanguages/TestPatternLanguage5");
+        patternLanguage.setLogo(new URL("http://patternpedia.org/someLogo.png"));
+
+        MvcResult result = this.mockMvc.perform(
+                post("/patternLanguages")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(patternLanguage))
+        ).andExpect(status().is4xxClientError()).andReturn();
+
+        assertThat(result.getResponse().getContentAsString()).isEqualTo("No PatternSchema defined!");
+    }
+
+    @Test
     public void addPatternLanguageSucceeds() throws Exception {
         PatternLanguage patternLanguage = new PatternLanguage();
         patternLanguage.setName("TestPatternLanguage5");
         patternLanguage.setUri("http://patternpedia.org/testPatternLanguages/TestPatternLanguage5");
         patternLanguage.setLogo(new URL("http://patternpedia.org/someLogo.png"));
+
+        PatternSchema patternSchema = new PatternSchema();
+        PatternSectionSchema patternSectionSchema = new PatternSectionSchema();
+        patternSectionSchema.setPosition(0);
+        patternSectionSchema.setName("test");
+        patternSectionSchema.setLabel("test");
+        patternSectionSchema.setType("test");
+        patternSectionSchema.setPatternSchema(patternSchema);
+        patternSchema.setPatternSectionSchemas(new ArrayList<>(Collections.singletonList(patternSectionSchema)));
+
+        patternLanguage.setPatternSchema(patternSchema);
 
         MvcResult result = this.mockMvc.perform(
                 post("/patternLanguages")
