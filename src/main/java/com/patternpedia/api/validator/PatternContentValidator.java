@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternSchema;
 import com.patternpedia.api.entities.PatternSectionSchema;
+import com.patternpedia.api.service.PatternLanguageService;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -14,16 +15,28 @@ import java.util.Map;
 
 public class PatternContentValidator implements ConstraintValidator<PatternContentConstraint, Pattern> {
 
+    private ObjectMapper objectMapper;
+    private PatternLanguageService patternLanguageService;
+
+    public PatternContentValidator(ObjectMapper objectMapper,
+                                   PatternLanguageService patternLanguageService) {
+        this.objectMapper = objectMapper;
+        this.patternLanguageService = patternLanguageService;
+    }
+
     @Override
     public void initialize(PatternContentConstraint constraintAnnotation) {
     }
 
     @Override
     public boolean isValid(Pattern pattern, ConstraintValidatorContext constraintValidatorContext) {
+        if (null == pattern.getPatternLanguage()) {
+            return false;
+        }
 
-        PatternSchema patternSchema = pattern.getPatternLanguage().getPatternSchema();
-        ObjectMapper objectMapper = new ObjectMapper();
-        ObjectNode content = objectMapper.convertValue(pattern.getContent(), ObjectNode.class);
+        PatternSchema patternSchema = this.patternLanguageService.getPatternSchemaByPatternLanguageId(pattern.getPatternLanguage().getId());
+
+        ObjectNode content = this.objectMapper.convertValue(pattern.getContent(), ObjectNode.class);
 
         // 1. Check if all content fields are valid
         for (Iterator<Map.Entry<String, JsonNode>> it = content.fields(); it.hasNext(); ) {
