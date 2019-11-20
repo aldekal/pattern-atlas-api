@@ -134,7 +134,7 @@ public class PatternController {
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
     }
 
-    private static List<Link> getPatternLinks(Pattern pattern) {
+    static List<Link> getPatternLinks(Pattern pattern) {
         List<Link> links = new ArrayList<>();
 
         links.add(linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(pattern.getPatternLanguage().getId(), pattern.getId())).withSelfRel()
@@ -153,7 +153,7 @@ public class PatternController {
         return links;
     }
 
-    private static List<Link> getPatternCollectionLinks(UUID patternLanguageId) {
+    static List<Link> getPatternCollectionLinks(UUID patternLanguageId) {
         ArrayList<Link> links = new ArrayList<>();
 
         links.add(linkTo(methodOn(PatternController.class).getAllPatternsOfPatternLanguage(patternLanguageId)).withSelfRel()

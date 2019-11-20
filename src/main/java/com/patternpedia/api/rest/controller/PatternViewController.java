@@ -1,5 +1,6 @@
 package com.patternpedia.api.rest.controller;
 
+import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternView;
 import com.patternpedia.api.service.PatternViewService;
 import org.apache.commons.text.CaseUtils;
@@ -29,6 +30,38 @@ public class PatternViewController {
 
     public PatternViewController(PatternViewService patternViewService) {
         this.patternViewService = patternViewService;
+    }
+
+    private static List<Link> getPatternViewCollectionLinks() {
+        List<Link> links = new ArrayList<>();
+
+        try {
+            Link findByUriLink = linkTo(methodOn(PatternViewController.class).findPatternViewByUri(null)).withRel("findByUri");
+            links.add(findByUriLink);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        links.add(linkTo(methodOn(PatternViewController.class).getAllPatternViews()).withSelfRel()
+                .andAffordance(afford(methodOn(PatternViewController.class).createPatternView(null))));
+        links.add(linkTo(methodOn(PatternViewController.class).getAllPatternViews()).withRel("patternViews"));
+
+        return links;
+    }
+
+    private static List<Link> getPatternViewLinks(PatternView patternView) {
+        List<Link> links = new ArrayList<>();
+
+        links.add(
+                linkTo(methodOn(PatternViewController.class).getPatternViewById(patternView.getId())).withSelfRel()
+                        .andAffordance(afford(methodOn(PatternViewController.class).putPatternView(patternView.getId(), null)))
+                        .andAffordance(afford(methodOn(PatternViewController.class).patchPatternView(patternView.getId(), null)))
+                        .andAffordance(afford(methodOn(PatternViewController.class).deletePatternView(patternView.getId())))
+        );
+        links.add(linkTo(methodOn(PatternViewController.class).getAllPatternViews()).withRel("patternViews"));
+        links.add(linkTo(methodOn(PatternController.class).getAllPatternsOfPatternView(patternView.getId())).withRel("patterns"));
+
+        return links;
     }
 
     @GetMapping
@@ -111,35 +144,20 @@ public class PatternViewController {
         return ResponseEntity.ok().build();
     }
 
-    private static List<Link> getPatternViewCollectionLinks() {
-        List<Link> links = new ArrayList<>();
-
-        try {
-            Link findByUriLink = linkTo(methodOn(PatternViewController.class).findPatternViewByUri(null)).withRel("findByUri");
-            links.add(findByUriLink);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        links.add(linkTo(methodOn(PatternViewController.class).getAllPatternViews()).withSelfRel()
-                .andAffordance(afford(methodOn(PatternViewController.class).createPatternView(null))));
-        links.add(linkTo(methodOn(PatternViewController.class).getAllPatternViews()).withRel("patternViews"));
-
-        return links;
+    @PostMapping(value = "/{patternViewId}/patterns")
+    @CrossOrigin(exposedHeaders = "Location")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<?> addPatternToPatternView(@PathVariable UUID patternViewId, @RequestBody Pattern pattern) {
+        this.patternViewService.addPatternToPatternView(patternViewId, pattern.getId());
+        return ResponseEntity.created(linkTo(methodOn(PatternViewController.class)
+                .getPatternOfPatternViewById(patternViewId, pattern.getId())).toUri()).build();
     }
 
-    private static List<Link> getPatternViewLinks(PatternView patternView) {
-        List<Link> links = new ArrayList<>();
+    @GetMapping(value = "/{patternViewId}/patterns/{patternId}")
+    public EntityModel<Pattern> getPatternOfPatternViewById(@PathVariable UUID patternViewId, @PathVariable UUID patternId) {
+        Pattern pattern = this.patternViewService.getPatternOfPatternViewById(patternViewId, patternId);
 
-        links.add(
-                linkTo(methodOn(PatternViewController.class).getPatternViewById(patternView.getId())).withSelfRel()
-                        .andAffordance(afford(methodOn(PatternViewController.class).putPatternView(patternView.getId(), null)))
-                        .andAffordance(afford(methodOn(PatternViewController.class).patchPatternView(patternView.getId(), null)))
-                        .andAffordance(afford(methodOn(PatternViewController.class).deletePatternView(patternView.getId())))
-        );
-        links.add(linkTo(methodOn(PatternViewController.class).getAllPatternViews()).withRel("patternViews"));
-        links.add(linkTo(methodOn(PatternController.class).getAllPatternsOfPatternView(patternView.getId())).withRel("patterns"));
-
-        return links;
+        return new EntityModel<>(pattern, PatternController.getPatternLinks(pattern));
     }
+
 }
