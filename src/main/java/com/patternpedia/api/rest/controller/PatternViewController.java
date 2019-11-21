@@ -20,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -68,11 +67,12 @@ public class PatternViewController {
         links.add(
                 linkTo(methodOn(PatternViewController.class).getPatternViewById(patternView.getId())).withSelfRel()
                         .andAffordance(afford(methodOn(PatternViewController.class).putPatternView(patternView.getId(), null)))
-                        .andAffordance(afford(methodOn(PatternViewController.class).patchPatternView(patternView.getId(), null)))
                         .andAffordance(afford(methodOn(PatternViewController.class).deletePatternView(patternView.getId())))
         );
         links.add(linkTo(methodOn(PatternViewController.class).getAllPatternViews()).withRel("patternViews"));
         links.add(linkTo(methodOn(PatternController.class).getPatternsOfPatternView(patternView.getId())).withRel("patterns"));
+        links.add(linkTo(methodOn(PatternRelationDescriptorController.class).getDirectedEdgesOfView(patternView.getId())).withRel("directedEdges"));
+        links.add(linkTo(methodOn(PatternRelationDescriptorController.class).getUndirectedEdgesOfView(patternView.getId())).withRel("undirectedEdges"));
 
         return links;
     }
@@ -146,14 +146,9 @@ public class PatternViewController {
         return ResponseEntity.ok(patternView);
     }
 
-    @PatchMapping(value = "/{patternViewId}")
-    public ResponseEntity<?> patchPatternView(@PathVariable UUID patternViewId, @RequestBody PatternView patternView) {
-        return this.putPatternView(patternViewId, patternView);
-    }
-
     @DeleteMapping(value = "/{patternViewId}")
     public ResponseEntity<?> deletePatternView(@PathVariable UUID patternViewId) {
         this.patternViewService.deletePatternView(patternViewId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

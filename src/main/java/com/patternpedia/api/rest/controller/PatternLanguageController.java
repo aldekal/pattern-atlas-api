@@ -23,7 +23,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -142,17 +141,12 @@ public class PatternLanguageController {
     ResponseEntity<?> deletePatternLanguage(@PathVariable UUID patternLanguageId) {
         try {
             this.patternLanguageService.deletePatternLanguage(patternLanguageId);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         } catch (PatternLanguageNotFoundException ex) {
             return ResponseEntity.notFound().build();
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-    }
-
-    @PatchMapping(value = "/{patternLanguageId}")
-    ResponseEntity<PatternLanguage> patchPatternLanguage(@PathVariable UUID patternLanguageId, @RequestBody PatternLanguage patternLanguage) {
-        return this.putPatternLanguage(patternLanguageId, patternLanguage);
     }
 
     @GetMapping(value = "/{patternLanguageId}/patternSchema")
