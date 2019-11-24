@@ -156,22 +156,10 @@ public class PatternLanguageController {
 
         Link selfLink = linkTo(methodOn(PatternLanguageController.class).getPatternSchema(patternLanguageId)).withSelfRel();
         selfLink.andAffordance(afford(methodOn(PatternLanguageController.class).updatePatternSchema(patternLanguageId, null)));
-        selfLink.andAffordance(afford((methodOn(PatternLanguageController.class).createPatternSchema(patternLanguageId, null))));
 
         return new EntityModel<>(schema,
                 selfLink,
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
-    }
-
-    @PostMapping(value = "/{patternLanguageId}/patternSchema")
-    @CrossOrigin(exposedHeaders = "Location")
-    @ResponseStatus(HttpStatus.CREATED)
-    ResponseEntity<PatternSchema> createPatternSchema(@PathVariable UUID patternLanguageId, @RequestBody PatternSchema patternSchema) {
-        PatternSchema createdSchema = this.patternLanguageService.createPatternSchemaAndAddToPatternLanguage(patternLanguageId, patternSchema);
-
-        return ResponseEntity
-                .created(linkTo(methodOn(PatternLanguageController.class).getPatternSchema(patternLanguageId)).toUri())
-                .body(createdSchema);
     }
 
     @PutMapping(value = "/{patternLanguageId}/patternSchema")
