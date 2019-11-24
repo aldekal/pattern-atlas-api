@@ -5,7 +5,9 @@ import java.util.UUID;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.PatternView;
 
-public class DirectedEdgeNotFoundException extends RuntimeException {
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+
+public class DirectedEdgeNotFoundException extends ResourceNotFoundException {
     public DirectedEdgeNotFoundException(String message) {
         super(message);
     }

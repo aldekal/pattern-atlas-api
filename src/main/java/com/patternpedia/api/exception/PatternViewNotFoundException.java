@@ -4,7 +4,9 @@ import java.util.UUID;
 
 import com.patternpedia.api.entities.PatternView;
 
-public class PatternViewNotFoundException extends RuntimeException {
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+
+public class PatternViewNotFoundException extends ResourceNotFoundException {
 
     public PatternViewNotFoundException(String message) {
         super(message);
