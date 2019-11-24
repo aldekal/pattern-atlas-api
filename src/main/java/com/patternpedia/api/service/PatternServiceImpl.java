@@ -58,6 +58,8 @@ public class PatternServiceImpl implements PatternService {
             throw new NullPatternException();
         }
 
+        pattern.setPatternViews(null);
+        this.patternRepository.save(pattern);
         this.patternRepository.deleteById(pattern.getId());
     }
 

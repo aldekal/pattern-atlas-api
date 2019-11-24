@@ -114,7 +114,30 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
     @Override
     @Transactional
     public void deletePatternLanguage(UUID patternLanguageId) {
-        throw new UnsupportedOperationException();
+        PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
+
+        if (null != patternLanguage.getPatterns()) {
+            for (Pattern pattern : patternLanguage.getPatterns()) {
+                // before we delete the pattern we have to delete the edges of views that contain em
+
+                List<DirectedEdge> directedEdges = this.patternRelationDescriptorService.findDirectedEdgeBySource(pattern);
+                directedEdges.addAll(this.patternRelationDescriptorService.findDirectedEdgeByTarget(pattern));
+                for (DirectedEdge directedEdge : directedEdges) {
+                    this.patternRelationDescriptorService.deleteDirectedEdge(directedEdge);
+                }
+
+                List<UndirectedEdge> undirectedEdges = this.patternRelationDescriptorService.findUndirectedEdgeByPattern(pattern);
+                for (UndirectedEdge undirectedEdge : undirectedEdges) {
+                    this.patternRelationDescriptorService.deleteUndirectedEdge(undirectedEdge);
+                }
+
+                this.patternService.deletePattern(pattern);
+            }
+        }
+
+        this.patternSchemaService.deletePatternSchemaById(patternLanguageId);
+
+        this.patternLanguageRepository.delete(patternLanguage);
     }
 
     @Override

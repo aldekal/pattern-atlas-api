@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.PatternSchema;
-import com.patternpedia.api.exception.PatternLanguageNotFoundException;
 import com.patternpedia.api.service.PatternLanguageService;
 
 import org.apache.commons.text.CaseUtils;
@@ -139,14 +138,9 @@ public class PatternLanguageController {
 
     @DeleteMapping(value = "/{patternLanguageId}")
     ResponseEntity<?> deletePatternLanguage(@PathVariable UUID patternLanguageId) {
-        try {
-            this.patternLanguageService.deletePatternLanguage(patternLanguageId);
-            return ResponseEntity.noContent().build();
-        } catch (PatternLanguageNotFoundException ex) {
-            return ResponseEntity.notFound().build();
-        } catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        this.patternLanguageService.deletePatternLanguage(patternLanguageId);
+
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping(value = "/{patternLanguageId}/patternSchema")
