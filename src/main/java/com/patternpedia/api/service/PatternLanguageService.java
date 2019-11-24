@@ -59,8 +59,20 @@ public interface PatternLanguageService {
     List<DirectedEdge> getDirectedEdgesOfPatternLanguage(UUID patternLanguageId);
 
     @Transactional
+    DirectedEdge updateDirectedEdgeOfPatternLanguage(UUID patternLanguageId, DirectedEdge directedEdge);
+
+    @Transactional
+    void removeDirectedEdgeFromPatternLanguage(UUID patternLanguageId, UUID directedEdgeId);
+
+    @Transactional
     UndirectedEdge createUndirectedEdgeAndAddToPatternLanguage(UUID patternLanguageId, UndirectedEdge undirectedEdge);
 
     @Transactional(readOnly = true)
     List<UndirectedEdge> getUndirectedEdgesOfPatternLanguage(UUID patternLanguageId);
+
+    @Transactional
+    UndirectedEdge updateUndirectedEdgeOfPatternLanguage(UUID patternLanguageId, UndirectedEdge undirectedEdge);
+
+    @Transactional
+    void removeUndirectedEdgeFromPatternLanguage(UUID patternLanguageId, UUID undirectedEdgeId);
 }

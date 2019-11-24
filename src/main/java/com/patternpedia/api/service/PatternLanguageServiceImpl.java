@@ -10,10 +10,12 @@ import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.PatternSchema;
 import com.patternpedia.api.entities.UndirectedEdge;
+import com.patternpedia.api.exception.DirectedEdgeNotFoundException;
 import com.patternpedia.api.exception.NullPatternLanguageException;
 import com.patternpedia.api.exception.NullPatternSchemaException;
 import com.patternpedia.api.exception.PatternLanguageNotFoundException;
 import com.patternpedia.api.exception.PatternNotFoundException;
+import com.patternpedia.api.exception.UndirectedEdgeNotFoundException;
 import com.patternpedia.api.repositories.PatternLanguageRepository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -245,6 +247,36 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
 
     @Override
     @Transactional
+    public DirectedEdge updateDirectedEdgeOfPatternLanguage(UUID patternLanguageId, DirectedEdge directedEdge) {
+        PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
+
+        if (null != directedEdge.getPatternLanguage()) {
+            if (directedEdge.getPatternLanguage().getId().equals(patternLanguageId)) {
+                return this.patternRelationDescriptorService.updateDirectedEdge(directedEdge);
+            } else {
+                throw new DirectedEdgeNotFoundException(patternLanguage, directedEdge.getId());
+            }
+        } else {
+            throw new DirectedEdgeNotFoundException(patternLanguage, directedEdge.getId());
+        }
+    }
+
+    @Override
+    @Transactional
+    public void removeDirectedEdgeFromPatternLanguage(UUID patternLanguageId, UUID directedEdgeId) {
+        PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
+        DirectedEdge directedEdge = this.patternRelationDescriptorService.getDirectedEdgeById(directedEdgeId);
+        if (null != patternLanguage.getDirectedEdges()) {
+            if (patternLanguage.getDirectedEdges().contains(directedEdge)) {
+                this.patternRelationDescriptorService.deleteDirectedEdgeById(directedEdgeId);
+                return;
+            }
+        }
+        throw new DirectedEdgeNotFoundException(patternLanguage, directedEdgeId);
+    }
+
+    @Override
+    @Transactional
     public UndirectedEdge createUndirectedEdgeAndAddToPatternLanguage(UUID patternLanguageId, UndirectedEdge undirectedEdge) {
         PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
         undirectedEdge.setPatternLanguage(patternLanguage);
@@ -261,5 +293,35 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
     public List<UndirectedEdge> getUndirectedEdgesOfPatternLanguage(UUID patternLanguageId) {
         PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
         return patternLanguage.getUndirectedEdges();
+    }
+
+    @Override
+    @Transactional
+    public UndirectedEdge updateUndirectedEdgeOfPatternLanguage(UUID patternLanguageId, UndirectedEdge undirectedEdge) {
+        PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
+
+        if (null != undirectedEdge.getPatternLanguage()) {
+            if (undirectedEdge.getPatternLanguage().getId().equals(patternLanguageId)) {
+                return this.patternRelationDescriptorService.updateUndirectedEdge(undirectedEdge);
+            } else {
+                throw new UndirectedEdgeNotFoundException(patternLanguage, undirectedEdge.getId());
+            }
+        } else {
+            throw new UndirectedEdgeNotFoundException(patternLanguage, undirectedEdge.getId());
+        }
+    }
+
+    @Override
+    @Transactional
+    public void removeUndirectedEdgeFromPatternLanguage(UUID patternLanguageId, UUID undirectedEdgeId) {
+        PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
+        UndirectedEdge undirectedEdge = this.patternRelationDescriptorService.getUndirectedEdgeById(undirectedEdgeId);
+        if (null != patternLanguage.getUndirectedEdges()) {
+            if (patternLanguage.getUndirectedEdges().contains(undirectedEdge)) {
+                this.patternRelationDescriptorService.deleteUndirectedEdgeById(undirectedEdgeId);
+                return;
+            }
+        }
+        throw new UndirectedEdgeNotFoundException(patternLanguage, undirectedEdgeId);
     }
 }

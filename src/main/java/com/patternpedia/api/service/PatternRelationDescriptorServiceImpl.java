@@ -9,7 +9,6 @@ import com.patternpedia.api.entities.DirectedEdge;
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.UndirectedEdge;
 import com.patternpedia.api.exception.DirectedEdgeNotFoundException;
-import com.patternpedia.api.exception.NullPatternLanguageException;
 import com.patternpedia.api.exception.UndirectedEdgeNotFoundException;
 import com.patternpedia.api.repositories.DirectedEdgeRepository;
 import com.patternpedia.api.repositories.UndirectedEdgeReository;
@@ -34,8 +33,8 @@ public class PatternRelationDescriptorServiceImpl implements PatternRelationDesc
     @Override
     @Transactional
     public DirectedEdge createDirectedEdge(DirectedEdge directedEdge) {
-        if (null == directedEdge.getPatternLanguage()) {
-            throw new NullPatternLanguageException();
+        if (null == directedEdge.getPatternLanguage() && null == directedEdge.getPatternViews()) {
+            throw new RuntimeException("DirectedEdge must either be part of a pattern language or of any view");
         }
 
         return this.directedEdgeRepository.save(directedEdge);
@@ -94,6 +93,9 @@ public class PatternRelationDescriptorServiceImpl implements PatternRelationDesc
     @Override
     @Transactional
     public UndirectedEdge createUndirectedEdge(UndirectedEdge undirectedEdge) {
+        if (null == undirectedEdge.getPatternLanguage() && null == undirectedEdge.getPatternViews()) {
+            throw new RuntimeException("UndirectedEdge must either be part of a pattern language or of any view");
+        }
         return this.undirectedEdgeReository.save(undirectedEdge);
     }
 
