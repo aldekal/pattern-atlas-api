@@ -11,6 +11,7 @@ import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.PatternSchema;
 import com.patternpedia.api.entities.PatternSectionSchema;
+import com.patternpedia.api.entities.PatternView;
 import com.patternpedia.api.repositories.DirectedEdgeRepository;
 import com.patternpedia.api.repositories.PatternLanguageRepository;
 import com.patternpedia.api.repositories.PatternRepository;
@@ -172,6 +173,31 @@ public class IntegrationTestHelper {
             }
         }
         return patternLanguage;
+    }
+
+    public PatternView getDefaultPatternView() {
+        PatternView patternView = new PatternView();
+        patternView.setName("Test Pattern View");
+        patternView.setUri("https://patternpedia.org/patternViews/testPatternView");
+        return patternView;
+    }
+
+    public PatternView setUpPatternView() throws  Exception {
+        PatternView patternView = this.getDefaultPatternView();
+
+        MvcResult postResult = this.mockMvc.perform(
+                post("/patternViews")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(patternView))
+        ).andExpect(status().isCreated()).andReturn();
+
+        String location = postResult.getResponse().getHeader("Location");
+
+        MvcResult getResult = this.mockMvc.perform(
+                get(location)
+        ).andExpect(status().isOk()).andReturn();
+
+        return this.objectMapper.readValue(getResult.getResponse().getContentAsByteArray(), PatternView.class);
     }
 
     public Pattern addPatternToLanguage(PatternLanguage patternLanguage) throws Exception {
