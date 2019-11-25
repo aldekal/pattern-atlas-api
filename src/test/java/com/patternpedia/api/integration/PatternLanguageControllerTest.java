@@ -3,13 +3,7 @@ package com.patternpedia.api.integration;
 import java.util.UUID;
 
 import com.patternpedia.api.entities.PatternLanguage;
-import com.patternpedia.api.repositories.DirectedEdgeRepository;
-import com.patternpedia.api.repositories.PatternLanguageRepository;
-import com.patternpedia.api.repositories.PatternRepository;
-import com.patternpedia.api.repositories.PatternSchemaRepository;
-import com.patternpedia.api.repositories.PatternSectionSchemaRepository;
-import com.patternpedia.api.repositories.PatternViewRepository;
-import com.patternpedia.api.repositories.UndirectedEdgeReository;
+import com.patternpedia.api.entities.PatternSchema;
 import com.patternpedia.api.util.IntegrationTestHelper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,27 +32,6 @@ public class PatternLanguageControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private PatternLanguageRepository patternLanguageRepository;
-
-    @Autowired
-    private PatternViewRepository patternViewRepository;
-
-    @Autowired
-    private PatternRepository patternRepository;
-
-    @Autowired
-    private DirectedEdgeRepository directedEdgeRepository;
-
-    @Autowired
-    private UndirectedEdgeReository undirectedEdgeReository;
-
-    @Autowired
-    private PatternSchemaRepository patternSchemaRepository;
-
-    @Autowired
-    private PatternSectionSchemaRepository patternSectionSchemaRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -143,5 +116,32 @@ public class PatternLanguageControllerTest {
         this.mockMvc.perform(
                 delete("/patternLanguages/{patternLanguageId}", createdPatternLanguage.getId())
         ).andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void updatePatternSchemaSucceeds() throws Exception {
+        PatternLanguage patternLanguage = this.integrationTestHelper.setUpPatternLanguage(0);
+
+        MvcResult getPatternSchemaResponse = this.mockMvc.perform(
+                get("/patternLanguages/{plId}/patternSchema", patternLanguage.getId())
+        ).andExpect(status().isOk()).andReturn();
+
+        PatternSchema patternSchema = this.objectMapper.readValue(getPatternSchemaResponse.getResponse().getContentAsByteArray(), PatternSchema.class);
+
+        patternSchema.getPatternSectionSchemas().remove(1);
+
+        this.mockMvc.perform(
+                put("/patternLanguages/{plId}/patternSchema", patternLanguage.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(patternSchema))
+        ).andExpect(status().isOk()).andReturn();
+
+        getPatternSchemaResponse = this.mockMvc.perform(
+                get("/patternLanguages/{plId}/patternSchema", patternLanguage.getId())
+        ).andExpect(status().isOk()).andReturn();
+
+        patternSchema = this.objectMapper.readValue(getPatternSchemaResponse.getResponse().getContentAsByteArray(), PatternSchema.class);
+
+        assertThat(patternSchema.getPatternSectionSchemas()).hasSize(1);
     }
 }

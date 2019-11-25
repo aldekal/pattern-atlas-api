@@ -60,9 +60,6 @@ public class IntegrationTestHelper {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private PatternLanguageService patternLanguageService;
-
-    @Autowired
     private MockMvc mockMvc;
 
     public void cleanUpRepos() {
