@@ -1,11 +1,12 @@
 package com.patternpedia.api.integration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patternpedia.api.entities.DirectedEdge;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.UndirectedEdge;
 import com.patternpedia.api.repositories.PatternLanguageRepository;
 import com.patternpedia.api.util.IntegrationTestHelper;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +38,10 @@ public class PatternRelationDescriptorControllerTest {
     @Autowired
     private PatternLanguageRepository patternLanguageRepository;
 
-
     @Test
-    public void addDirectedEdgeSucceeds() throws Exception {
-        PatternLanguage patternLanguage = this.integrationTestHelper.getDefaultPatternLanguageWithPatterns(2);
+    public void addDirectedEdgeToPatternLanguageSucceeds() throws Exception {
+
+        PatternLanguage patternLanguage = this.integrationTestHelper.setUpPatternLanguage(2);
 
         DirectedEdge directedEdge = new DirectedEdge();
         directedEdge.setPatternLanguage(patternLanguage);
@@ -63,7 +64,7 @@ public class PatternRelationDescriptorControllerTest {
 
     @Test
     public void addUndirectedEdgeSucceeds() throws Exception {
-        PatternLanguage patternLanguage = this.integrationTestHelper.getDefaultPatternLanguageWithPatterns(2);
+        PatternLanguage patternLanguage = this.integrationTestHelper.setUpPatternLanguage(2);
 
         UndirectedEdge undirectedEdge = new UndirectedEdge();
         undirectedEdge.setPatternLanguage(patternLanguage);
@@ -83,5 +84,4 @@ public class PatternRelationDescriptorControllerTest {
                 get(location)
         ).andExpect(status().isOk());
     }
-
 }

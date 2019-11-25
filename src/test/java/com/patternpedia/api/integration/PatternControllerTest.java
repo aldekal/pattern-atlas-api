@@ -1,12 +1,13 @@
 package com.patternpedia.api.integration;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.repositories.PatternLanguageRepository;
 import com.patternpedia.api.repositories.PatternRepository;
 import com.patternpedia.api.util.IntegrationTestHelper;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -41,42 +43,46 @@ public class PatternControllerTest {
     @Autowired
     private IntegrationTestHelper integrationTestHelper;
 
+    @After
+    public void cleanUpRepos() {
+        this.integrationTestHelper.cleanUpRepos();
+    }
 
     @Test
     public void addPatternToPatternLanguageSucceeds() throws Exception {
-        PatternLanguage patternLanguage = this.integrationTestHelper.getDefaultPatternLanguage();
-        Pattern pattern = this.integrationTestHelper.getUnpersistedDefaultPattern();
+        PatternLanguage patternLanguage = this.integrationTestHelper.setUpPatternLanguage(0);
 
-        String postContent = this.objectMapper.writeValueAsString(pattern);
+        Pattern pattern = this.integrationTestHelper.getDefaultPattern();
 
         MvcResult postResult = this.mockMvc.perform(
                 post("/patternLanguages/{id}/patterns", patternLanguage.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(postContent)
+                        .content(this.objectMapper.writeValueAsString(pattern))
         ).andExpect(status().isCreated())
                 .andReturn();
 
         String patternLocation = postResult.getResponse().getHeader("Location");
-        MvcResult getResult = this.mockMvc.perform(
+
+        MvcResult getPatternResponse = this.mockMvc.perform(
                 get(patternLocation)
         ).andExpect(status().isOk()).andReturn();
 
-        JsonNode patternJson = this.objectMapper.readTree(getResult.getResponse().getContentAsByteArray());
-        String contentUri = patternJson.get("_links").get("content").get("href").textValue();
+        Pattern constraint = this.integrationTestHelper.getDefaultPattern();
+        Pattern createdPattern = this.objectMapper.readValue(getPatternResponse.getResponse().getContentAsByteArray(), Pattern.class);
 
-        MvcResult patternContentMvcResult = this.mockMvc.perform(
-                get(contentUri)
-        ).andExpect(status().isOk())
-                .andReturn();
+        MvcResult getPatternLanguageResponse = this.mockMvc.perform(
+                get("/patternLanguages/{plId}", patternLanguage.getId())
+        ).andExpect(status().isOk()).andReturn();
 
-        JsonNode result = this.objectMapper.readTree(patternContentMvcResult.getResponse().getContentAsByteArray());
-        assertThat(result.get("content")).isNotNull();
-        assertThat(result.get("content").toString()).isEqualTo(this.integrationTestHelper.getDefaultPatternContent().toString());
+        patternLanguage = this.objectMapper
+                .readValue(getPatternLanguageResponse.getResponse().getContentAsByteArray(), PatternLanguage.class);
+
+        assertThat(patternLanguage.getPatterns()).hasSize(1);
     }
 
     @Test
     public void findPatternById() throws Exception {
-        PatternLanguage patternLanguage = this.integrationTestHelper.getDefaultPatternLanguageWithPatterns(1);
+        PatternLanguage patternLanguage = this.integrationTestHelper.setUpPatternLanguage(1);
 
         MvcResult getResult = this.mockMvc.perform(
                 get("/patternLanguages/{plId}/patterns/{pId}",
@@ -85,19 +91,4 @@ public class PatternControllerTest {
         ).andExpect(status().isOk())
                 .andReturn();
     }
-
-    @Test
-    public void deletePatternFromPatternLanguageSucceeds() throws Exception {
-        PatternLanguage patternLanguage = this.integrationTestHelper.getDefaultPatternLanguageWithPatterns(2);
-
-        Pattern pattern = patternLanguage.getPatterns().get(0);
-
-        this.mockMvc.perform(
-                delete("/patternLanguages/{plId}/patterns/{pId}", patternLanguage.getId(), pattern.getId())
-        ).andExpect(status().isOk());
-
-        patternLanguage = this.patternLanguageRepository.getOne(patternLanguage.getId());
-        assertThat(patternLanguage.getPatterns()).hasSize(1);
-    }
-
 }
