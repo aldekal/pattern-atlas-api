@@ -100,13 +100,13 @@ public class PatternViewController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> createPatternView(@RequestBody PatternView patternView) {
         String patternViewNameAsCamelCase = CaseUtils.toCamelCase(patternView.getName(), false);
-        String uri = String.format("https://patternpedia.org/patternLanguages/%s", patternViewNameAsCamelCase);
+        String uri = String.format("https://patternpedia.org/patternViews/%s", patternViewNameAsCamelCase);
         patternView.setUri(uri);
 
         PatternView createdPatternView = this.patternViewService.createPatternView(patternView);
-        return ResponseEntity
-                .created(linkTo(methodOn(PatternViewController.class).getPatternViewById(createdPatternView.getId())).toUri())
-                .build();
+
+        return ResponseEntity.created(linkTo(methodOn(PatternViewController.class)
+                .getPatternViewById(createdPatternView.getId())).toUri()).build();
     }
 
     @GetMapping(value = "/{patternViewId}")

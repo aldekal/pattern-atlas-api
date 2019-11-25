@@ -131,13 +131,14 @@ public class PatternController {
     }
 
     @GetMapping(value = "/patternViews/{patternViewId}/patterns/{patternId}")
-    EntityModel<Pattern> getPatternOfPatternViewById(UUID patternViewId, UUID patternId) {
+    EntityModel<Pattern> getPatternOfPatternViewById(@PathVariable UUID patternViewId, @PathVariable UUID patternId) {
         Pattern pattern = this.patternViewService.getPatternOfPatternViewById(patternViewId, patternId);
+
         return new EntityModel<>(pattern, getPatternLinks(pattern));
     }
 
     @DeleteMapping(value = "/patternViews/{patternViewId}/patterns/{patternId}")
-    ResponseEntity<?> removePatternFromView(UUID patternViewId, UUID patternId) {
+    ResponseEntity<?> removePatternFromView(@PathVariable UUID patternViewId, @PathVariable UUID patternId) {
         this.patternViewService.removePatternFromPatternView(patternViewId, patternId);
         return ResponseEntity.noContent().build();
     }
@@ -150,9 +151,8 @@ public class PatternController {
 
         pattern = this.patternLanguageService.createPatternAndAddToPatternLanguage(patternLanguageId, pattern);
 
-        return ResponseEntity
-                .created(linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(patternLanguageId, pattern.getId())).toUri())
-                .build();
+        return ResponseEntity.created(linkTo(methodOn(PatternController.class)
+                .getPatternOfPatternLanguageById(patternLanguageId, pattern.getId())).toUri()).build();
     }
 
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/patterns/{patternId}")
