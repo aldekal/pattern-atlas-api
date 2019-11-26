@@ -18,6 +18,7 @@ import com.patternpedia.api.repositories.DirectedEdgeRepository;
 import com.patternpedia.api.repositories.PatternViewRepository;
 import com.patternpedia.api.repositories.UndirectedEdgeReository;
 
+import javax.persistence.EntityManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,17 +31,20 @@ public class PatternViewServiceImpl implements PatternViewService {
     private PatternViewRepository patternViewRepository;
     private DirectedEdgeRepository directedEdgeRepository;
     private UndirectedEdgeReository undirectedEdgeReository;
+    private EntityManager entityManager;
 
     public PatternViewServiceImpl(PatternService patternService,
                                   PatternRelationDescriptorService patternRelationDescriptorService,
                                   PatternViewRepository patternViewRepository,
                                   DirectedEdgeRepository directedEdgeRepository,
-                                  UndirectedEdgeReository undirectedEdgeReository) {
+                                  UndirectedEdgeReository undirectedEdgeReository,
+                                  EntityManager entityManager) {
         this.patternService = patternService;
         this.patternRelationDescriptorService = patternRelationDescriptorService;
         this.patternViewRepository = patternViewRepository;
         this.directedEdgeRepository = directedEdgeRepository;
         this.undirectedEdgeReository = undirectedEdgeReository;
+        this.entityManager = entityManager;
     }
 
     // PatternView Handling
@@ -125,16 +129,10 @@ public class PatternViewServiceImpl implements PatternViewService {
     @Override
     @Transactional
     public void addPatternToPatternView(UUID patternViewId, UUID patternId) {
-        PatternView patternView = this.getPatternViewById(patternViewId);
-        Pattern pattern = this.patternService.getPatternById(patternId);
-
-        if (null == patternView.getPatterns()) {
-            patternView.setPatterns(new ArrayList<>(Collections.singletonList(pattern)));
-        } else if (!patternView.getPatterns().contains(pattern)) {
-            patternView.getPatterns().add(pattern);
-        }
-
-        this.patternViewRepository.save(patternView);
+        this.entityManager.createNativeQuery("INSERT INTO pattern_view_patterns (pattern_view_id, pattern_id) VALUES (?, ?)")
+                .setParameter(1, patternViewId)
+                .setParameter(2, patternId)
+                .executeUpdate();
     }
 
     @Override
