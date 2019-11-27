@@ -80,13 +80,7 @@ public class PatternViewController {
     @GetMapping
     public CollectionModel<EntityModel<PatternView>> getAllPatternViews() {
 
-        // Todo: This is a hack. How can we influence serialization to prevent embedding content of patterns (--> master assembler)
-        List<PatternView> preparedViews = this.patternViewService.getAllPatternViews();
-        for (PatternView patternView : preparedViews) {
-            patternView.setPatterns(PatternController.removeContentFromPatterns(patternView.getPatterns()));
-        }
-
-        List<EntityModel<PatternView>> patternViews = preparedViews
+        List<EntityModel<PatternView>> patternViews = this.patternViewService.getAllPatternViews()
                 .stream()
                 .map(patternView -> new EntityModel<>(patternView,
                         getPatternViewLinks(patternView)))
@@ -113,11 +107,6 @@ public class PatternViewController {
     public EntityModel<PatternView> getPatternViewById(@PathVariable UUID patternViewId) {
         PatternView patternView = this.patternViewService.getPatternViewById(patternViewId);
 
-        // Todo: This is a hack. How can we influence serialization to prevent embedding content of patterns (--> master assembler)
-        if (null != patternView.getPatterns()) {
-            patternView.setPatterns(PatternController.removeContentFromPatterns(patternView.getPatterns()));
-        }
-
         return new EntityModel<>(patternView, getPatternViewLinks(patternView));
     }
 
@@ -126,22 +115,12 @@ public class PatternViewController {
         String uri = URLDecoder.decode(encodedUri, StandardCharsets.UTF_8.toString());
         PatternView patternView = this.patternViewService.getPatternViewByUri(uri);
 
-        // Todo: This is a hack. How can we influence serialization to prevent embedding content of patterns (--> master assembler)
-        if (null != patternView.getPatterns()) {
-            patternView.setPatterns(PatternController.removeContentFromPatterns(patternView.getPatterns()));
-        }
-
         return new EntityModel<>(patternView, getPatternViewLinks(patternView));
     }
 
     @PutMapping(value = "/{patternViewId}")
     public ResponseEntity<?> putPatternView(@PathVariable UUID patternViewId, @RequestBody PatternView patternView) {
         patternView = this.patternViewService.updatePatternView(patternView);
-
-        // Todo: This is a hack. How can we influence serialization to prevent embedding content of patterns (--> master assembler)
-        if (null != patternView.getPatterns()) {
-            patternView.setPatterns(PatternController.removeContentFromPatterns(patternView.getPatterns()));
-        }
 
         return ResponseEntity.ok(patternView);
     }

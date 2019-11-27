@@ -42,21 +42,21 @@ public class PatternRelationDescriptorServiceImpl implements PatternRelationDesc
 
     @Override
     @Transactional(readOnly = true)
-    public DirectedEdge getDirectedEdgeById(UUID id) {
+    public DirectedEdge getDirectedEdgeById(UUID id) throws DirectedEdgeNotFoundException {
         return this.directedEdgeRepository.findById(id)
                 .orElseThrow(() -> new DirectedEdgeNotFoundException(String.format("DirectedEdge %s not found!", id.toString())));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<DirectedEdge> findDirectedEdgeBySource(Pattern pattern) {
+    public List<DirectedEdge> findDirectedEdgeBySource(Pattern pattern) throws DirectedEdgeNotFoundException {
         return this.directedEdgeRepository.findBySource(pattern)
                 .orElseThrow(() -> new DirectedEdgeNotFoundException(String.format("No DirectedEdge found with Pattern %s as source", pattern.getId())));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<DirectedEdge> findDirectedEdgeByTarget(Pattern pattern) {
+    public List<DirectedEdge> findDirectedEdgeByTarget(Pattern pattern) throws DirectedEdgeNotFoundException {
         return this.directedEdgeRepository.findByTarget(pattern)
                 .orElseThrow(() -> new DirectedEdgeNotFoundException(String.format("No DirectedEdge found with Pattern %s as target", pattern.getId())));
     }
@@ -101,19 +101,19 @@ public class PatternRelationDescriptorServiceImpl implements PatternRelationDesc
 
     @Override
     @Transactional(readOnly = true)
-    public UndirectedEdge getUndirectedEdgeById(UUID id) {
+    public UndirectedEdge getUndirectedEdgeById(UUID id) throws UndirectedEdgeNotFoundException {
         return this.undirectedEdgeReository.findById(id)
                 .orElseThrow(() -> new UndirectedEdgeNotFoundException(String.format("UndirectedEdge %s not found!", id.toString())));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<UndirectedEdge> findUndirectedEdgeByPattern(Pattern pattern) {
+    public List<UndirectedEdge> findUndirectedEdgeByPattern(Pattern pattern) throws UndirectedEdgeNotFoundException {
         List<UndirectedEdge> undirectedEdges = new ArrayList<>();
         undirectedEdges.addAll(this.findUndirectedEdgeByP1(pattern));
         undirectedEdges.addAll(this.findUndirectedEdgeByP2(pattern));
         if (0 == undirectedEdges.size()) {
-            throw new DirectedEdgeNotFoundException(String.format("No DirectedEdge found with Pattern %s as target", pattern.getId()));
+            throw new UndirectedEdgeNotFoundException(String.format("No UndirectedEdge found with Pattern %s", pattern.getId()));
         }
         return undirectedEdges;
     }

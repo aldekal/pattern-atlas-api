@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.patternpedia.api.entities.DirectedEdge;
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternView;
+import com.patternpedia.api.entities.PatternViewPattern;
+import com.patternpedia.api.entities.PatternViewPatternId;
 import com.patternpedia.api.entities.UndirectedEdge;
 import com.patternpedia.api.exception.DirectedEdgeNotFoundException;
 import com.patternpedia.api.exception.NullPatternViewException;
@@ -15,6 +18,7 @@ import com.patternpedia.api.exception.PatternNotFoundException;
 import com.patternpedia.api.exception.PatternViewNotFoundException;
 import com.patternpedia.api.exception.UndirectedEdgeNotFoundException;
 import com.patternpedia.api.repositories.DirectedEdgeRepository;
+import com.patternpedia.api.repositories.PatternViewPatternRepository;
 import com.patternpedia.api.repositories.PatternViewRepository;
 import com.patternpedia.api.repositories.UndirectedEdgeReository;
 
@@ -29,6 +33,7 @@ public class PatternViewServiceImpl implements PatternViewService {
     private PatternService patternService;
     private PatternRelationDescriptorService patternRelationDescriptorService;
     private PatternViewRepository patternViewRepository;
+    private PatternViewPatternRepository patternViewPatternRepository;
     private DirectedEdgeRepository directedEdgeRepository;
     private UndirectedEdgeReository undirectedEdgeReository;
     private EntityManager entityManager;
@@ -36,12 +41,14 @@ public class PatternViewServiceImpl implements PatternViewService {
     public PatternViewServiceImpl(PatternService patternService,
                                   PatternRelationDescriptorService patternRelationDescriptorService,
                                   PatternViewRepository patternViewRepository,
+                                  PatternViewPatternRepository patternViewPatternRepository,
                                   DirectedEdgeRepository directedEdgeRepository,
                                   UndirectedEdgeReository undirectedEdgeReository,
                                   EntityManager entityManager) {
         this.patternService = patternService;
         this.patternRelationDescriptorService = patternRelationDescriptorService;
         this.patternViewRepository = patternViewRepository;
+        this.patternViewPatternRepository = patternViewPatternRepository;
         this.directedEdgeRepository = directedEdgeRepository;
         this.undirectedEdgeReository = undirectedEdgeReository;
         this.entityManager = entityManager;
@@ -92,9 +99,11 @@ public class PatternViewServiceImpl implements PatternViewService {
             throw new PatternViewNotFoundException(patternView);
         }
 
-        patternView.setPatterns(this.getPatternsOfPatternView(patternView.getId()));
-        patternView.setDirectedEdges(this.getDirectedEdgesByPatternViewId(patternView.getId()));
-        patternView.setUndirectedEdges(this.getUndirectedEdgesByPatternViewId(patternView.getId()));
+        PatternView oldPatternView = this.getPatternViewById(patternView.getId());
+
+        patternView.setPatterns(oldPatternView.getPatterns());
+        patternView.setDirectedEdges(oldPatternView.getDirectedEdges());
+        patternView.setUndirectedEdges(oldPatternView.getUndirectedEdges());
 
         return this.patternViewRepository.save(patternView);
     }
@@ -129,10 +138,16 @@ public class PatternViewServiceImpl implements PatternViewService {
     @Override
     @Transactional
     public void addPatternToPatternView(UUID patternViewId, UUID patternId) {
-        this.entityManager.createNativeQuery("INSERT INTO pattern_view_patterns (pattern_view_id, pattern_id) VALUES (?, ?)")
-                .setParameter(1, patternViewId)
-                .setParameter(2, patternId)
-                .executeUpdate();
+        PatternView patternView = this.getPatternViewById(patternViewId);
+        Pattern pattern = this.patternService.getPatternById(patternId);
+
+        PatternViewPattern patternViewPattern = new PatternViewPattern(patternView, pattern);
+
+        this.patternViewPatternRepository.save(patternViewPattern);
+//        this.entityManager.createNativeQuery("INSERT INTO pattern_view_patterns (pattern_view_id, pattern_id) VALUES (?, ?)")
+//                .setParameter(1, patternViewId)
+//                .setParameter(2, patternId)
+//                .executeUpdate();
     }
 
     @Override
@@ -142,7 +157,9 @@ public class PatternViewServiceImpl implements PatternViewService {
         if (null == patternView.getPatterns()) {
             patternView.setPatterns(Collections.emptyList());
         }
-        return patternView.getPatterns();
+        return patternView.getPatterns().stream()
+                .map(PatternViewPattern::getPattern)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -152,10 +169,11 @@ public class PatternViewServiceImpl implements PatternViewService {
         if (null == patternView.getPatterns()) {
             throw new PatternNotFoundException(patternView, patternId);
         }
-        return patternView.getPatterns()
-                .stream()
-                .filter(pattern -> pattern.getId().equals(patternId)).findFirst()
+
+        PatternViewPattern patternViewPattern = this.patternViewPatternRepository.findById(new PatternViewPatternId(patternViewId, patternId))
                 .orElseThrow(() -> new PatternNotFoundException(patternView, patternId));
+
+        return patternViewPattern.getPattern();
     }
 
     @Override

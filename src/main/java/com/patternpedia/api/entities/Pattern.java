@@ -1,12 +1,14 @@
 package com.patternpedia.api.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -26,8 +28,8 @@ public class Pattern extends EntityWithURI {
     private PatternLanguage patternLanguage;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "patterns")
-    private List<PatternView> patternViews;
+    @OneToMany(mappedBy = "pattern", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PatternViewPattern> patternViews = new ArrayList<>();
 
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")

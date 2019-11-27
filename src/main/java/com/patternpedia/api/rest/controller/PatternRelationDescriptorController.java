@@ -53,7 +53,6 @@ public class PatternRelationDescriptorController {
     // DirectedEdge
 
     private static List<Link> getDirectedEdgeLinksForPatternLanguageRoute(DirectedEdge directedEdge) {
-        // TODO Add this to pattern language routes
         List<Link> links = new ArrayList<>();
 
         links.add(linkTo(methodOn(PatternRelationDescriptorController.class)
@@ -64,7 +63,7 @@ public class PatternRelationDescriptorController {
         links.add(linkTo(methodOn(PatternRelationDescriptorController.class)
                 .getDirectedEdgesOfPatternLanguage(directedEdge.getPatternLanguage().getId())).withRel("directedEdges"));
 
-        return getLinksToViewsAndLanguageOfDirectedEdge(directedEdge, links);
+        return getNonRouteRelatedLinksOfDirectedEdge(directedEdge, links);
     }
 
     private static List<Link> getDirectedEdgeLinksForViewRoute(DirectedEdge directedEdge, UUID patternViewId) {
@@ -78,7 +77,7 @@ public class PatternRelationDescriptorController {
         links.add(linkTo(methodOn(PatternRelationDescriptorController.class)
                 .getDirectedEdgesOfView(patternViewId)).withRel("directedEdges"));
 
-        return getLinksToViewsAndLanguageOfDirectedEdge(directedEdge, links);
+        return getNonRouteRelatedLinksOfDirectedEdge(directedEdge, links);
     }
 
     private static List<Link> getDirectedEdgeCollectionResourceLinksForPatternLanguageRoute(UUID patternLanguageId) {
@@ -109,7 +108,7 @@ public class PatternRelationDescriptorController {
         return links;
     }
 
-    private static List<Link> getLinksToViewsAndLanguageOfDirectedEdge(DirectedEdge directedEdge, List<Link> links) {
+    private static List<Link> getNonRouteRelatedLinksOfDirectedEdge(DirectedEdge directedEdge, List<Link> links) {
         if (null != directedEdge.getPatternViews()) {
             for (PatternView patternView : directedEdge.getPatternViews()) {
                 links.add(linkTo(methodOn(PatternViewController.class).getPatternViewById(patternView.getId())).withRel("patternView"));
@@ -119,6 +118,9 @@ public class PatternRelationDescriptorController {
         if (null != directedEdge.getPatternLanguage()) {
             links.add(linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(directedEdge.getPatternLanguage().getId())).withRel("patternLanguage"));
         }
+
+        links.add(linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(directedEdge.getSource().getPatternLanguage().getId(), directedEdge.getSource().getId())).withRel("sourcePattern"));
+        links.add(linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(directedEdge.getTarget().getPatternLanguage().getId(), directedEdge.getTarget().getId())).withRel("targetPattern"));
 
         return links;
     }
@@ -138,7 +140,7 @@ public class PatternRelationDescriptorController {
         links.add(linkTo(methodOn(PatternRelationDescriptorController.class)
                 .getUndirectedEdgesOfPatternLanguage(undirectedEdge.getPatternLanguage().getId())).withRel("undirectedEdges"));
 
-        return getLinksToViewsAndLanguageOfUndirectedEdge(undirectedEdge, links);
+        return getNonRouteRelatedLinksOfUndirectedEdge(undirectedEdge, links);
     }
 
     private static List<Link> getUndirectedEdgeLinksForViewRoute(UUID patternViewId, UndirectedEdge undirectedEdge) {
@@ -152,7 +154,7 @@ public class PatternRelationDescriptorController {
         links.add(linkTo(methodOn(PatternRelationDescriptorController.class)
                 .getUndirectedEdgesOfView(patternViewId)).withRel("undirectedEdges"));
 
-        return getLinksToViewsAndLanguageOfUndirectedEdge(undirectedEdge, links);
+        return getNonRouteRelatedLinksOfUndirectedEdge(undirectedEdge, links);
     }
 
     private static List<Link> getUndirectedEdgeCollectionResourceLinksForPatternLanguageRoute(UUID patternLanguageId) {
@@ -185,7 +187,7 @@ public class PatternRelationDescriptorController {
         return links;
     }
 
-    private static List<Link> getLinksToViewsAndLanguageOfUndirectedEdge(UndirectedEdge undirectedEdge, List<Link> links) {
+    private static List<Link> getNonRouteRelatedLinksOfUndirectedEdge(UndirectedEdge undirectedEdge, List<Link> links) {
         if (null != undirectedEdge.getPatternViews()) {
             for (PatternView patternView : undirectedEdge.getPatternViews()) {
                 links.add(linkTo(methodOn(PatternViewController.class).getPatternViewById(patternView.getId())).withRel("patternView"));
@@ -195,6 +197,9 @@ public class PatternRelationDescriptorController {
         if (null != undirectedEdge.getPatternLanguage()) {
             links.add(linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(undirectedEdge.getPatternLanguage().getId())).withRel("patternLanguage"));
         }
+
+        links.add(linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(undirectedEdge.getP1().getPatternLanguage().getId(), undirectedEdge.getP1().getId())).withRel("pattern"));
+        links.add(linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(undirectedEdge.getP2().getPatternLanguage().getId(), undirectedEdge.getP2().getId())).withRel("pattern"));
 
         return links;
     }

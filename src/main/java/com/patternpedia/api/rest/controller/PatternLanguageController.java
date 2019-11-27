@@ -98,11 +98,7 @@ public class PatternLanguageController {
     @GetMapping(value = "/findByUri")
     EntityModel<PatternLanguage> findPatternLanguageByUri(@RequestParam String encodedUri) throws UnsupportedEncodingException {
         String uri = URLDecoder.decode(encodedUri, StandardCharsets.UTF_8.toString());
-
         PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageByUri(uri);
-        if (null != patternLanguage.getPatterns()) {
-            patternLanguage.setPatterns(PatternController.removeContentFromPatterns(patternLanguage.getPatterns()));
-        }
 
         return new EntityModel<>(patternLanguage, getPatternLanguageLinks(patternLanguage.getId()));
     }
@@ -110,9 +106,6 @@ public class PatternLanguageController {
     @GetMapping(value = "/{patternLanguageId}")
     EntityModel<PatternLanguage> getPatternLanguageById(@PathVariable UUID patternLanguageId) {
         PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
-        if (null != patternLanguage.getPatterns()) {
-            patternLanguage.setPatterns(PatternController.removeContentFromPatterns(patternLanguage.getPatterns()));
-        }
 
         return new EntityModel<>(patternLanguage, getPatternLanguageLinks(patternLanguage.getId()));
     }
