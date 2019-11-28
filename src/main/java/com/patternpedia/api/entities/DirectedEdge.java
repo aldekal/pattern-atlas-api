@@ -5,8 +5,8 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.Entity;
 import javax.persistence.Index;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -38,6 +38,6 @@ public class DirectedEdge extends PatternRelationDescriptor {
 
     @JsonIgnore
     @ToString.Exclude
-    @ManyToMany(mappedBy = "directedEdges")
-    private List<PatternView> patternViews;
+    @OneToMany(mappedBy = "directedEdge")
+    private List<PatternViewDirectedEdge> patternViews;
 }

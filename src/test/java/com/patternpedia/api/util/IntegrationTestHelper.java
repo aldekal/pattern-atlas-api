@@ -17,6 +17,8 @@ import com.patternpedia.api.repositories.PatternLanguageRepository;
 import com.patternpedia.api.repositories.PatternRepository;
 import com.patternpedia.api.repositories.PatternSchemaRepository;
 import com.patternpedia.api.repositories.PatternSectionSchemaRepository;
+import com.patternpedia.api.repositories.PatternViewDirectedEdgeRepository;
+import com.patternpedia.api.repositories.PatternViewPatternRepository;
 import com.patternpedia.api.repositories.PatternViewRepository;
 import com.patternpedia.api.repositories.UndirectedEdgeReository;
 import com.patternpedia.api.service.PatternLanguageService;
@@ -58,6 +60,12 @@ public class IntegrationTestHelper {
     private PatternViewRepository patternViewRepository;
 
     @Autowired
+    PatternViewPatternRepository patternViewPatternRepository;
+
+    @Autowired
+    PatternViewDirectedEdgeRepository patternViewDirectedEdgeRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
@@ -71,6 +79,12 @@ public class IntegrationTestHelper {
 
         this.patternSchemaRepository.deleteAll();
         System.out.println("Cleaned up patternSchemaRepository");
+
+        this.patternViewPatternRepository.deleteAll();
+        System.out.println("Cleaned up patternViewPatternRepository");
+
+        this.patternViewDirectedEdgeRepository.deleteAll();
+        System.out.println("Cleaned up patternViewDirectedEdgeRepository");
 
         this.directedEdgeRepository.deleteAll();
         System.out.println("Cleaned up directedEdgeRepository");

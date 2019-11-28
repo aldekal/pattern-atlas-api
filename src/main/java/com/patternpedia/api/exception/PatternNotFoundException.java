@@ -2,6 +2,7 @@ package com.patternpedia.api.exception;
 
 import java.util.UUID;
 
+import com.patternpedia.api.entities.PatternGraphType;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.PatternView;
 
@@ -23,5 +24,20 @@ public class PatternNotFoundException extends ResourceNotFoundException {
 
     public PatternNotFoundException(PatternLanguage patternLanguage, UUID patternId) {
         super(String.format("Pattern \"%s\" is not part of PatternLanguage \"%s\"", patternId, patternLanguage.getId()));
+    }
+
+    public PatternNotFoundException(UUID graphId, UUID patternId, PatternGraphType patternGraphType) {
+        super(createMessage(graphId, patternId, patternGraphType));
+    }
+
+    private static String createMessage(UUID graphId, UUID patternId, PatternGraphType patternGraphType) {
+        switch (patternGraphType) {
+            case PATTERN_VIEW:
+                return String.format("Pattern \"%s\" is not part of PatternView \"%s\"", patternId, graphId);
+            case PATTERN_LANGUAGE:
+                return String.format("Pattern \"%s\" is not part of PatternLanguage \"%s\"", patternId, graphId);
+            default:
+                return String.format("Pattern \"%s\" not found", patternId);
+        }
     }
 }

@@ -27,8 +27,8 @@ INSERT INTO public.pattern (id, name, uri, content, pattern_language_id) VALUES 
 
 INSERT INTO public.pattern_view (id, name, uri) VALUES ('82146836-1f69-4f8d-81c5-3d87a8db7690', 'TestView', 'https://patternpedia.org/patternViews/TestView');
 INSERT INTO public.pattern_view (id, name, uri) VALUES ('82146836-1f69-4f8d-81c5-3d87a8db7691', 'TestView2', 'https://patternpedia.org/patternViews/TestView2');
-INSERT INTO public.pattern_view_patterns (pattern_view_id, pattern_id) VALUES ('82146836-1f69-4f8d-81c5-3d87a8db7690', '82146836-1f69-4f8d-81c5-3d87a8db7666');
-INSERT INTO public.pattern_view_patterns (pattern_view_id, pattern_id) VALUES ('82146836-1f69-4f8d-81c5-3d87a8db7691', '82146836-1f69-4f8d-81c5-3d87a8db7666');
+INSERT INTO public.pattern_view_pattern (pattern_view_id, pattern_id) VALUES ('82146836-1f69-4f8d-81c5-3d87a8db7690', '82146836-1f69-4f8d-81c5-3d87a8db7666');
+INSERT INTO public.pattern_view_pattern (pattern_view_id, pattern_id) VALUES ('82146836-1f69-4f8d-81c5-3d87a8db7691', '82146836-1f69-4f8d-81c5-3d87a8db7666');
 
 INSERT INTO public.directed_edge (id, description, type, pattern_language_id, source_id, target_id) VALUES ('ffb2e8a1-14f1-4e29-a6aa-284a5bff40f6', 'null', 'isUsedBefore', '54b5c9fa-e25b-4ab6-a98b-0e0738323ca9', '1321dd9c-52c7-4b76-a1f3-3b567c3c7780', 'b6a4503a-5385-4bd4-879e-b9c7998820bd');
 INSERT INTO public.directed_edge (id, description, type, pattern_language_id, source_id, target_id) VALUES ('79f256f3-5de1-4b55-b692-872dd99d89e7', 'null', 'isUsedAfter', '54b5c9fa-e25b-4ab6-a98b-0e0738323ca9', '67d9b3fa-f6d6-4c0d-a239-695c2998c71e', '1321dd9c-52c7-4b76-a1f3-3b567c3c7780');
@@ -36,13 +36,6 @@ INSERT INTO public.directed_edge (id, description, type, pattern_language_id, so
 INSERT INTO public.directed_edge (id, description, type, pattern_language_id, source_id, target_id) VALUES ('8d60f611-4fae-4d67-ae5a-3c90d7d8d301', 'null', 'isRelatedTo', '54b5c9fa-e25b-4ab6-a98b-0e0738323ca9', '13b1fbfe-369d-4e0c-8273-68d5fc1bedbe', '10c55d72-b870-4a65-9c08-b5b38f0a17c8');
 INSERT INTO public.directed_edge (id, description, type, pattern_language_id, source_id, target_id) VALUES ('bbbb0014-c31a-443c-ae62-4a1b763fff14', 'null', 'isRelatedTo', '54b5c9fa-e25b-4ab6-a98b-0e0738323ca9', '84bc7222-cc07-4c93-b40d-41e7870d16e6', 'b6a4503a-5385-4bd4-879e-b9c7998820bd');
 INSERT INTO public.directed_edge (id, description, type, pattern_language_id, source_id, target_id) VALUES ('e5beb9f7-4452-43ab-bb0e-e09605bb9a5d', 'null', 'isRelatedTo', '54b5c9fa-e25b-4ab6-a98b-0e0738323ca9', '84bc7222-cc07-4c93-b40d-41e7870d16e6', 'e633a551-e033-4c23-b3c3-2cffda4b3cd5');
-
-INSERT INTO public.pattern_language_directed_edges (pattern_language_id, directed_edges_id) VALUES ('54b5c9fa-e25b-4ab6-a98b-0e0738323ca9', 'ffb2e8a1-14f1-4e29-a6aa-284a5bff40f6');
-INSERT INTO public.pattern_language_directed_edges (pattern_language_id, directed_edges_id) VALUES ('54b5c9fa-e25b-4ab6-a98b-0e0738323ca9', '79f256f3-5de1-4b55-b692-872dd99d89e7');
-INSERT INTO public.pattern_language_directed_edges (pattern_language_id, directed_edges_id) VALUES ('54b5c9fa-e25b-4ab6-a98b-0e0738323ca9', '38be2910-aa36-4310-8888-8079387754c2');
-INSERT INTO public.pattern_language_directed_edges (pattern_language_id, directed_edges_id) VALUES ('54b5c9fa-e25b-4ab6-a98b-0e0738323ca9', '8d60f611-4fae-4d67-ae5a-3c90d7d8d301');
-INSERT INTO public.pattern_language_directed_edges (pattern_language_id, directed_edges_id) VALUES ('54b5c9fa-e25b-4ab6-a98b-0e0738323ca9', 'bbbb0014-c31a-443c-ae62-4a1b763fff14');
-INSERT INTO public.pattern_language_directed_edges (pattern_language_id, directed_edges_id) VALUES ('54b5c9fa-e25b-4ab6-a98b-0e0738323ca9', 'e5beb9f7-4452-43ab-bb0e-e09605bb9a5d');
 
 INSERT INTO public.undirected_edge (id, description, type, p1_id, p2_id, pattern_language_id) VALUES ('9b100c69-7d89-4f18-882d-1a74068a3301', 'null', 'isRelatedTo', 'b6a4503a-5385-4bd4-879e-b9c7998820bd', '67d9b3fa-f6d6-4c0d-a239-695c2998c71e', '54b5c9fa-e25b-4ab6-a98b-0e0738323ca9');
 INSERT INTO public.undirected_edge (id, description, type, p1_id, p2_id, pattern_language_id) VALUES ('3267abbf-1435-436f-865e-278cd200038e', 'null', 'isUsedAfter', '10c55d72-b870-4a65-9c08-b5b38f0a17c8', '84bc7222-cc07-4c93-b40d-41e7870d16e6', '54b5c9fa-e25b-4ab6-a98b-0e0738323ca9');

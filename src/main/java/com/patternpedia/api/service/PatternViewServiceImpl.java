@@ -1,16 +1,19 @@
 package com.patternpedia.api.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.patternpedia.api.entities.DirectedEdge;
 import com.patternpedia.api.entities.Pattern;
+import com.patternpedia.api.entities.PatternGraphType;
 import com.patternpedia.api.entities.PatternView;
+import com.patternpedia.api.entities.PatternViewDirectedEdge;
+import com.patternpedia.api.entities.PatternViewDirectedEdgeId;
 import com.patternpedia.api.entities.PatternViewPattern;
 import com.patternpedia.api.entities.PatternViewPatternId;
+import com.patternpedia.api.entities.PatternViewUndirectedEdge;
+import com.patternpedia.api.entities.PatternViewUndirectedEdgeId;
 import com.patternpedia.api.entities.UndirectedEdge;
 import com.patternpedia.api.exception.DirectedEdgeNotFoundException;
 import com.patternpedia.api.exception.NullPatternViewException;
@@ -18,11 +21,12 @@ import com.patternpedia.api.exception.PatternNotFoundException;
 import com.patternpedia.api.exception.PatternViewNotFoundException;
 import com.patternpedia.api.exception.UndirectedEdgeNotFoundException;
 import com.patternpedia.api.repositories.DirectedEdgeRepository;
+import com.patternpedia.api.repositories.PatternViewDirectedEdgeRepository;
 import com.patternpedia.api.repositories.PatternViewPatternRepository;
 import com.patternpedia.api.repositories.PatternViewRepository;
+import com.patternpedia.api.repositories.PatternViewUndirectedEdgeRepository;
 import com.patternpedia.api.repositories.UndirectedEdgeReository;
 
-import javax.persistence.EntityManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,24 +38,27 @@ public class PatternViewServiceImpl implements PatternViewService {
     private PatternRelationDescriptorService patternRelationDescriptorService;
     private PatternViewRepository patternViewRepository;
     private PatternViewPatternRepository patternViewPatternRepository;
+    private PatternViewDirectedEdgeRepository patternViewDirectedEdgeRepository;
+    private PatternViewUndirectedEdgeRepository patternViewUndirectedEdgeRepository;
     private DirectedEdgeRepository directedEdgeRepository;
     private UndirectedEdgeReository undirectedEdgeReository;
-    private EntityManager entityManager;
 
     public PatternViewServiceImpl(PatternService patternService,
                                   PatternRelationDescriptorService patternRelationDescriptorService,
                                   PatternViewRepository patternViewRepository,
                                   PatternViewPatternRepository patternViewPatternRepository,
+                                  PatternViewDirectedEdgeRepository patternViewDirectedEdgeRepository,
+                                  PatternViewUndirectedEdgeRepository patternViewUndirectedEdgeRepository,
                                   DirectedEdgeRepository directedEdgeRepository,
-                                  UndirectedEdgeReository undirectedEdgeReository,
-                                  EntityManager entityManager) {
+                                  UndirectedEdgeReository undirectedEdgeReository) {
         this.patternService = patternService;
         this.patternRelationDescriptorService = patternRelationDescriptorService;
         this.patternViewRepository = patternViewRepository;
         this.patternViewPatternRepository = patternViewPatternRepository;
+        this.patternViewDirectedEdgeRepository = patternViewDirectedEdgeRepository;
+        this.patternViewUndirectedEdgeRepository = patternViewUndirectedEdgeRepository;
         this.directedEdgeRepository = directedEdgeRepository;
         this.undirectedEdgeReository = undirectedEdgeReository;
-        this.entityManager = entityManager;
     }
 
     // PatternView Handling
@@ -115,17 +122,17 @@ public class PatternViewServiceImpl implements PatternViewService {
 
         // Remove edges that are just part of pattern view
         if (null != patternView.getDirectedEdges()) {
-            patternView.getDirectedEdges().forEach(directedEdge -> {
-                if (null == directedEdge.getPatternLanguage()) {
-                    this.directedEdgeRepository.delete(directedEdge);
+            patternView.getDirectedEdges().forEach(patternViewDirectedEdge -> {
+                if (null == patternViewDirectedEdge.getDirectedEdge().getPatternLanguage()) {
+                    this.directedEdgeRepository.delete(patternViewDirectedEdge.getDirectedEdge());
                 }
             });
         }
 
         if (null != patternView.getUndirectedEdges()) {
-            patternView.getUndirectedEdges().forEach(undirectedEdge -> {
-                if (null == undirectedEdge.getPatternLanguage()) {
-                    this.undirectedEdgeReository.delete(undirectedEdge);
+            patternView.getUndirectedEdges().forEach(patternViewUndirectedEdge -> {
+                if (null == patternViewUndirectedEdge.getUndirectedEdge().getPatternLanguage()) {
+                    this.undirectedEdgeReository.delete(patternViewUndirectedEdge.getUndirectedEdge());
                 }
             });
         }
@@ -142,22 +149,13 @@ public class PatternViewServiceImpl implements PatternViewService {
         Pattern pattern = this.patternService.getPatternById(patternId);
 
         PatternViewPattern patternViewPattern = new PatternViewPattern(patternView, pattern);
-
         this.patternViewPatternRepository.save(patternViewPattern);
-//        this.entityManager.createNativeQuery("INSERT INTO pattern_view_patterns (pattern_view_id, pattern_id) VALUES (?, ?)")
-//                .setParameter(1, patternViewId)
-//                .setParameter(2, patternId)
-//                .executeUpdate();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Pattern> getPatternsOfPatternView(UUID patternViewId) {
-        PatternView patternView = this.getPatternViewById(patternViewId);
-        if (null == patternView.getPatterns()) {
-            patternView.setPatterns(Collections.emptyList());
-        }
-        return patternView.getPatterns().stream()
+        return this.patternViewPatternRepository.findAllByPatternViewId(patternViewId).stream()
                 .map(PatternViewPattern::getPattern)
                 .collect(Collectors.toList());
     }
@@ -165,13 +163,8 @@ public class PatternViewServiceImpl implements PatternViewService {
     @Override
     @Transactional(readOnly = true)
     public Pattern getPatternOfPatternViewById(UUID patternViewId, UUID patternId) {
-        PatternView patternView = this.getPatternViewById(patternViewId);
-        if (null == patternView.getPatterns()) {
-            throw new PatternNotFoundException(patternView, patternId);
-        }
-
         PatternViewPattern patternViewPattern = this.patternViewPatternRepository.findById(new PatternViewPatternId(patternViewId, patternId))
-                .orElseThrow(() -> new PatternNotFoundException(patternView, patternId));
+                .orElseThrow(() -> new PatternNotFoundException(patternViewId, patternId, PatternGraphType.PATTERN_VIEW));
 
         return patternViewPattern.getPattern();
     }
@@ -179,14 +172,11 @@ public class PatternViewServiceImpl implements PatternViewService {
     @Override
     @Transactional
     public void removePatternFromPatternView(UUID patternViewId, UUID patternId) {
-        PatternView patternView = this.getPatternViewById(patternViewId);
-        Pattern pattern = this.getPatternOfPatternViewById(patternViewId, patternId);
-
-        if (null == patternView.getPatterns() || !patternView.getPatterns().contains(pattern)) {
-            throw new PatternNotFoundException(patternView, patternId);
+        PatternViewPatternId id = new PatternViewPatternId(patternViewId, patternId);
+        if (this.patternViewPatternRepository.existsById(id)) {
+            this.patternViewPatternRepository.deleteById(id);
         } else {
-            patternView.getPatterns().remove(pattern);
-            this.patternViewRepository.save(patternView);
+            throw new PatternNotFoundException(patternViewId, patternId, PatternGraphType.PATTERN_VIEW);
         }
     }
 
@@ -198,58 +188,36 @@ public class PatternViewServiceImpl implements PatternViewService {
         PatternView patternView = this.getPatternViewById(patternViewId);
         DirectedEdge directedEdge = this.patternRelationDescriptorService.getDirectedEdgeById(directedEdgeId);
 
-        if (null == patternView.getDirectedEdges()) {
-            patternView.setDirectedEdges(new ArrayList<>(Collections.singletonList(directedEdge)));
-        } else {
-            patternView.getDirectedEdges().add(directedEdge);
-        }
-
-        this.patternViewRepository.save(patternView);
+        PatternViewDirectedEdge patternViewDirectedEdge = new PatternViewDirectedEdge(patternView, directedEdge);
+        this.patternViewDirectedEdgeRepository.save(patternViewDirectedEdge);
     }
 
     @Override
     @Transactional
     public DirectedEdge createDirectedEdgeAndAddToPatternView(UUID patternViewId, DirectedEdge directedEdge) {
         PatternView patternView = this.getPatternViewById(patternViewId);
-        if (null != directedEdge.getPatternViews()) {
-            directedEdge.getPatternViews().add(patternView);
-        } else {
-            directedEdge.setPatternViews(new ArrayList<>(Collections.singletonList(patternView)));
-        }
-
         directedEdge = this.patternRelationDescriptorService.createDirectedEdge(directedEdge);
-        if (null != patternView.getDirectedEdges()) {
-            patternView.getDirectedEdges().add(directedEdge);
-        } else {
-            patternView.setDirectedEdges(new ArrayList<>(Collections.singletonList(directedEdge)));
-        }
-        this.patternViewRepository.save(patternView);
-        return directedEdge;
+
+        PatternViewDirectedEdge patternViewDirectedEdge = new PatternViewDirectedEdge(patternView, directedEdge);
+        patternViewDirectedEdge = this.patternViewDirectedEdgeRepository.save(patternViewDirectedEdge);
+
+        return patternViewDirectedEdge.getDirectedEdge();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<DirectedEdge> getDirectedEdgesByPatternViewId(UUID patternViewId) {
-        PatternView patternView = this.getPatternViewById(patternViewId);
-        if (null == patternView.getDirectedEdges()) {
-            patternView.setDirectedEdges(Collections.emptyList());
-        }
-        return patternView.getDirectedEdges();
+        return this.patternViewDirectedEdgeRepository.findByPatternViewId(patternViewId).stream()
+                .map(PatternViewDirectedEdge::getDirectedEdge)
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public DirectedEdge getDirectedEdgeOfPatternViewById(UUID patternViewId, UUID directedEdgeId) {
-        PatternView patternView = this.getPatternViewById(patternViewId);
-
-        if (null == patternView.getDirectedEdges()) {
-            throw new DirectedEdgeNotFoundException(patternView, directedEdgeId);
-        }
-
-        return patternView.getDirectedEdges()
-                .stream()
-                .filter(directedEdge -> directedEdge.getId().equals(directedEdgeId)).findFirst()
-                .orElseThrow(() -> new DirectedEdgeNotFoundException(patternView, directedEdgeId));
+        return this.patternViewDirectedEdgeRepository.findById(new PatternViewDirectedEdgeId(patternViewId, directedEdgeId))
+                .map(PatternViewDirectedEdge::getDirectedEdge)
+                .orElseThrow(() -> new DirectedEdgeNotFoundException(patternViewId, directedEdgeId, PatternGraphType.PATTERN_VIEW));
     }
 
     @Override
@@ -260,45 +228,34 @@ public class PatternViewServiceImpl implements PatternViewService {
             return this.createDirectedEdgeAndAddToPatternView(patternViewId, directedEdge);
         }
 
-        PatternView patternView = this.getPatternViewById(patternViewId);
-        if (null != patternView.getDirectedEdges()) {
-            if (patternView.getDirectedEdges().contains(directedEdge)) {
-                DirectedEdge persisted = this.patternRelationDescriptorService.getDirectedEdgeById(directedEdge.getId());
-                directedEdge.setPatternLanguage(persisted.getPatternLanguage());
-                directedEdge.setPatternViews(persisted.getPatternViews());
-                return this.patternRelationDescriptorService.updateDirectedEdge(directedEdge);
-            } else {
-                throw new DirectedEdgeNotFoundException(patternView, directedEdge.getId());
-            }
-        } else {
-            throw new DirectedEdgeNotFoundException(patternView, directedEdge.getId());
-        }
+        PatternViewDirectedEdge patternViewDirectedEdge = this.patternViewDirectedEdgeRepository
+                .findById(new PatternViewDirectedEdgeId(patternViewId, directedEdge.getId()))
+                .orElseThrow(() -> new DirectedEdgeNotFoundException(patternViewId, directedEdge.getId(), PatternGraphType.PATTERN_VIEW));
+
+        DirectedEdge persisted = patternViewDirectedEdge.getDirectedEdge();
+        directedEdge.setPatternLanguage(persisted.getPatternLanguage());
+        directedEdge.setPatternViews(persisted.getPatternViews());
+
+        return this.patternRelationDescriptorService.updateDirectedEdge(directedEdge);
     }
 
     @Override
     @Transactional
-    public void removeDirectedEdgeFromPatternView(UUID patternViewId, UUID directedEdgeId) {
+    public void removeDirectedEdgeFromPatternView(UUID patternViewId, UUID directedEdgeId) throws DirectedEdgeNotFoundException {
         DirectedEdge directedEdge = this.patternRelationDescriptorService.getDirectedEdgeById(directedEdgeId);
-        if (null != directedEdge.getPatternLanguage()) {
-            // DirectedEdge is part of pattern language, thus we do not remove it from database but drop it from view
-            PatternView patternView = this.getPatternViewById(patternViewId);
-            if (null != patternView.getDirectedEdges()) {
-                patternView.getDirectedEdges().remove(directedEdge);
-                this.patternViewRepository.save(patternView);
-            }
+        PatternView patternView = this.getPatternViewById(patternViewId);
+        PatternViewDirectedEdge patternViewDirectedEdge = this.patternViewDirectedEdgeRepository.getOne(new PatternViewDirectedEdgeId(patternViewId, directedEdgeId));
+
+        if (null != patternViewDirectedEdge) {
+            this.patternViewDirectedEdgeRepository.delete(patternViewDirectedEdge);
         } else {
-            // DirectedEdge is not part of pattern language, thus we remove it from database
-            List<PatternView> patternViews = directedEdge.getPatternViews();
-            if (null == patternViews) {
-                this.patternRelationDescriptorService.deleteDirectedEdgeById(directedEdgeId);
-            } else {
-                for (PatternView patternView : patternViews) {
-                    if (null != patternView.getDirectedEdges()) {
-                        patternView.getDirectedEdges().remove(directedEdge);
-                        this.patternViewRepository.save(patternView);
-                    }
-                }
-                this.patternRelationDescriptorService.deleteDirectedEdgeById(directedEdgeId);
+            throw new DirectedEdgeNotFoundException(patternView, directedEdgeId);
+        }
+
+        if (null == directedEdge.getPatternLanguage()) {
+            // directed edge is not part of pattern language, thus remove it if it is not part of other views
+            if (!this.patternViewDirectedEdgeRepository.existsByDirectedEdgeId(directedEdgeId)) {
+                this.directedEdgeRepository.delete(directedEdge);
             }
         }
     }
@@ -309,59 +266,38 @@ public class PatternViewServiceImpl implements PatternViewService {
     @Transactional
     public void addUndirectedEdgeToPatternView(UUID patternViewId, UUID undirectedEdgeId) {
         PatternView patternView = this.getPatternViewById(patternViewId);
-        UndirectedEdge edge = this.patternRelationDescriptorService.getUndirectedEdgeById(undirectedEdgeId);
+        UndirectedEdge undirectedEdge = this.patternRelationDescriptorService.getUndirectedEdgeById(undirectedEdgeId);
 
-        if (null == patternView.getUndirectedEdges()) {
-            patternView.setUndirectedEdges(new ArrayList<>(Collections.singletonList(edge)));
-        } else {
-            patternView.getUndirectedEdges().add(edge);
-        }
-
-        this.patternViewRepository.save(patternView);
+        PatternViewUndirectedEdge patternViewUndirectedEdge = new PatternViewUndirectedEdge(patternView, undirectedEdge);
+        this.patternViewUndirectedEdgeRepository.save(patternViewUndirectedEdge);
     }
 
     @Override
     @Transactional
     public UndirectedEdge createUndirectedEdgeAndAddToPatternView(UUID patternViewId, UndirectedEdge undirectedEdge) {
         PatternView patternView = this.getPatternViewById(patternViewId);
-        if (null != undirectedEdge.getPatternViews()) {
-            undirectedEdge.getPatternViews().add(patternView);
-        } else {
-            undirectedEdge.setPatternViews(new ArrayList<>(Collections.singletonList(patternView)));
-        }
-
         undirectedEdge = this.patternRelationDescriptorService.createUndirectedEdge(undirectedEdge);
-        if (null != patternView.getUndirectedEdges()) {
-            patternView.getUndirectedEdges().add(undirectedEdge);
-        } else {
-            patternView.setUndirectedEdges(new ArrayList<>(Collections.singletonList(undirectedEdge)));
-        }
-        this.patternViewRepository.save(patternView);
-        return undirectedEdge;
+
+        PatternViewUndirectedEdge patternViewUndirectedEdge = new PatternViewUndirectedEdge(patternView, undirectedEdge);
+        patternViewUndirectedEdge = this.patternViewUndirectedEdgeRepository.save(patternViewUndirectedEdge);
+
+        return patternViewUndirectedEdge.getUndirectedEdge();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<UndirectedEdge> getUndirectedEdgesByPatternViewId(UUID patternViewId) {
-        PatternView patternView = this.getPatternViewById(patternViewId);
-        if (null == patternView.getUndirectedEdges()) {
-            patternView.setUndirectedEdges(Collections.emptyList());
-        }
-        return patternView.getUndirectedEdges();
+        return this.patternViewUndirectedEdgeRepository.findByPatternViewId(patternViewId).stream()
+                .map(PatternViewUndirectedEdge::getUndirectedEdge)
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public UndirectedEdge getUndirectedEdgeOfPatternViewById(UUID patternViewId, UUID undirectedEdgeId) {
-        PatternView patternView = this.getPatternViewById(patternViewId);
-
-        if (null == patternView.getUndirectedEdges()) {
-            throw new UndirectedEdgeNotFoundException(patternView, undirectedEdgeId);
-        }
-
-        return patternView.getUndirectedEdges().stream()
-                .filter(undirectedEdge -> undirectedEdge.getId().equals(undirectedEdgeId)).findFirst()
-                .orElseThrow(() -> new UndirectedEdgeNotFoundException(patternView, undirectedEdgeId));
+        return this.patternViewUndirectedEdgeRepository.findById(new PatternViewUndirectedEdgeId(patternViewId, undirectedEdgeId))
+                .map(PatternViewUndirectedEdge::getUndirectedEdge)
+                .orElseThrow(() -> new UndirectedEdgeNotFoundException(patternViewId, undirectedEdgeId, PatternGraphType.PATTERN_VIEW));
     }
 
     @Override
@@ -372,45 +308,35 @@ public class PatternViewServiceImpl implements PatternViewService {
             return this.createUndirectedEdgeAndAddToPatternView(patternViewId, undirectedEdge);
         }
 
-        PatternView patternView = this.getPatternViewById(patternViewId);
-        if (null != patternView.getUndirectedEdges()) {
-            if (patternView.getUndirectedEdges().contains(undirectedEdge)) {
-                UndirectedEdge persisted = this.patternRelationDescriptorService.getUndirectedEdgeById(undirectedEdge.getId());
-                undirectedEdge.setPatternLanguage(persisted.getPatternLanguage());
-                undirectedEdge.setPatternViews(persisted.getPatternViews());
-                return this.patternRelationDescriptorService.updateUndirectedEdge(undirectedEdge);
-            } else {
-                throw new UndirectedEdgeNotFoundException(patternView, undirectedEdge.getId());
-            }
-        } else {
-            throw new UndirectedEdgeNotFoundException(patternView, undirectedEdge.getId());
-        }
+        PatternViewUndirectedEdge patternViewUndirectedEdge = this.patternViewUndirectedEdgeRepository
+                .findById(new PatternViewUndirectedEdgeId(patternViewId, undirectedEdge.getId()))
+                .orElseThrow(() -> new UndirectedEdgeNotFoundException(patternViewId, undirectedEdge.getId(), PatternGraphType.PATTERN_VIEW));
+
+        UndirectedEdge persisted = patternViewUndirectedEdge.getUndirectedEdge();
+        undirectedEdge.setPatternLanguage(persisted.getPatternLanguage());
+        undirectedEdge.setPatternViews(persisted.getPatternViews());
+
+        return this.patternRelationDescriptorService.updateUndirectedEdge(undirectedEdge);
     }
 
     @Override
     @Transactional
     public void removeUndirectedEdgeFromPatternView(UUID patternViewId, UUID undirectedEdgeId) {
-        UndirectedEdge edge = this.patternRelationDescriptorService.getUndirectedEdgeById(undirectedEdgeId);
-        if (null != edge.getPatternLanguage()) {
-            // DirectedEdge is part of pattern language, thus we do not remove it from database but drop it from view
-            PatternView patternView = this.getPatternViewById(patternViewId);
-            if (null != patternView.getUndirectedEdges()) {
-                patternView.getUndirectedEdges().remove(edge);
-                this.patternViewRepository.save(patternView);
-            }
+        UndirectedEdge undirectedEdge = this.patternRelationDescriptorService.getUndirectedEdgeById(undirectedEdgeId);
+        PatternView patternView = this.getPatternViewById(patternViewId);
+        PatternViewUndirectedEdge patternViewUndirectedEdge = this.patternViewUndirectedEdgeRepository
+                .getOne(new PatternViewUndirectedEdgeId(patternViewId, undirectedEdgeId));
+
+        if (null != patternViewUndirectedEdge) {
+            this.patternViewUndirectedEdgeRepository.delete(patternViewUndirectedEdge);
         } else {
-            // DirectedEdge is not part of pattern language, thus we remove it from database
-            List<PatternView> patternViews = edge.getPatternViews();
-            if (null == patternViews) {
-                this.patternRelationDescriptorService.deleteUndirectedEdgeById(undirectedEdgeId);
-            } else {
-                for (PatternView patternView : patternViews) {
-                    if (null != patternView.getUndirectedEdges()) {
-                        patternView.getUndirectedEdges().remove(edge);
-                        this.patternViewRepository.save(patternView);
-                    }
-                }
-                this.patternRelationDescriptorService.deleteUndirectedEdgeById(undirectedEdgeId);
+            throw new UndirectedEdgeNotFoundException(patternView, undirectedEdgeId);
+        }
+
+        if (null == undirectedEdge.getPatternLanguage()) {
+            // directed edge is not part of pattern language, thus remove it if it is not part of other views
+            if (!this.patternViewUndirectedEdgeRepository.existsByUndirectedEdgeId(undirectedEdgeId)) {
+                this.undirectedEdgeReository.delete(undirectedEdge);
             }
         }
     }

@@ -33,12 +33,4 @@ public class PatternModel {
     public static PatternModel from(Pattern pattern) {
         return new PatternModel(pattern);
     }
-
-    public Pattern toPattern() {
-        Pattern pattern = new Pattern();
-        pattern.setId(this.getId());
-        pattern.setUri(this.getUri());
-        pattern.setName(this.getName());
-        return pattern;
-    }
 }

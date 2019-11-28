@@ -1,13 +1,16 @@
 package com.patternpedia.api.integration;
 
+import java.util.List;
+
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.PatternView;
 import com.patternpedia.api.repositories.PatternRepository;
 import com.patternpedia.api.util.IntegrationTestHelper;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +42,8 @@ public class PatternViewTest {
     @Autowired
     private IntegrationTestHelper integrationTestHelper;
 
-    @After
-    public void cleanUpRepos() {
+    @Before
+    public void cleanUpReposBefore() {
         this.integrationTestHelper.cleanUpRepos();
     }
 
@@ -90,9 +93,20 @@ public class PatternViewTest {
                 get("/patternViews/{viewId}", patternView.getId())
         ).andExpect(status().isOk()).andReturn();
 
-        PatternView updatedPatternView = this.objectMapper.readValue(getPatternViewResponse.getResponse().getContentAsByteArray(), PatternView.class);
+        JsonNode node = this.objectMapper.readTree(getPatternViewResponse.getResponse().getContentAsByteArray());
+        String linkToPatterns = node.get("_links").get("patterns").get("href").textValue();
 
-        assertThat(updatedPatternView.getPatterns()).isNotNull();
-        assertThat(updatedPatternView.getPatterns()).hasSize(numberOfPatterns);
+        MvcResult getPatternViewPatternsResponse = this.mockMvc.perform(
+                get(linkToPatterns)
+        ).andExpect(status().isOk()).andReturn();
+
+        JsonNode response = this.objectMapper.readTree(getPatternViewPatternsResponse.getResponse().getContentAsByteArray());
+
+        List<Pattern> patterns = this.objectMapper.readValue(
+                response.get("_embedded").get("patternModels").toString(),
+                this.objectMapper.getTypeFactory().constructCollectionType(List.class, Pattern.class)
+        );
+
+        assertThat(patterns).hasSize(numberOfPatterns);
     }
 }

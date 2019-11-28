@@ -7,9 +7,6 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -25,19 +22,13 @@ public class PatternView extends PatternGraph {
     @OneToMany(mappedBy = "patternView", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PatternViewPattern> patterns = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(
-            joinColumns = @JoinColumn(name = "pattern_view_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "directed_edge_id", referencedColumnName = "id")
-    )
-    private List<DirectedEdge> directedEdges;
+    @JsonIgnore
+    @OneToMany(mappedBy = "patternView", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PatternViewDirectedEdge> directedEdges;
 
-    @ManyToMany
-    @JoinTable(
-            joinColumns = @JoinColumn(name = "pattern_view_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "undirected_edge_id", referencedColumnName = "id")
-    )
-    private List<UndirectedEdge> undirectedEdges;
+    @JsonIgnore
+    @OneToMany(mappedBy = "patternView", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PatternViewUndirectedEdge> undirectedEdges;
 
     public void removePattern(Pattern pattern) {
         for (Iterator<PatternViewPattern> iterator = this.patterns.iterator(); iterator.hasNext(); ) {
@@ -47,6 +38,20 @@ public class PatternView extends PatternGraph {
                 patternViewPattern.getPattern().getPatternViews().remove(patternViewPattern);
                 patternViewPattern.setPattern(null);
                 patternViewPattern.setPatternView(null);
+                break;
+            }
+        }
+    }
+
+    public void removeDirectedEdge(DirectedEdge directedEdge) {
+        for (Iterator<PatternViewDirectedEdge> iterator = this.directedEdges.iterator(); iterator.hasNext(); ) {
+            PatternViewDirectedEdge patternViewDirectedEdge = iterator.next();
+            if (patternViewDirectedEdge.getPatternView().equals(this) &&
+                    patternViewDirectedEdge.getDirectedEdge().equals(directedEdge)) {
+                iterator.remove();
+                patternViewDirectedEdge.getDirectedEdge().getPatternViews().remove(patternViewDirectedEdge);
+                patternViewDirectedEdge.setDirectedEdge(null);
+                patternViewDirectedEdge.setPatternView(null);
                 break;
             }
         }

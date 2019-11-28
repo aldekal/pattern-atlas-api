@@ -11,12 +11,15 @@ import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.PatternSchema;
 import com.patternpedia.api.entities.UndirectedEdge;
 import com.patternpedia.api.exception.DirectedEdgeNotFoundException;
+import com.patternpedia.api.exception.NullPatternException;
 import com.patternpedia.api.exception.NullPatternLanguageException;
 import com.patternpedia.api.exception.NullPatternSchemaException;
 import com.patternpedia.api.exception.PatternLanguageNotFoundException;
 import com.patternpedia.api.exception.PatternNotFoundException;
 import com.patternpedia.api.exception.UndirectedEdgeNotFoundException;
 import com.patternpedia.api.repositories.PatternLanguageRepository;
+import com.patternpedia.api.rest.model.CreateDirectedEdgeRequest;
+import com.patternpedia.api.rest.model.CreateUndirectedEdgeRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
@@ -249,16 +252,25 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
 
     @Override
     @Transactional
-    public DirectedEdge createDirectedEdgeAndAddToPatternLanguage(UUID patternLanguageId, DirectedEdge directedEdge) {
+    public DirectedEdge createDirectedEdgeAndAddToPatternLanguage(UUID patternLanguageId, CreateDirectedEdgeRequest createDirectedEdgeRequest) throws NullPatternException {
         PatternLanguage patternLanguage = this.patternLanguageRepository.findById(patternLanguageId)
                 .orElseThrow(() -> new PatternLanguageNotFoundException(patternLanguageId));
-        directedEdge.setPatternLanguage(patternLanguage);
-        directedEdge = this.patternRelationDescriptorService.createDirectedEdge(directedEdge);
-        if (null != patternLanguage.getDirectedEdges()) {
-            patternLanguage.getDirectedEdges().add(directedEdge);
+
+        if (null == createDirectedEdgeRequest.getSourcePatternId()) {
+            throw new NullPatternException("No source pattern defined for DirectedEdge");
         }
-        this.patternLanguageRepository.save(patternLanguage);
-        return directedEdge;
+        if (null == createDirectedEdgeRequest.getTargetPatternId()) {
+            throw new NullPatternException("No target pattern defined for DirectedEdge");
+        }
+
+        DirectedEdge directedEdge = new DirectedEdge();
+        directedEdge.setPatternLanguage(patternLanguage);
+        directedEdge.setSource(this.patternService.getPatternById(createDirectedEdgeRequest.getSourcePatternId()));
+        directedEdge.setTarget(this.patternService.getPatternById(createDirectedEdgeRequest.getTargetPatternId()));
+        directedEdge.setDescription(createDirectedEdgeRequest.getDescription());
+        directedEdge.setType(createDirectedEdgeRequest.getType());
+
+        return this.patternRelationDescriptorService.createDirectedEdge(directedEdge);
     }
 
     @Override
@@ -300,15 +312,17 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
 
     @Override
     @Transactional
-    public UndirectedEdge createUndirectedEdgeAndAddToPatternLanguage(UUID patternLanguageId, UndirectedEdge undirectedEdge) {
+    public UndirectedEdge createUndirectedEdgeAndAddToPatternLanguage(UUID patternLanguageId, CreateUndirectedEdgeRequest createUndirectedEdgeRequest) {
         PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
+
+        UndirectedEdge undirectedEdge = new UndirectedEdge();
         undirectedEdge.setPatternLanguage(patternLanguage);
-        undirectedEdge = this.patternRelationDescriptorService.createUndirectedEdge(undirectedEdge);
-        if (null != patternLanguage.getUndirectedEdges()) {
-            patternLanguage.getUndirectedEdges().add(undirectedEdge);
-        }
-        this.patternLanguageRepository.save(patternLanguage);
-        return undirectedEdge;
+        undirectedEdge.setP1(this.patternService.getPatternById(createUndirectedEdgeRequest.getP1Id()));
+        undirectedEdge.setP2(this.patternService.getPatternById(createUndirectedEdgeRequest.getP2Id()));
+        undirectedEdge.setType(createUndirectedEdgeRequest.getType());
+        undirectedEdge.setDescription(createUndirectedEdgeRequest.getDescription());
+
+        return this.patternRelationDescriptorService.createUndirectedEdge(undirectedEdge);
     }
 
     @Override

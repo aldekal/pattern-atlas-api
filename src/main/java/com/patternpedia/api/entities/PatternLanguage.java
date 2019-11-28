@@ -29,10 +29,10 @@ public class PatternLanguage extends PatternGraph {
     private PatternSchema patternSchema;
 
     @JsonIgnore
-    @OneToMany
+    @OneToMany(mappedBy = "patternLanguage", fetch = FetchType.LAZY)
     private List<DirectedEdge> directedEdges;
 
     @JsonIgnore
-    @OneToMany
+    @OneToMany(mappedBy = "patternLanguage", fetch = FetchType.LAZY)
     private List<UndirectedEdge> undirectedEdges;
 }

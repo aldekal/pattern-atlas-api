@@ -1,12 +1,13 @@
 package com.patternpedia.api.integration;
 
-import com.patternpedia.api.entities.DirectedEdge;
 import com.patternpedia.api.entities.PatternLanguage;
-import com.patternpedia.api.entities.UndirectedEdge;
-import com.patternpedia.api.repositories.PatternLanguageRepository;
+import com.patternpedia.api.rest.model.CreateDirectedEdgeRequest;
+import com.patternpedia.api.rest.model.CreateUndirectedEdgeRequest;
 import com.patternpedia.api.util.IntegrationTestHelper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,23 +36,25 @@ public class PatternRelationDescriptorControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private PatternLanguageRepository patternLanguageRepository;
+    @Before
+    public void cleanUpReposBefore() {
+        this.integrationTestHelper.cleanUpRepos();
+    }
 
     @Test
     public void addDirectedEdgeToPatternLanguageSucceeds() throws Exception {
 
         PatternLanguage patternLanguage = this.integrationTestHelper.setUpPatternLanguage(2);
 
-        DirectedEdge directedEdge = new DirectedEdge();
-        directedEdge.setPatternLanguage(patternLanguage);
-        directedEdge.setSource(patternLanguage.getPatterns().get(0));
-        directedEdge.setTarget(patternLanguage.getPatterns().get(1));
+        CreateDirectedEdgeRequest request = CreateDirectedEdgeRequest.builder(
+                patternLanguage.getPatterns().get(0).getId(),
+                patternLanguage.getPatterns().get(1).getId()
+        ).build();
 
         MvcResult result = this.mockMvc.perform(
                 post("/patternLanguages/{patternLanguageId}/directedEdges", patternLanguage.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(this.objectMapper.writeValueAsString(directedEdge))
+                        .content(this.objectMapper.writeValueAsString(request))
         ).andExpect(status().isCreated())
                 .andReturn();
 
@@ -63,18 +66,18 @@ public class PatternRelationDescriptorControllerTest {
     }
 
     @Test
-    public void addUndirectedEdgeSucceeds() throws Exception {
+    public void addUndirectedEdgeSucceedsToPatternLanguageSucceeds() throws Exception {
         PatternLanguage patternLanguage = this.integrationTestHelper.setUpPatternLanguage(2);
 
-        UndirectedEdge undirectedEdge = new UndirectedEdge();
-        undirectedEdge.setPatternLanguage(patternLanguage);
-        undirectedEdge.setP1(patternLanguage.getPatterns().get(0));
-        undirectedEdge.setP2(patternLanguage.getPatterns().get(1));
+        CreateUndirectedEdgeRequest request = CreateUndirectedEdgeRequest.builder(
+                patternLanguage.getPatterns().get(0).getId(),
+                patternLanguage.getPatterns().get(1).getId()
+        ).build();
 
         MvcResult result = this.mockMvc.perform(
                 post("/patternLanguages/{patternLanguageId}/undirectedEdges", patternLanguage.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(this.objectMapper.writeValueAsString(undirectedEdge))
+                        .content(this.objectMapper.writeValueAsString(request))
         ).andExpect(status().isCreated())
                 .andReturn();
 

@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import com.patternpedia.api.entities.DirectedEdge;
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternLanguage;
-import com.patternpedia.api.entities.PatternView;
 import com.patternpedia.api.entities.PatternViewPattern;
 import com.patternpedia.api.entities.UndirectedEdge;
 import com.patternpedia.api.exception.DirectedEdgeNotFoundException;
@@ -116,12 +115,14 @@ public class PatternController {
                     links.add(linkTo(methodOn(PatternRelationDescriptorController.class)
                             .getDirectedEdgeOfPatternLanguageById(directedEdge.getPatternLanguage().getId(), directedEdge.getId())).withRel("outgoingDirectedEdges"));
                 }
+
                 if (null != directedEdge.getPatternViews()) {
                     // edge is part of pattern view, thus we reference the pattern view route
-                    for (PatternView patternView : directedEdge.getPatternViews()) {
-                        links.add(linkTo(methodOn(PatternRelationDescriptorController.class)
-                                .getDirectedEdgeOfPatternViewById(patternView.getId(), directedEdge.getId())).withRel("outgoingDirectedEdges"));
-                    }
+                    List<Link> newLinks = directedEdge.getPatternViews().stream()
+                            .map(patternViewDirectedEdge -> linkTo(methodOn(PatternRelationDescriptorController.class)
+                                    .getDirectedEdgeOfPatternViewById(patternViewDirectedEdge.getPatternView().getId(), patternViewDirectedEdge.getDirectedEdge().getId())).withRel("outgoingDirectedEdges")
+                            ).collect(Collectors.toList());
+                    links.addAll(newLinks);
                 }
             }
         }
@@ -141,10 +142,12 @@ public class PatternController {
                 }
                 if (null != directedEdge.getPatternViews()) {
                     // edge is part of pattern view, thus we reference the pattern view route
-                    for (PatternView patternView : directedEdge.getPatternViews()) {
-                        links.add(linkTo(methodOn(PatternRelationDescriptorController.class)
-                                .getDirectedEdgeOfPatternViewById(patternView.getId(), directedEdge.getId())).withRel("ingoingDirectedEdges"));
-                    }
+
+                    List<Link> newLinks = directedEdge.getPatternViews().stream()
+                            .map(patternViewDirectedEdge -> linkTo(methodOn(PatternRelationDescriptorController.class)
+                                    .getDirectedEdgeOfPatternViewById(patternViewDirectedEdge.getPatternView().getId(), patternViewDirectedEdge.getDirectedEdge().getId())).withRel("ingoingDirectedEdges")
+                            ).collect(Collectors.toList());
+                    links.addAll(newLinks);
                 }
             }
         }
@@ -164,10 +167,11 @@ public class PatternController {
                 }
                 if (null != undirectedEdge.getPatternViews()) {
                     // edge is part of pattern view, thus we reference the pattern view route
-                    for (PatternView patternView : undirectedEdge.getPatternViews()) {
-                        links.add(linkTo(methodOn(PatternRelationDescriptorController.class)
-                                .getUndirectedEdgeOfPatternViewById(patternView.getId(), undirectedEdge.getId())).withRel("undirectedEdges"));
-                    }
+                    List<Link> newLinks = undirectedEdge.getPatternViews().stream()
+                            .map(patternViewUndirectedEdge -> linkTo(methodOn(PatternRelationDescriptorController.class)
+                                    .getUndirectedEdgeOfPatternViewById(patternViewUndirectedEdge.getPatternView().getId(), patternViewUndirectedEdge.getUndirectedEdge().getId())).withRel("undirectedEdges")
+                            ).collect(Collectors.toList());
+                    links.addAll(newLinks);
                 }
             }
         }
@@ -187,10 +191,6 @@ public class PatternController {
 
     @GetMapping(value = "/patternViews/{patternViewId}/patterns")
     CollectionModel<EntityModel<PatternModel>> getPatternsOfPatternView(@PathVariable UUID patternViewId) {
-
-        // Todo: This is a hack. How can we influence serialization to prevent embedding content of patterns
-        List<Pattern> preparedList = removeContentFromPatterns(this.patternViewService.getPatternsOfPatternView(patternViewId));
-
         List<EntityModel<PatternModel>> patterns = this.patternViewService.getPatternsOfPatternView(patternViewId).stream()
                 .map(PatternModel::from)
                 .map(patternModel -> new EntityModel<>(patternModel, getPatternLinks(patternModel.getPattern())))

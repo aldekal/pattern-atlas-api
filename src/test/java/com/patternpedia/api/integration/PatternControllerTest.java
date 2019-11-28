@@ -1,13 +1,16 @@
 package com.patternpedia.api.integration;
 
+import java.util.List;
+
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.repositories.PatternLanguageRepository;
 import com.patternpedia.api.repositories.PatternRepository;
 import com.patternpedia.api.util.IntegrationTestHelper;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +46,8 @@ public class PatternControllerTest {
     @Autowired
     private IntegrationTestHelper integrationTestHelper;
 
-    @After
-    public void cleanUpRepos() {
+    @Before
+    public void cleanUpReposBefore() {
         this.integrationTestHelper.cleanUpRepos();
     }
 
@@ -67,17 +70,26 @@ public class PatternControllerTest {
                 get(patternLocation)
         ).andExpect(status().isOk()).andReturn();
 
-        Pattern constraint = this.integrationTestHelper.getDefaultPattern();
-        Pattern createdPattern = this.objectMapper.readValue(getPatternResponse.getResponse().getContentAsByteArray(), Pattern.class);
-
         MvcResult getPatternLanguageResponse = this.mockMvc.perform(
                 get("/patternLanguages/{plId}", patternLanguage.getId())
         ).andExpect(status().isOk()).andReturn();
 
-        patternLanguage = this.objectMapper
-                .readValue(getPatternLanguageResponse.getResponse().getContentAsByteArray(), PatternLanguage.class);
+        JsonNode response = this.objectMapper.readTree(getPatternLanguageResponse.getResponse().getContentAsByteArray());
 
-        assertThat(patternLanguage.getPatterns()).hasSize(1);
+        String patternsLocation = response.get("_links").get("patterns").get("href").textValue();
+
+        MvcResult getPatternsResponse = this.mockMvc.perform(
+                get(patternsLocation)
+        ).andExpect(status().isOk()).andReturn();
+
+        JsonNode getPatternsResult = this.objectMapper.readTree(getPatternsResponse.getResponse().getContentAsByteArray());
+
+        List<Pattern> patterns = this.objectMapper.readValue(
+                getPatternsResult.get("_embedded").get("patternModels").toString(),
+                this.objectMapper.getTypeFactory().constructCollectionType(List.class, Pattern.class)
+        );
+
+        assertThat(patterns).hasSize(1);
     }
 
     @Test
