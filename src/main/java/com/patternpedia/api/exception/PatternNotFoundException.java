@@ -18,12 +18,16 @@ public class PatternNotFoundException extends ResourceNotFoundException {
         super(message);
     }
 
+    public PatternNotFoundException(UUID patternId) {
+        super(String.format("Pattern \"%s\" not found!", patternId));
+    }
+
     public PatternNotFoundException(PatternView patternView, UUID patternId) {
-        super(String.format("Pattern \"%s\" is not part of PatternView \"%s\"", patternId, patternView.getId()));
+        super(String.format("Pattern \"%s\" is not part of PatternView \"%s\"!", patternId, patternView.getId()));
     }
 
     public PatternNotFoundException(PatternLanguage patternLanguage, UUID patternId) {
-        super(String.format("Pattern \"%s\" is not part of PatternLanguage \"%s\"", patternId, patternLanguage.getId()));
+        super(String.format("Pattern \"%s\" is not part of PatternLanguage \"%s\"!", patternId, patternLanguage.getId()));
     }
 
     public PatternNotFoundException(UUID graphId, UUID patternId, PatternGraphType patternGraphType) {
@@ -33,11 +37,11 @@ public class PatternNotFoundException extends ResourceNotFoundException {
     private static String createMessage(UUID graphId, UUID patternId, PatternGraphType patternGraphType) {
         switch (patternGraphType) {
             case PATTERN_VIEW:
-                return String.format("Pattern \"%s\" is not part of PatternView \"%s\"", patternId, graphId);
+                return String.format("Pattern \"%s\" is not part of PatternView \"%s\"!", patternId, graphId);
             case PATTERN_LANGUAGE:
-                return String.format("Pattern \"%s\" is not part of PatternLanguage \"%s\"", patternId, graphId);
+                return String.format("Pattern \"%s\" is not part of PatternLanguage \"%s\"!", patternId, graphId);
             default:
-                return String.format("Pattern \"%s\" not found", patternId);
+                return String.format("Pattern \"%s\" not found!", patternId);
         }
     }
 }

@@ -67,7 +67,7 @@ public class PatternServiceImpl implements PatternService {
     @Transactional(readOnly = true)
     public Pattern getPatternById(UUID patternId) {
         return this.patternRepository.findById(patternId)
-                .orElseThrow(() -> new PatternNotFoundException(String.format("Pattern %s not found!", patternId)));
+                .orElseThrow(() -> new PatternNotFoundException(patternId));
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.PatternSchema;
 import com.patternpedia.api.entities.UndirectedEdge;
+import com.patternpedia.api.exception.UndirectedEdgeNotFoundException;
 import com.patternpedia.api.rest.model.CreateDirectedEdgeRequest;
 import com.patternpedia.api.rest.model.CreateUndirectedEdgeRequest;
 
@@ -60,6 +61,9 @@ public interface PatternLanguageService {
     @Transactional(readOnly = true)
     List<DirectedEdge> getDirectedEdgesOfPatternLanguage(UUID patternLanguageId);
 
+    @Transactional(readOnly = true)
+    DirectedEdge getDirectedEdgeOfPatternLanguageById(UUID patternLanguageId, UUID directedEdgeId);
+
     @Transactional
     DirectedEdge updateDirectedEdgeOfPatternLanguage(UUID patternLanguageId, DirectedEdge directedEdge);
 
@@ -71,6 +75,9 @@ public interface PatternLanguageService {
 
     @Transactional(readOnly = true)
     List<UndirectedEdge> getUndirectedEdgesOfPatternLanguage(UUID patternLanguageId);
+
+    @Transactional(readOnly = true)
+    UndirectedEdge getUndirectedEdgeOfPatternLanguageById(UUID patternLanguageId, UUID undirectedEdgeId) throws UndirectedEdgeNotFoundException;
 
     @Transactional
     UndirectedEdge updateUndirectedEdgeOfPatternLanguage(UUID patternLanguageId, UndirectedEdge undirectedEdge);

@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import com.patternpedia.api.entities.DirectedEdge;
 import com.patternpedia.api.entities.Pattern;
+import com.patternpedia.api.entities.PatternGraphType;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.PatternSchema;
 import com.patternpedia.api.entities.UndirectedEdge;
@@ -174,22 +175,19 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
 
     @Override
     @Transactional(readOnly = true)
-    public Pattern getPatternOfPatternLanguageById(UUID patternLanguageId, UUID patternId) {
+    public Pattern getPatternOfPatternLanguageById(UUID patternLanguageId, UUID patternId) throws PatternNotFoundException {
         PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
         if (null == patternLanguage.getPatterns()) {
             throw new PatternNotFoundException(patternLanguage, patternId);
         }
 
-        return patternLanguage.getPatterns()
-                .stream()
-                .filter(pattern -> pattern.getId().equals(patternId)).findFirst()
-                .map(pattern -> {
-                    if (null == pattern.getContent()) {
-                        pattern.setContent(this.objectMapper.createObjectNode());
-                    }
-                    return pattern;
-                })
-                .orElseThrow(() -> new PatternNotFoundException(patternLanguage, patternId));
+        Pattern pattern = this.patternService.getPatternById(patternId);
+
+        if (null != pattern.getPatternLanguage() && pattern.getPatternLanguage().getId().equals(patternLanguageId)) {
+            return pattern;
+        } else {
+            throw new PatternNotFoundException(patternLanguage, patternId);
+        }
     }
 
     @Override
@@ -281,6 +279,17 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public DirectedEdge getDirectedEdgeOfPatternLanguageById(UUID patternLanguageId, UUID directedEdgeId) throws DirectedEdgeNotFoundException {
+        DirectedEdge directedEdge = this.patternRelationDescriptorService.getDirectedEdgeById(directedEdgeId);
+        if (null != directedEdge && null != directedEdge.getPatternLanguage() && directedEdge.getPatternLanguage().getId().equals(patternLanguageId)) {
+            return directedEdge;
+        } else {
+            throw new DirectedEdgeNotFoundException(patternLanguageId, directedEdgeId, PatternGraphType.PATTERN_LANGUAGE);
+        }
+    }
+
+    @Override
     @Transactional
     public DirectedEdge updateDirectedEdgeOfPatternLanguage(UUID patternLanguageId, DirectedEdge directedEdge) {
         PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
@@ -330,6 +339,17 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
     public List<UndirectedEdge> getUndirectedEdgesOfPatternLanguage(UUID patternLanguageId) {
         PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
         return patternLanguage.getUndirectedEdges();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UndirectedEdge getUndirectedEdgeOfPatternLanguageById(UUID patternLanguageId, UUID undirectedEdgeId) throws UndirectedEdgeNotFoundException {
+        UndirectedEdge undirectedEdge = this.patternRelationDescriptorService.getUndirectedEdgeById(undirectedEdgeId);
+        if (null != undirectedEdge && null != undirectedEdge.getPatternLanguage() && undirectedEdge.getPatternLanguage().getId().equals(patternLanguageId)) {
+            return undirectedEdge;
+        } else {
+            throw new UndirectedEdgeNotFoundException(patternLanguageId, undirectedEdgeId, PatternGraphType.PATTERN_LANGUAGE);
+        }
     }
 
     @Override
