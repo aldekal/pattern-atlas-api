@@ -7,7 +7,9 @@ import com.patternpedia.api.entities.PatternViewDirectedEdge;
 import com.patternpedia.api.entities.PatternViewDirectedEdgeId;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+@RepositoryRestResource(exported = false)
 public interface PatternViewDirectedEdgeRepository extends JpaRepository<PatternViewDirectedEdge, PatternViewDirectedEdgeId> {
     List<PatternViewDirectedEdge> findByPatternViewId(UUID patternViewId);
 

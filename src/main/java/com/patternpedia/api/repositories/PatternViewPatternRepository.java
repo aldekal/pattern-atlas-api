@@ -7,7 +7,9 @@ import com.patternpedia.api.entities.PatternViewPattern;
 import com.patternpedia.api.entities.PatternViewPatternId;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+@RepositoryRestResource(exported = false)
 public interface PatternViewPatternRepository extends JpaRepository<PatternViewPattern, PatternViewPatternId> {
     List<PatternViewPattern> findAllByPatternViewId(UUID patternViewId);
 
