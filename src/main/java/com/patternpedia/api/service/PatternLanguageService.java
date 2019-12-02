@@ -55,6 +55,18 @@ public interface PatternLanguageService {
     @Transactional
     PatternSchema updatePatternSchemaOfPatternLanguage(UUID patternLanguageId, PatternSchema patternSchema);
 
+    @Transactional(readOnly = true)
+    Object getGraphOfPatternLanguage(UUID patternLanguageId);
+
+    @Transactional
+    Object createGraphOfPatternLanguage(UUID patternLanguageId, Object graph);
+
+    @Transactional
+    Object updateGraphOfPatternLanguage(UUID patternLanguageId, Object graph);
+
+    @Transactional
+    void deleteGraphOfPatternLanguage(UUID patternLanguageId);
+
     @Transactional
     DirectedEdge createDirectedEdgeAndAddToPatternLanguage(UUID patternLanguageId, CreateDirectedEdgeRequest createDirectedEdgeRequest);
 

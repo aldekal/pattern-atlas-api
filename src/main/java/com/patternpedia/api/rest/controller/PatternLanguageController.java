@@ -113,7 +113,7 @@ public class PatternLanguageController {
     @PostMapping
     @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
-    ResponseEntity<PatternLanguage> createPatternLanguage(@RequestBody PatternLanguage patternLanguage) {
+    ResponseEntity<?> createPatternLanguage(@RequestBody PatternLanguage patternLanguage) {
         String patternLanguageNameAsCamelCase = CaseUtils.toCamelCase(patternLanguage.getName(), false);
         String uri = String.format("https://patternpedia.org/patternLanguages/%s", patternLanguageNameAsCamelCase);
         patternLanguage.setUri(uri);
@@ -125,20 +125,19 @@ public class PatternLanguageController {
     }
 
     @PutMapping(value = "/{patternLanguageId}")
-    ResponseEntity<PatternLanguage> putPatternLanguage(@PathVariable UUID patternLanguageId, @RequestBody PatternLanguage patternLanguage) {
-        return ResponseEntity.ok(this.patternLanguageService.updatePatternLanguage(patternLanguage));
+    ResponseEntity<?> putPatternLanguage(@PathVariable UUID patternLanguageId, @RequestBody PatternLanguage patternLanguage) {
+        this.patternLanguageService.updatePatternLanguage(patternLanguage);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping(value = "/{patternLanguageId}")
     ResponseEntity<?> deletePatternLanguage(@PathVariable UUID patternLanguageId) {
         this.patternLanguageService.deletePatternLanguage(patternLanguageId);
-
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping(value = "/{patternLanguageId}/patternSchema")
     EntityModel<PatternSchema> getPatternSchema(@PathVariable UUID patternLanguageId) {
-
         PatternSchema schema = this.patternLanguageService.getPatternSchemaByPatternLanguageId(patternLanguageId);
 
         Link selfLink = linkTo(methodOn(PatternLanguageController.class).getPatternSchema(patternLanguageId)).withSelfRel();
@@ -150,8 +149,37 @@ public class PatternLanguageController {
     }
 
     @PutMapping(value = "/{patternLanguageId}/patternSchema")
-    ResponseEntity<PatternSchema> updatePatternSchema(@PathVariable UUID patternLanguageId, @RequestBody PatternSchema patternSchema) {
-        PatternSchema schema = this.patternLanguageService.updatePatternSchemaOfPatternLanguage(patternLanguageId, patternSchema);
-        return ResponseEntity.ok(schema);
+    ResponseEntity<?> updatePatternSchema(@PathVariable UUID patternLanguageId, @RequestBody PatternSchema patternSchema) {
+        this.patternLanguageService.updatePatternSchemaOfPatternLanguage(patternLanguageId, patternSchema);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping(value = "/{patternLanguageId}/graph")
+    EntityModel<Object> getPatternLanguageGraph(@PathVariable UUID patternLanguageId) {
+        return new EntityModel<>(this.patternLanguageService.getGraphOfPatternLanguage(patternLanguageId),
+                linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"),
+                linkTo(methodOn(PatternLanguageController.class).getPatternLanguageGraph(patternLanguageId)).withSelfRel()
+                        .andAffordance(afford(methodOn(PatternLanguageController.class).postPatternLanguageGraph(patternLanguageId, null)))
+                        .andAffordance(afford(methodOn(PatternLanguageController.class).putPatternLanguageGraph(patternLanguageId, null)))
+                        .andAffordance(afford(methodOn(PatternLanguageController.class).deletePatternLanguageGraph(patternLanguageId)))
+        );
+    }
+
+    @PostMapping(value = "/{patternLanguageId}/graph")
+    ResponseEntity<?> postPatternLanguageGraph(@PathVariable UUID patternLanguageId, @RequestBody Object graph) {
+        return ResponseEntity.created(linkTo(methodOn(PatternLanguageController.class).getPatternLanguageGraph(patternLanguageId)).toUri())
+                .build();
+    }
+
+    @PutMapping(value = "/{patternLanguageId}/graph")
+    ResponseEntity<?> putPatternLanguageGraph(@PathVariable UUID patternLanguageId, @RequestBody Object graph) {
+        this.patternLanguageService.updateGraphOfPatternLanguage(patternLanguageId, graph);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping(value = "/{patternLanguageId}/graph")
+    ResponseEntity<?> deletePatternLanguageGraph(@PathVariable UUID patternLanguageId) {
+        this.patternLanguageService.deleteGraphOfPatternLanguage(patternLanguageId);
+        return ResponseEntity.noContent().build();
     }
 }

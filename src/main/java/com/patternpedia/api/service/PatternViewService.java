@@ -7,6 +7,9 @@ import com.patternpedia.api.entities.DirectedEdge;
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternView;
 import com.patternpedia.api.entities.UndirectedEdge;
+import com.patternpedia.api.rest.model.CreateDirectedEdgeRequest;
+
+import org.springframework.transaction.annotation.Transactional;
 
 public interface PatternViewService {
 

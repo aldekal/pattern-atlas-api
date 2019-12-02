@@ -88,13 +88,17 @@ public class PatternLanguageControllerTest {
         String newName = "TestPatternLanguage - Updated";
         createdPatternLanguage.setName(newName);
 
-        MvcResult result = this.mockMvc.perform(
+        this.mockMvc.perform(
                 put("/patternLanguages/{patternLanguageId}", createdPatternLanguage.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(this.objectMapper.writeValueAsString(createdPatternLanguage))
+        ).andExpect(status().isNoContent()).andReturn();
+
+        MvcResult mvcResult = this.mockMvc.perform(
+                get("/patternLanguages/{patternLanguageId}", createdPatternLanguage.getId())
         ).andExpect(status().isOk()).andReturn();
 
-        PatternLanguage updatedPatternLanguage = this.objectMapper.readValue(result.getResponse().getContentAsByteArray(), PatternLanguage.class);
+        PatternLanguage updatedPatternLanguage = this.objectMapper.readValue(mvcResult.getResponse().getContentAsByteArray(), PatternLanguage.class);
 
         assertThat(updatedPatternLanguage.getName()).isEqualTo(newName);
     }
@@ -136,7 +140,7 @@ public class PatternLanguageControllerTest {
                 put("/patternLanguages/{plId}/patternSchema", patternLanguage.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(this.objectMapper.writeValueAsString(patternSchema))
-        ).andExpect(status().isOk()).andReturn();
+        ).andExpect(status().isNoContent()).andReturn();
 
         getPatternSchemaResponse = this.mockMvc.perform(
                 get("/patternLanguages/{plId}/patternSchema", patternLanguage.getId())

@@ -106,11 +106,13 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
             throw new PatternLanguageNotFoundException(String.format("PatternLanguage %s not found", patternLanguage.getId()));
         }
 
+        PatternLanguage oldPatternLanguage = this.getPatternLanguageById(patternLanguage.getId());
+
         // Here we reset patternSchema, patterns, undirectedEdges and directedEdges to what is already stored
-        patternLanguage.setPatternSchema(this.getPatternSchemaByPatternLanguageId(patternLanguage.getId()));
-        patternLanguage.setPatterns(this.getPatternsOfPatternLanguage(patternLanguage.getId()));
-        patternLanguage.setUndirectedEdges(this.getUndirectedEdgesOfPatternLanguage(patternLanguage.getId()));
-        patternLanguage.setDirectedEdges(this.getDirectedEdgesOfPatternLanguage(patternLanguage.getId()));
+        patternLanguage.setPatternSchema(oldPatternLanguage.getPatternSchema());
+        patternLanguage.setPatterns(oldPatternLanguage.getPatterns());
+        patternLanguage.setUndirectedEdges(oldPatternLanguage.getUndirectedEdges());
+        patternLanguage.setDirectedEdges(oldPatternLanguage.getDirectedEdges());
 
         return this.patternLanguageRepository.save(patternLanguage);
     }
@@ -246,6 +248,40 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
         PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
         patternSchema.setPatternLanguage(patternLanguage);
         return this.patternSchemaService.updatePatternSchema(patternSchema);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Object getGraphOfPatternLanguage(UUID patternLanguageId) throws PatternLanguageNotFoundException {
+        return this.patternLanguageRepository.findById(patternLanguageId)
+                .map(PatternLanguage::getGraph)
+                .orElseThrow(() -> new PatternLanguageNotFoundException(patternLanguageId));
+    }
+
+    @Override
+    @Transactional
+    public Object createGraphOfPatternLanguage(UUID patternLanguageId, Object graph) {
+        PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
+        patternLanguage.setGraph(graph);
+        patternLanguage = this.updatePatternLanguage(patternLanguage);
+        return patternLanguage.getGraph();
+    }
+
+    @Override
+    @Transactional
+    public Object updateGraphOfPatternLanguage(UUID patternLanguageId, Object graph) {
+        PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
+        patternLanguage.setGraph(graph);
+        patternLanguage = this.updatePatternLanguage(patternLanguage);
+        return patternLanguage.getGraph();
+    }
+
+    @Override
+    @Transactional
+    public void deleteGraphOfPatternLanguage(UUID patternLanguageId) {
+        PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
+        patternLanguage.setGraph(null);
+        this.patternLanguageRepository.save(patternLanguage);
     }
 
     @Override

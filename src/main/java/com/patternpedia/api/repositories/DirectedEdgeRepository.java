@@ -15,4 +15,6 @@ public interface DirectedEdgeRepository extends JpaRepository<DirectedEdge, UUID
     Optional<List<DirectedEdge>> findBySource(Pattern pattern);
 
     Optional<List<DirectedEdge>> findByTarget(Pattern pattern);
+
+    boolean existsBySourceIdAndTargetId(UUID sourcePatternId, UUID targetPatternId);
 }

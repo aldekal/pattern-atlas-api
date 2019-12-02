@@ -33,10 +33,6 @@ public class PatternRelationDescriptorServiceImpl implements PatternRelationDesc
     @Override
     @Transactional
     public DirectedEdge createDirectedEdge(DirectedEdge directedEdge) {
-        if (null == directedEdge.getPatternLanguage() && null == directedEdge.getPatternViews()) {
-            throw new RuntimeException("DirectedEdge must either be part of a pattern language or of any view");
-        }
-
         return this.directedEdgeRepository.save(directedEdge);
     }
 
@@ -93,9 +89,6 @@ public class PatternRelationDescriptorServiceImpl implements PatternRelationDesc
     @Override
     @Transactional
     public UndirectedEdge createUndirectedEdge(UndirectedEdge undirectedEdge) {
-        if (null == undirectedEdge.getPatternLanguage() && null == undirectedEdge.getPatternViews()) {
-            throw new RuntimeException("UndirectedEdge must either be part of a pattern language or of any view");
-        }
         return this.undirectedEdgeReository.save(undirectedEdge);
     }
 

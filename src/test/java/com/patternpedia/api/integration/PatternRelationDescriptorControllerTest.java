@@ -1,6 +1,8 @@
 package com.patternpedia.api.integration;
 
 import com.patternpedia.api.entities.PatternLanguage;
+import com.patternpedia.api.entities.PatternView;
+import com.patternpedia.api.entities.PatternViewDirectedEdge;
 import com.patternpedia.api.rest.model.CreateDirectedEdgeRequest;
 import com.patternpedia.api.rest.model.CreateUndirectedEdgeRequest;
 import com.patternpedia.api.util.IntegrationTestHelper;
@@ -63,6 +65,30 @@ public class PatternRelationDescriptorControllerTest {
         this.mockMvc.perform(
                 get(location)
         ).andExpect(status().isOk());
+    }
+
+    @Test
+    public void addDirectedEdgeToPatternViewSucceeds() throws Exception {
+
+        PatternLanguage patternLanguage = this.integrationTestHelper.setUpPatternLanguage(2);
+
+        PatternView patternView = this.integrationTestHelper.setUpPatternView();
+
+        CreateDirectedEdgeRequest request = CreateDirectedEdgeRequest.builder(
+                patternLanguage.getPatterns().get(0).getId(),
+                patternLanguage.getPatterns().get(1).getId()
+        ).build();
+
+        MvcResult result = this.mockMvc.perform(
+                post("/patternLanguages/{patternLanguageId}/directedEdges", patternLanguage.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(request))
+        ).andExpect(status().isCreated())
+                .andReturn();
+
+        PatternViewDirectedEdge patternViewDirectedEdge = new PatternViewDirectedEdge();
+
+
     }
 
     @Test

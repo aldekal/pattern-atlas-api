@@ -25,8 +25,8 @@ public class CreateDirectedEdgeRequest {
     public static class CreateDirectedEdgeRequestBuilder {
         private CreateDirectedEdgeRequest createDirectedEdgeRequest;
 
-        public CreateDirectedEdgeRequestBuilder(UUID sourcePatternid, UUID targetPatternId) {
-            this.createDirectedEdgeRequest = new CreateDirectedEdgeRequest(sourcePatternid, targetPatternId);
+        public CreateDirectedEdgeRequestBuilder(UUID sourcePatternId, UUID targetPatternId) {
+            this.createDirectedEdgeRequest = new CreateDirectedEdgeRequest(sourcePatternId, targetPatternId);
         }
 
         public CreateDirectedEdgeRequestBuilder withType(String type) {
