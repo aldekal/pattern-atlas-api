@@ -13,12 +13,14 @@ import com.patternpedia.api.entities.PatternViewPattern;
 import com.patternpedia.api.entities.UndirectedEdge;
 import com.patternpedia.api.exception.DirectedEdgeNotFoundException;
 import com.patternpedia.api.exception.UndirectedEdgeNotFoundException;
+import com.patternpedia.api.rest.model.PatternContentModel;
 import com.patternpedia.api.rest.model.PatternModel;
 import com.patternpedia.api.service.PatternLanguageService;
 import com.patternpedia.api.service.PatternRelationDescriptorService;
 import com.patternpedia.api.service.PatternService;
 import com.patternpedia.api.service.PatternViewService;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.validation.Valid;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -49,15 +51,18 @@ public class PatternController {
     private PatternLanguageService patternLanguageService;
     private PatternViewService patternViewService;
     private PatternRelationDescriptorService patternRelationDescriptorService;
+    private ObjectMapper objectMapper;
 
     public PatternController(PatternService patternService,
                              PatternLanguageService patternLanguageService,
                              PatternViewService patternViewService,
-                             PatternRelationDescriptorService patternRelationDescriptorService) {
+                             PatternRelationDescriptorService patternRelationDescriptorService,
+                             ObjectMapper objectMapper) {
         this.patternService = patternService;
         this.patternLanguageService = patternLanguageService;
         this.patternViewService = patternViewService;
         this.patternRelationDescriptorService = patternRelationDescriptorService;
+        this.objectMapper = objectMapper;
     }
 
     static List<Link> getPatternLanguagePatternCollectionLinks(UUID patternLanguageId) {
@@ -262,7 +267,7 @@ public class PatternController {
                 }
             }
         }
-        
+
         return links;
     }
 
@@ -345,8 +350,15 @@ public class PatternController {
     EntityModel<Object> getPatternContentOfPattern(@PathVariable UUID patternLanguageId, @PathVariable UUID patternId) {
 
         Pattern pattern = this.patternLanguageService.getPatternOfPatternLanguageById(patternLanguageId, patternId);
+        PatternContentModel model = new PatternContentModel();
 
-        return new EntityModel<>(pattern.getContent(),
+        if (null == pattern.getContent()) {
+            model.setContent(this.objectMapper.createObjectNode());
+        } else {
+            model.setContent(pattern.getContent());
+        }
+
+        return new EntityModel<>(model,
                 linkTo(methodOn(PatternController.class).getPatternContentOfPattern(patternLanguageId, patternId)).withSelfRel(),
                 linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(patternLanguageId, patternId)).withRel("pattern"),
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));

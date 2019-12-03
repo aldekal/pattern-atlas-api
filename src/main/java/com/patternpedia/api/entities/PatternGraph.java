@@ -4,7 +4,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -20,5 +19,4 @@ public abstract class PatternGraph extends EntityWithURI {
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
     private Object graph;
-
 }

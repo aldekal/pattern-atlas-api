@@ -10,8 +10,11 @@ import java.util.stream.Collectors;
 
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.PatternSchema;
+import com.patternpedia.api.rest.model.PatternLanguageGraphModel;
 import com.patternpedia.api.service.PatternLanguageService;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.text.CaseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -42,9 +45,13 @@ public class PatternLanguageController {
 
     private PatternLanguageService patternLanguageService;
 
+    private ObjectMapper objectMapper;
+
     @Autowired
-    public PatternLanguageController(PatternLanguageService patternLanguageService) {
+    public PatternLanguageController(PatternLanguageService patternLanguageService,
+                                     ObjectMapper objectMapper) {
         this.patternLanguageService = patternLanguageService;
+        this.objectMapper = objectMapper;
     }
 
     private static List<Link> getPatternLanguageCollectionLinks() {
@@ -147,18 +154,21 @@ public class PatternLanguageController {
     }
 
     @GetMapping(value = "/{patternLanguageId}/graph")
-    EntityModel<Object> getPatternLanguageGraph(@PathVariable UUID patternLanguageId) {
+    ResponseEntity<?> getPatternLanguageGraph(@PathVariable UUID patternLanguageId) {
         Object graph = this.patternLanguageService.getGraphOfPatternLanguage(patternLanguageId);
+
+        PatternLanguageGraphModel model = new PatternLanguageGraphModel();
         if (null == graph) {
-            graph = new Object();
+            model.setGraph(this.objectMapper.createObjectNode());
+        } else {
+            model.setGraph(graph);
         }
-        return new EntityModel<>(graph,
-                linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"),
+        EntityModel<Object> entityModel = new EntityModel<>(model,linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"),
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageGraph(patternLanguageId)).withSelfRel()
                         .andAffordance(afford(methodOn(PatternLanguageController.class).postPatternLanguageGraph(patternLanguageId, null)))
                         .andAffordance(afford(methodOn(PatternLanguageController.class).putPatternLanguageGraph(patternLanguageId, null)))
-                        .andAffordance(afford(methodOn(PatternLanguageController.class).deletePatternLanguageGraph(patternLanguageId)))
-        );
+                        .andAffordance(afford(methodOn(PatternLanguageController.class).deletePatternLanguageGraph(patternLanguageId))));
+        return ResponseEntity.ok(entityModel);
     }
 
     @PostMapping(value = "/{patternLanguageId}/graph")

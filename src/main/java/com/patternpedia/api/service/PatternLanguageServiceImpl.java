@@ -253,9 +253,8 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
     @Override
     @Transactional(readOnly = true)
     public Object getGraphOfPatternLanguage(UUID patternLanguageId) throws PatternLanguageNotFoundException {
-        return this.patternLanguageRepository.findById(patternLanguageId)
-                .map(PatternLanguage::getGraph)
-                .orElseThrow(() -> new PatternLanguageNotFoundException(patternLanguageId));
+        PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
+        return patternLanguage.getGraph();
     }
 
     @Override
