@@ -215,6 +215,54 @@ public class PatternController {
             }
         }
 
+        List<DirectedEdge> outgoingFromPatternLanguage;
+        try {
+            outgoingFromPatternLanguage = this.patternRelationDescriptorService.findDirectedEdgeBySource(pattern);
+        } catch (DirectedEdgeNotFoundException ex) {
+            outgoingFromPatternLanguage = Collections.emptyList();
+        }
+        if (null != outgoingFromPatternLanguage) {
+            for (DirectedEdge directedEdge : outgoingFromPatternLanguage) {
+                if (null != directedEdge.getPatternLanguage() && directedEdge.getPatternLanguage().getId().equals(pattern.getPatternLanguage().getId())) {
+                    // edge is part of pattern language, thus reference the route to edge in pattern language
+                    links.add(linkTo(methodOn(PatternRelationDescriptorController.class)
+                            .getDirectedEdgeOfPatternLanguageById(directedEdge.getPatternLanguage().getId(), directedEdge.getId())).withRel("outgoingDirectedEdgesFromPatternLanguage"));
+                }
+            }
+        }
+
+        List<DirectedEdge> ingoingFromPatternLanguage;
+        try {
+            ingoingFromPatternLanguage = this.patternRelationDescriptorService.findDirectedEdgeByTarget(pattern);
+        } catch (DirectedEdgeNotFoundException ex) {
+            ingoingFromPatternLanguage = Collections.emptyList();
+        }
+        if (null != ingoingFromPatternLanguage) {
+            for (DirectedEdge directedEdge : ingoingFromPatternLanguage) {
+                if (null != directedEdge.getPatternLanguage() && directedEdge.getPatternLanguage().getId().equals(pattern.getPatternLanguage().getId())) {
+                    // edge is part of pattern language, thus reference the route to edge in pattern language
+                    links.add(linkTo(methodOn(PatternRelationDescriptorController.class)
+                            .getDirectedEdgeOfPatternLanguageById(directedEdge.getPatternLanguage().getId(), directedEdge.getId())).withRel("ingoingDirectedEdgesFromPatternLanguage"));
+                }
+            }
+        }
+
+        List<UndirectedEdge> undirectedFromPatternLanguage;
+        try {
+            undirectedFromPatternLanguage = this.patternRelationDescriptorService.findUndirectedEdgeByPattern(pattern);
+        } catch (UndirectedEdgeNotFoundException ex) {
+            undirectedFromPatternLanguage = Collections.emptyList();
+        }
+        if (null != undirectedFromPatternLanguage) {
+            for (UndirectedEdge undirectedEdge : undirectedFromPatternLanguage) {
+                if (null != undirectedEdge.getPatternLanguage() && undirectedEdge.getPatternLanguage().getId().equals(pattern.getPatternLanguage().getId())) {
+                    // edge is part of pattern language, thus reference the route to edge in pattern language
+                    links.add(linkTo(methodOn(PatternRelationDescriptorController.class)
+                            .getUndirectedEdgeOfPatternLanguageById(undirectedEdge.getPatternLanguage().getId(), undirectedEdge.getId())).withRel("undirectedEdgesFromPatternLanguage"));
+                }
+            }
+        }
+        
         return links;
     }
 
