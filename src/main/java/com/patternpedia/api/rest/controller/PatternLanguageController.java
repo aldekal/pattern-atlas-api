@@ -157,7 +157,11 @@ public class PatternLanguageController {
 
     @GetMapping(value = "/{patternLanguageId}/graph")
     EntityModel<Object> getPatternLanguageGraph(@PathVariable UUID patternLanguageId) {
-        return new EntityModel<>(this.patternLanguageService.getGraphOfPatternLanguage(patternLanguageId),
+        Object graph = this.patternLanguageService.getGraphOfPatternLanguage(patternLanguageId);
+        if (null == graph) {
+            graph = new Object();
+        }
+        return new EntityModel<>(graph,
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"),
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageGraph(patternLanguageId)).withSelfRel()
                         .andAffordance(afford(methodOn(PatternLanguageController.class).postPatternLanguageGraph(patternLanguageId, null)))
@@ -168,6 +172,7 @@ public class PatternLanguageController {
 
     @PostMapping(value = "/{patternLanguageId}/graph")
     ResponseEntity<?> postPatternLanguageGraph(@PathVariable UUID patternLanguageId, @RequestBody Object graph) {
+        this.patternLanguageService.updateGraphOfPatternLanguage(patternLanguageId, graph);
         return ResponseEntity.created(linkTo(methodOn(PatternLanguageController.class).getPatternLanguageGraph(patternLanguageId)).toUri())
                 .build();
     }
