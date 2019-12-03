@@ -22,6 +22,8 @@ import org.hibernate.annotations.Type;
 @NoArgsConstructor
 public class Pattern extends EntityWithURI {
 
+    private String iconUrl;
+
     @JsonIgnore
     @ToString.Exclude
     @ManyToOne

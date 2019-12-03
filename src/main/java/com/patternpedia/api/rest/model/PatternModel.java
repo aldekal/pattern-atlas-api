@@ -20,6 +20,8 @@ public class PatternModel {
 
     private String name;
 
+    private String iconUrl;
+
     @JsonIgnore
     private Pattern pattern;
 
@@ -28,6 +30,7 @@ public class PatternModel {
         this.id = pattern.getId();
         this.uri = pattern.getUri();
         this.name = pattern.getName();
+        this.iconUrl = pattern.getIconUrl();
     }
 
     public static PatternModel from(Pattern pattern) {
