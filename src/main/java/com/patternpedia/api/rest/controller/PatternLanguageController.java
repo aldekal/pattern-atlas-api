@@ -78,16 +78,7 @@ public class PatternLanguageController {
 
     @GetMapping
     CollectionModel<EntityModel<PatternLanguage>> getAllPatternLanguages() {
-
-        // Todo: This is a hack. How can we influence serialization to prevent embedding content of patterns (--> master assembler)
-        List<PatternLanguage> preparedList = this.patternLanguageService.getPatternLanguages();
-        for (PatternLanguage patternLanguage : preparedList) {
-            if (null != patternLanguage.getPatterns()) {
-                patternLanguage.setPatterns(PatternController.removeContentFromPatterns(patternLanguage.getPatterns()));
-            }
-        }
-
-        List<EntityModel<PatternLanguage>> patternLanguages = preparedList
+        List<EntityModel<PatternLanguage>> patternLanguages = this.patternLanguageService.getPatternLanguages()
                 .stream()
                 .map(patternLanguage -> new EntityModel<>(patternLanguage,
                         getPatternLanguageLinks(patternLanguage.getId())))

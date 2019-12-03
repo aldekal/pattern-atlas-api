@@ -60,13 +60,6 @@ public class PatternController {
         this.patternRelationDescriptorService = patternRelationDescriptorService;
     }
 
-    static List<Pattern> removeContentFromPatterns(List<Pattern> patterns) {
-        for (Pattern pattern : patterns) {
-            pattern.setContent(null);
-        }
-        return patterns;
-    }
-
     static List<Link> getPatternLanguagePatternCollectionLinks(UUID patternLanguageId) {
         ArrayList<Link> links = new ArrayList<>();
 
@@ -87,7 +80,7 @@ public class PatternController {
         return links;
     }
 
-    List<Link> getPatternLinks(Pattern pattern) {
+    List<Link> getPatternLinksForPatternLanguageRoute(Pattern pattern) {
         List<Link> links = new ArrayList<>();
 
         links.add(linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(pattern.getPatternLanguage().getId(), pattern.getId())).withSelfRel()
@@ -183,7 +176,7 @@ public class PatternController {
     CollectionModel<EntityModel<PatternModel>> getPatternsOfPatternLanguage(@PathVariable UUID patternLanguageId) {
         List<EntityModel<PatternModel>> patterns = this.patternLanguageService.getPatternsOfPatternLanguage(patternLanguageId).stream()
                 .map(PatternModel::from)
-                .map(patternModel -> new EntityModel<>(patternModel, getPatternLinks(patternModel.getPattern())))
+                .map(patternModel -> new EntityModel<>(patternModel, getPatternLinksForPatternLanguageRoute(patternModel.getPattern())))
                 .collect(Collectors.toList());
 
         return new CollectionModel<>(patterns, getPatternLanguagePatternCollectionLinks(patternLanguageId));
@@ -193,7 +186,7 @@ public class PatternController {
     CollectionModel<EntityModel<PatternModel>> getPatternsOfPatternView(@PathVariable UUID patternViewId) {
         List<EntityModel<PatternModel>> patterns = this.patternViewService.getPatternsOfPatternView(patternViewId).stream()
                 .map(PatternModel::from)
-                .map(patternModel -> new EntityModel<>(patternModel, getPatternLinks(patternModel.getPattern())))
+                .map(patternModel -> new EntityModel<>(patternModel, getPatternLinksForPatternLanguageRoute(patternModel.getPattern())))
                 .collect(Collectors.toList());
         return new CollectionModel<>(patterns, getPatternViewPatternCollectionLinks(patternViewId));
     }
@@ -211,7 +204,7 @@ public class PatternController {
     EntityModel<Pattern> getPatternOfPatternViewById(@PathVariable UUID patternViewId, @PathVariable UUID patternId) {
         Pattern pattern = this.patternViewService.getPatternOfPatternViewById(patternViewId, patternId);
 
-        return new EntityModel<>(pattern, getPatternLinks(pattern));
+        return new EntityModel<>(pattern, getPatternLinksForPatternLanguageRoute(pattern));
     }
 
     @DeleteMapping(value = "/patternViews/{patternViewId}/patterns/{patternId}")
@@ -235,7 +228,7 @@ public class PatternController {
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/patterns/{patternId}")
     EntityModel<Pattern> getPatternOfPatternLanguageById(@PathVariable UUID patternLanguageId, @PathVariable UUID patternId) {
         Pattern pattern = this.patternLanguageService.getPatternOfPatternLanguageById(patternLanguageId, patternId);
-        return new EntityModel<>(pattern, getPatternLinks(pattern));
+        return new EntityModel<>(pattern, getPatternLinksForPatternLanguageRoute(pattern));
     }
 
     @PutMapping(value = "/patternLanguages/{patternLanguageId}/patterns/{patternId}")
