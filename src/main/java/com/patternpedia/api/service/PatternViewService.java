@@ -7,9 +7,11 @@ import com.patternpedia.api.entities.DirectedEdge;
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternView;
 import com.patternpedia.api.entities.UndirectedEdge;
-import com.patternpedia.api.rest.model.CreateDirectedEdgeRequest;
-
-import org.springframework.transaction.annotation.Transactional;
+import com.patternpedia.api.rest.model.AddDirectedEdgeToViewRequest;
+import com.patternpedia.api.rest.model.AddUndirectedEdgeToViewRequest;
+import com.patternpedia.api.rest.model.CreateUndirectedEdgeRequest;
+import com.patternpedia.api.rest.model.UpdateDirectedEdgeRequest;
+import com.patternpedia.api.rest.model.UpdateUndirectedEdgeRequest;
 
 public interface PatternViewService {
 
@@ -35,25 +37,25 @@ public interface PatternViewService {
 
     void addDirectedEdgeToPatternView(UUID patternViewId, UUID directedEdgeId);
 
-    DirectedEdge createDirectedEdgeAndAddToPatternView(UUID patternViewId, DirectedEdge directedEdge);
+    DirectedEdge createDirectedEdgeAndAddToPatternView(UUID patternViewId, AddDirectedEdgeToViewRequest request);
 
     List<DirectedEdge> getDirectedEdgesByPatternViewId(UUID patternViewId);
 
     DirectedEdge getDirectedEdgeOfPatternViewById(UUID patternViewId, UUID directedEdgeId);
 
-    DirectedEdge updateDirectedEdgeOfPatternView(UUID patternViewId, DirectedEdge directedEdge);
+    DirectedEdge updateDirectedEdgeOfPatternView(UUID patternViewId, UpdateDirectedEdgeRequest request);
 
     void removeDirectedEdgeFromPatternView(UUID patternViewId, UUID directedEdgeId);
 
     void addUndirectedEdgeToPatternView(UUID patternViewId, UUID undirectedEdgeId);
 
-    UndirectedEdge createUndirectedEdgeAndAddToPatternView(UUID patternViewId, UndirectedEdge undirectedEdge);
+    UndirectedEdge createUndirectedEdgeAndAddToPatternView(UUID patternViewId, AddUndirectedEdgeToViewRequest request);
 
     List<UndirectedEdge> getUndirectedEdgesByPatternViewId(UUID patternViewId);
 
     UndirectedEdge getUndirectedEdgeOfPatternViewById(UUID patternViewId, UUID undirectedEdgeId);
 
-    UndirectedEdge updateUndirectedEdgeOfPatternView(UUID patternViewId, UndirectedEdge undirectedEdge);
+    UndirectedEdge updateUndirectedEdgeOfPatternView(UUID patternViewId, UpdateUndirectedEdgeRequest request);
 
     void removeUndirectedEdgeFromPatternView(UUID patternViewId, UUID undirectedEdgeId);
 }

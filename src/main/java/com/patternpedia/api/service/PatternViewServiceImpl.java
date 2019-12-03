@@ -26,6 +26,10 @@ import com.patternpedia.api.repositories.PatternViewPatternRepository;
 import com.patternpedia.api.repositories.PatternViewRepository;
 import com.patternpedia.api.repositories.PatternViewUndirectedEdgeRepository;
 import com.patternpedia.api.repositories.UndirectedEdgeReository;
+import com.patternpedia.api.rest.model.AddDirectedEdgeToViewRequest;
+import com.patternpedia.api.rest.model.AddUndirectedEdgeToViewRequest;
+import com.patternpedia.api.rest.model.UpdateDirectedEdgeRequest;
+import com.patternpedia.api.rest.model.UpdateUndirectedEdgeRequest;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -194,8 +198,14 @@ public class PatternViewServiceImpl implements PatternViewService {
 
     @Override
     @Transactional
-    public DirectedEdge createDirectedEdgeAndAddToPatternView(UUID patternViewId, DirectedEdge directedEdge) {
+    public DirectedEdge createDirectedEdgeAndAddToPatternView(UUID patternViewId, AddDirectedEdgeToViewRequest request) {
         PatternView patternView = this.getPatternViewById(patternViewId);
+
+        DirectedEdge directedEdge = new DirectedEdge();
+        directedEdge.setSource(this.patternService.getPatternById(request.getSourcePatternId()));
+        directedEdge.setTarget(this.patternService.getPatternById(request.getTargetPatternId()));
+        directedEdge.setDescription(request.getDescription());
+        directedEdge.setType(request.getType());
         directedEdge = this.patternRelationDescriptorService.createDirectedEdge(directedEdge);
 
         PatternViewDirectedEdge patternViewDirectedEdge = new PatternViewDirectedEdge(patternView, directedEdge);
@@ -222,19 +232,21 @@ public class PatternViewServiceImpl implements PatternViewService {
 
     @Override
     @Transactional
-    public DirectedEdge updateDirectedEdgeOfPatternView(UUID patternViewId, DirectedEdge directedEdge) {
-        if (null == directedEdge.getId()) {
-            // since the edge has no UUID we assume that it is a new edge and try to persist it
-            return this.createDirectedEdgeAndAddToPatternView(patternViewId, directedEdge);
-        }
+    public DirectedEdge updateDirectedEdgeOfPatternView(UUID patternViewId, UpdateDirectedEdgeRequest request) {
 
         PatternViewDirectedEdge patternViewDirectedEdge = this.patternViewDirectedEdgeRepository
-                .findById(new PatternViewDirectedEdgeId(patternViewId, directedEdge.getId()))
-                .orElseThrow(() -> new DirectedEdgeNotFoundException(patternViewId, directedEdge.getId(), PatternGraphType.PATTERN_VIEW));
+                .findById(new PatternViewDirectedEdgeId(patternViewId, request.getDirectedEdgeId()))
+                .orElseThrow(() -> new DirectedEdgeNotFoundException(patternViewId, request.getDirectedEdgeId(), PatternGraphType.PATTERN_VIEW));
 
-        DirectedEdge persisted = patternViewDirectedEdge.getDirectedEdge();
-        directedEdge.setPatternLanguage(persisted.getPatternLanguage());
-        directedEdge.setPatternViews(persisted.getPatternViews());
+        DirectedEdge directedEdge = patternViewDirectedEdge.getDirectedEdge();
+        directedEdge.setType(request.getType());
+        directedEdge.setDescription(request.getDescription());
+
+        Pattern source = this.patternService.getPatternById(request.getSourcePatternId());
+        directedEdge.setSource(source);
+
+        Pattern target = this.patternService.getPatternById(request.getTargetPatternId());
+        directedEdge.setTarget(target);
 
         return this.patternRelationDescriptorService.updateDirectedEdge(directedEdge);
     }
@@ -274,8 +286,14 @@ public class PatternViewServiceImpl implements PatternViewService {
 
     @Override
     @Transactional
-    public UndirectedEdge createUndirectedEdgeAndAddToPatternView(UUID patternViewId, UndirectedEdge undirectedEdge) {
+    public UndirectedEdge createUndirectedEdgeAndAddToPatternView(UUID patternViewId, AddUndirectedEdgeToViewRequest request) {
         PatternView patternView = this.getPatternViewById(patternViewId);
+
+        UndirectedEdge undirectedEdge = new UndirectedEdge();
+        undirectedEdge.setP1(this.patternService.getPatternById(request.getPattern1Id()));
+        undirectedEdge.setP2(this.patternService.getPatternById(request.getPattern2Id()));
+        undirectedEdge.setDescription(request.getDescription());
+        undirectedEdge.setType(request.getType());
         undirectedEdge = this.patternRelationDescriptorService.createUndirectedEdge(undirectedEdge);
 
         PatternViewUndirectedEdge patternViewUndirectedEdge = new PatternViewUndirectedEdge(patternView, undirectedEdge);
@@ -302,19 +320,20 @@ public class PatternViewServiceImpl implements PatternViewService {
 
     @Override
     @Transactional
-    public UndirectedEdge updateUndirectedEdgeOfPatternView(UUID patternViewId, UndirectedEdge undirectedEdge) {
-        if (null == undirectedEdge.getId()) {
-            // since the edge has no UUID we assume that it is a new edge and try to persist it
-            return this.createUndirectedEdgeAndAddToPatternView(patternViewId, undirectedEdge);
-        }
+    public UndirectedEdge updateUndirectedEdgeOfPatternView(UUID patternViewId, UpdateUndirectedEdgeRequest request) {
+        PatternViewUndirectedEdge edge = this.patternViewUndirectedEdgeRepository
+                .findById(new PatternViewUndirectedEdgeId(patternViewId, request.getUndirectedEdgeId()))
+                .orElseThrow(() -> new UndirectedEdgeNotFoundException(patternViewId, request.getUndirectedEdgeId(), PatternGraphType.PATTERN_VIEW));
 
-        PatternViewUndirectedEdge patternViewUndirectedEdge = this.patternViewUndirectedEdgeRepository
-                .findById(new PatternViewUndirectedEdgeId(patternViewId, undirectedEdge.getId()))
-                .orElseThrow(() -> new UndirectedEdgeNotFoundException(patternViewId, undirectedEdge.getId(), PatternGraphType.PATTERN_VIEW));
+        UndirectedEdge undirectedEdge = edge.getUndirectedEdge();
+        undirectedEdge.setType(request.getType());
+        undirectedEdge.setDescription(request.getDescription());
 
-        UndirectedEdge persisted = patternViewUndirectedEdge.getUndirectedEdge();
-        undirectedEdge.setPatternLanguage(persisted.getPatternLanguage());
-        undirectedEdge.setPatternViews(persisted.getPatternViews());
+        Pattern p1 = this.patternService.getPatternById(request.getPattern1Id());
+        undirectedEdge.setP1(p1);
+
+        Pattern p2 = this.patternService.getPatternById(request.getPattern2Id());
+        undirectedEdge.setP2(p2);
 
         return this.patternRelationDescriptorService.updateUndirectedEdge(undirectedEdge);
     }

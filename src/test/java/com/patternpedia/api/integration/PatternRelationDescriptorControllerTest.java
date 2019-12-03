@@ -1,14 +1,16 @@
 package com.patternpedia.api.integration;
 
+import com.patternpedia.api.entities.DirectedEdge;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.PatternView;
-import com.patternpedia.api.entities.PatternViewDirectedEdge;
+import com.patternpedia.api.entities.UndirectedEdge;
+import com.patternpedia.api.rest.model.AddDirectedEdgeToViewRequest;
+import com.patternpedia.api.rest.model.AddUndirectedEdgeToViewRequest;
 import com.patternpedia.api.rest.model.CreateDirectedEdgeRequest;
 import com.patternpedia.api.rest.model.CreateUndirectedEdgeRequest;
 import com.patternpedia.api.util.IntegrationTestHelper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,7 +70,7 @@ public class PatternRelationDescriptorControllerTest {
     }
 
     @Test
-    public void addDirectedEdgeToPatternViewSucceeds() throws Exception {
+    public void addExistingDirectedEdgeToPatternViewSucceeds() throws Exception {
 
         PatternLanguage patternLanguage = this.integrationTestHelper.setUpPatternLanguage(2);
 
@@ -86,13 +88,58 @@ public class PatternRelationDescriptorControllerTest {
         ).andExpect(status().isCreated())
                 .andReturn();
 
-        PatternViewDirectedEdge patternViewDirectedEdge = new PatternViewDirectedEdge();
+        String location = result.getResponse().getHeader("Location");
 
+        MvcResult getResult = this.mockMvc.perform(
+                get(location)
+        ).andExpect(status().isOk()).andReturn();
 
+        DirectedEdge model = this.objectMapper.readValue(getResult.getResponse().getContentAsByteArray(), DirectedEdge.class);
+
+        AddDirectedEdgeToViewRequest addEdgeRequest = new AddDirectedEdgeToViewRequest();
+        addEdgeRequest.setDirectedEdgeId(model.getId());
+
+        MvcResult postResult = this.mockMvc.perform(
+                post("/patternViews/{patternViewId}/directedEdges", patternView.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsBytes(addEdgeRequest))
+        ).andExpect(status().isCreated()).andReturn();
+
+        String addedEdgeLocation = postResult.getResponse().getHeader("Location");
+
+        this.mockMvc.perform(
+                get(addedEdgeLocation)
+        ).andExpect(status().isOk()).andReturn();
     }
 
     @Test
-    public void addUndirectedEdgeSucceedsToPatternLanguageSucceeds() throws Exception {
+    public void addNewDirectedEdgeToPatternViewSucceeds() throws Exception {
+        PatternLanguage patternLanguage = this.integrationTestHelper.setUpPatternLanguage(2);
+
+        PatternView patternView = this.integrationTestHelper.setUpPatternView();
+
+        AddDirectedEdgeToViewRequest request = new AddDirectedEdgeToViewRequest();
+        request.setSourcePatternId(patternLanguage.getPatterns().get(0).getId());
+        request.setTargetPatternId(patternLanguage.getPatterns().get(1).getId());
+        request.setDescription("This is a test description");
+        request.setType("This is a test type");
+        request.setNewEdge(true);
+
+        MvcResult postResult = this.mockMvc.perform(
+                post("/patternViews/{patternViewId}/directedEdges", patternView.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsBytes(request))
+        ).andExpect(status().isCreated()).andReturn();
+
+        String addedEdgeLocation = postResult.getResponse().getHeader("Location");
+
+        this.mockMvc.perform(
+                get(addedEdgeLocation)
+        ).andExpect(status().isOk()).andReturn();
+    }
+
+    @Test
+    public void addUndirectedEdgeToPatternLanguageSucceeds() throws Exception {
         PatternLanguage patternLanguage = this.integrationTestHelper.setUpPatternLanguage(2);
 
         CreateUndirectedEdgeRequest request = CreateUndirectedEdgeRequest.builder(
@@ -112,5 +159,73 @@ public class PatternRelationDescriptorControllerTest {
         this.mockMvc.perform(
                 get(location)
         ).andExpect(status().isOk());
+    }
+
+    @Test
+    public void addExistingUndirectedEdgeToPatternViewSucceeds() throws Exception {
+        PatternLanguage patternLanguage = this.integrationTestHelper.setUpPatternLanguage(2);
+
+        PatternView patternView = this.integrationTestHelper.setUpPatternView();
+
+        CreateUndirectedEdgeRequest request = CreateUndirectedEdgeRequest.builder(
+                patternLanguage.getPatterns().get(0).getId(),
+                patternLanguage.getPatterns().get(1).getId()
+        ).build();
+
+        MvcResult result = this.mockMvc.perform(
+                post("/patternLanguages/{patternLanguageId}/undirectedEdges", patternLanguage.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(request))
+        ).andExpect(status().isCreated())
+                .andReturn();
+
+        String location = result.getResponse().getHeader("Location");
+
+        MvcResult getResult = this.mockMvc.perform(
+                get(location)
+        ).andExpect(status().isOk()).andReturn();
+
+        UndirectedEdge edge = this.objectMapper.readValue(getResult.getResponse().getContentAsByteArray(), UndirectedEdge.class);
+
+        AddUndirectedEdgeToViewRequest addEdgeRequest = new AddUndirectedEdgeToViewRequest();
+        addEdgeRequest.setUndirectedEdgeId(edge.getId());
+
+        MvcResult postResult = this.mockMvc.perform(
+                post("/patternViews/{patternViewId}/undirectedEdges", patternView.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsBytes(addEdgeRequest))
+        ).andExpect(status().isCreated()).andReturn();
+
+        String addedEdgeLocation = postResult.getResponse().getHeader("Location");
+
+        this.mockMvc.perform(
+                get(addedEdgeLocation)
+        ).andExpect(status().isOk()).andReturn();
+    }
+
+    @Test
+    public void addNewUndirectedEdgeToPatternViewSucceeds() throws Exception {
+        PatternLanguage patternLanguage = this.integrationTestHelper.setUpPatternLanguage(2);
+
+        PatternView patternView = this.integrationTestHelper.setUpPatternView();
+
+        AddUndirectedEdgeToViewRequest request = new AddUndirectedEdgeToViewRequest();
+        request.setPattern1Id(patternLanguage.getPatterns().get(0).getId());
+        request.setPattern2Id(patternLanguage.getPatterns().get(1).getId());
+        request.setDescription("This is a test description");
+        request.setType("This is a test type");
+        request.setNewEdge(true);
+
+        MvcResult postResult = this.mockMvc.perform(
+                post("/patternViews/{patternViewId}/undirectedEdges", patternView.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsBytes(request))
+        ).andExpect(status().isCreated()).andReturn();
+
+        String addedEdgeLocation = postResult.getResponse().getHeader("Location");
+
+        this.mockMvc.perform(
+                get(addedEdgeLocation)
+        ).andExpect(status().isOk()).andReturn();
     }
 }

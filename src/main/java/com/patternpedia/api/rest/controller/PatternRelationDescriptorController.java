@@ -7,10 +7,14 @@ import java.util.stream.Collectors;
 
 import com.patternpedia.api.entities.DirectedEdge;
 import com.patternpedia.api.entities.UndirectedEdge;
+import com.patternpedia.api.rest.model.AddDirectedEdgeToViewRequest;
+import com.patternpedia.api.rest.model.AddUndirectedEdgeToViewRequest;
 import com.patternpedia.api.rest.model.CreateDirectedEdgeRequest;
 import com.patternpedia.api.rest.model.CreateUndirectedEdgeRequest;
 import com.patternpedia.api.rest.model.DirectedEdgeModel;
 import com.patternpedia.api.rest.model.UndirectedEdgeModel;
+import com.patternpedia.api.rest.model.UpdateDirectedEdgeRequest;
+import com.patternpedia.api.rest.model.UpdateUndirectedEdgeRequest;
 import com.patternpedia.api.service.PatternLanguageService;
 import com.patternpedia.api.service.PatternViewService;
 
@@ -72,7 +76,7 @@ public class PatternRelationDescriptorController {
         links.add(linkTo(methodOn(PatternRelationDescriptorController.class)
                 .getDirectedEdgeOfPatternViewById(patternViewId, directedEdge.getId())).withSelfRel()
                 .andAffordance(afford(methodOn(PatternRelationDescriptorController.class).removeDirectedEdgeFromPatternView(patternViewId, directedEdge.getId())))
-                .andAffordance(afford(methodOn(PatternRelationDescriptorController.class).putDirectedEdgeToPatternView(patternViewId, directedEdge.getId(), directedEdge))));
+                .andAffordance(afford(methodOn(PatternRelationDescriptorController.class).putDirectedEdgeToPatternView(patternViewId, directedEdge.getId(), null))));
 
         links.add(linkTo(methodOn(PatternRelationDescriptorController.class)
                 .getDirectedEdgesOfView(patternViewId)).withRel("directedEdges"));
@@ -150,7 +154,7 @@ public class PatternRelationDescriptorController {
         links.add(linkTo(methodOn(PatternRelationDescriptorController.class)
                 .getUndirectedEdgeOfPatternViewById(patternViewId, undirectedEdge.getId())).withSelfRel()
                 .andAffordance(afford(methodOn(PatternRelationDescriptorController.class).removeUndirectedEdgeFromPatternView(patternViewId, undirectedEdge.getId())))
-                .andAffordance(afford(methodOn(PatternRelationDescriptorController.class).putUndirectedEdgeToPatternView(patternViewId, undirectedEdge.getId(), undirectedEdge))));
+                .andAffordance(afford(methodOn(PatternRelationDescriptorController.class).putUndirectedEdgeToPatternView(patternViewId, undirectedEdge.getId(), null))));
 
         links.add(linkTo(methodOn(PatternRelationDescriptorController.class)
                 .getUndirectedEdgesOfView(patternViewId)).withRel("undirectedEdges"));
@@ -300,15 +304,16 @@ public class PatternRelationDescriptorController {
     @PostMapping(value = "/patternViews/{patternViewId}/directedEdges")
     @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> addDirectedEdgeToView(@PathVariable UUID patternViewId, @RequestBody DirectedEdge directedEdge) {
-        if (null != directedEdge.getId()) {
-            this.patternViewService.addDirectedEdgeToPatternView(patternViewId, directedEdge.getId());
+    public ResponseEntity<?> addDirectedEdgeToView(@PathVariable UUID patternViewId, @RequestBody AddDirectedEdgeToViewRequest request) {
+        if (request.isNewEdge()) {
+            DirectedEdge directedEdge = this.patternViewService.createDirectedEdgeAndAddToPatternView(patternViewId, request);
+            return ResponseEntity.created(linkTo(methodOn(PatternRelationDescriptorController.class)
+                    .getDirectedEdgeOfPatternViewById(patternViewId, directedEdge.getId())).toUri()).build();
         } else {
-            directedEdge = this.patternViewService.createDirectedEdgeAndAddToPatternView(patternViewId, directedEdge);
+            this.patternViewService.addDirectedEdgeToPatternView(patternViewId, request.getDirectedEdgeId());
+            return ResponseEntity.created(linkTo(methodOn(PatternRelationDescriptorController.class)
+                    .getDirectedEdgeOfPatternViewById(patternViewId, request.getDirectedEdgeId())).toUri()).build();
         }
-
-        return ResponseEntity.created(linkTo(methodOn(PatternRelationDescriptorController.class)
-                .getDirectedEdgeOfPatternViewById(patternViewId, directedEdge.getId())).toUri()).build();
     }
 
     @GetMapping(value = "/patternViews/{patternViewId}/directedEdges")
@@ -330,8 +335,9 @@ public class PatternRelationDescriptorController {
     }
 
     @PutMapping(value = "/patternViews/{patternViewId}/directedEdges/{directedEdgeId}")
-    public EntityModel<DirectedEdgeModel> putDirectedEdgeToPatternView(@PathVariable UUID patternViewId, @PathVariable UUID directedEdgeId, @RequestBody DirectedEdge directedEdge) {
-        directedEdge = this.patternViewService.updateDirectedEdgeOfPatternView(patternViewId, directedEdge);
+    public EntityModel<DirectedEdgeModel> putDirectedEdgeToPatternView(@PathVariable UUID patternViewId, @PathVariable UUID directedEdgeId, @RequestBody UpdateDirectedEdgeRequest request) {
+        request.setDirectedEdgeId(directedEdgeId);
+        DirectedEdge directedEdge = this.patternViewService.updateDirectedEdgeOfPatternView(patternViewId, request);
 
         return new EntityModel<>(DirectedEdgeModel.from(directedEdge), getDirectedEdgeLinksForViewRoute(directedEdge, patternViewId));
     }
@@ -346,15 +352,17 @@ public class PatternRelationDescriptorController {
     @PostMapping(value = "/patternViews/{patternViewId}/undirectedEdges")
     @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> addUndirectedEdgeToView(@PathVariable UUID patternViewId, @RequestBody UndirectedEdge undirectedEdge) {
-        if (null != undirectedEdge.getId()) {
-            this.patternViewService.addUndirectedEdgeToPatternView(patternViewId, undirectedEdge.getId());
-        } else {
-            undirectedEdge = this.patternViewService.createUndirectedEdgeAndAddToPatternView(patternViewId, undirectedEdge);
-        }
+    public ResponseEntity<?> addUndirectedEdgeToView(@PathVariable UUID patternViewId, @RequestBody AddUndirectedEdgeToViewRequest request) {
 
-        return ResponseEntity.created(linkTo(methodOn(PatternRelationDescriptorController.class)
-                .getUndirectedEdgeOfPatternViewById(patternViewId, undirectedEdge.getId())).toUri()).build();
+        if (request.isNewEdge()) {
+            UndirectedEdge undirectedEdge = this.patternViewService.createUndirectedEdgeAndAddToPatternView(patternViewId, request);
+            return ResponseEntity.created(linkTo(methodOn(PatternRelationDescriptorController.class)
+                    .getUndirectedEdgeOfPatternViewById(patternViewId, undirectedEdge.getId())).toUri()).build();
+        } else {
+            this.patternViewService.addUndirectedEdgeToPatternView(patternViewId, request.getUndirectedEdgeId());
+            return ResponseEntity.created(linkTo(methodOn(PatternRelationDescriptorController.class)
+                    .getUndirectedEdgeOfPatternViewById(patternViewId, request.getUndirectedEdgeId())).toUri()).build();
+        }
     }
 
     @GetMapping(value = "/patternViews/{patternViewId}/undirectedEdges")
@@ -376,8 +384,9 @@ public class PatternRelationDescriptorController {
     }
 
     @PutMapping(value = "/patternViews/{patternViewId}/undirectedEdges/{undirectedEdgeId}")
-    public EntityModel<UndirectedEdgeModel> putUndirectedEdgeToPatternView(@PathVariable UUID patternViewId, @PathVariable UUID undirectedEdgeId, @RequestBody UndirectedEdge undirectedEdge) {
-        undirectedEdge = this.patternViewService.updateUndirectedEdgeOfPatternView(patternViewId, undirectedEdge);
+    public EntityModel<UndirectedEdgeModel> putUndirectedEdgeToPatternView(@PathVariable UUID patternViewId, @PathVariable UUID undirectedEdgeId, @RequestBody UpdateUndirectedEdgeRequest request) {
+        request.setUndirectedEdgeId(undirectedEdgeId);
+        UndirectedEdge undirectedEdge = this.patternViewService.updateUndirectedEdgeOfPatternView(patternViewId, request);
 
         return new EntityModel<>(UndirectedEdgeModel.from(undirectedEdge), getUndirectedEdgeLinksForViewRoute(patternViewId, undirectedEdge));
     }
