@@ -21,7 +21,6 @@ import com.patternpedia.api.repositories.PatternViewDirectedEdgeRepository;
 import com.patternpedia.api.repositories.PatternViewPatternRepository;
 import com.patternpedia.api.repositories.PatternViewRepository;
 import com.patternpedia.api.repositories.UndirectedEdgeReository;
-import com.patternpedia.api.service.PatternLanguageService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -39,35 +38,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class IntegrationTestHelper {
 
     @Autowired
-    private PatternRepository patternRepository;
-
-    @Autowired
-    private PatternLanguageRepository patternLanguageRepository;
-
-    @Autowired
-    private PatternSchemaRepository patternSchemaRepository;
-
-    @Autowired
-    private PatternSectionSchemaRepository patternSectionSchemaRepository;
-
-    @Autowired
-    private DirectedEdgeRepository directedEdgeRepository;
-
-    @Autowired
-    private UndirectedEdgeReository undirectedEdgeReository;
-
-    @Autowired
-    private PatternViewRepository patternViewRepository;
-
-    @Autowired
     PatternViewPatternRepository patternViewPatternRepository;
-
     @Autowired
     PatternViewDirectedEdgeRepository patternViewDirectedEdgeRepository;
-
+    @Autowired
+    private PatternRepository patternRepository;
+    @Autowired
+    private PatternLanguageRepository patternLanguageRepository;
+    @Autowired
+    private PatternSchemaRepository patternSchemaRepository;
+    @Autowired
+    private PatternSectionSchemaRepository patternSectionSchemaRepository;
+    @Autowired
+    private DirectedEdgeRepository directedEdgeRepository;
+    @Autowired
+    private UndirectedEdgeReository undirectedEdgeReository;
+    @Autowired
+    private PatternViewRepository patternViewRepository;
     @Autowired
     private ObjectMapper objectMapper;
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -196,7 +185,7 @@ public class IntegrationTestHelper {
         return patternView;
     }
 
-    public PatternView setUpPatternView() throws  Exception {
+    public PatternView setUpPatternView() throws Exception {
         PatternView patternView = this.getDefaultPatternView();
 
         MvcResult postResult = this.mockMvc.perform(

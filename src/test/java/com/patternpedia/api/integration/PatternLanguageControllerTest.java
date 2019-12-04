@@ -7,7 +7,6 @@ import com.patternpedia.api.entities.PatternSchema;
 import com.patternpedia.api.util.IntegrationTestHelper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class PatternLanguageControllerTest {
+public class PatternLanguageControllerTest extends IntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -39,7 +38,6 @@ public class PatternLanguageControllerTest {
 
     @Autowired
     private IntegrationTestHelper integrationTestHelper;
-
 
     @Before
     public void cleanUpReposBefore() {

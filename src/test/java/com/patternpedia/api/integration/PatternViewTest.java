@@ -5,7 +5,6 @@ import java.util.List;
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.PatternView;
-import com.patternpedia.api.repositories.PatternRepository;
 import com.patternpedia.api.util.IntegrationTestHelper;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -29,12 +28,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class PatternViewTest {
+public class PatternViewTest extends IntegrationTest {
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private PatternRepository patternRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
