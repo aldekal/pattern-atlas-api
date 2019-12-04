@@ -333,7 +333,13 @@ public class PatternController {
 
     @PutMapping(value = "/patternLanguages/{patternLanguageId}/patterns/{patternId}")
     EntityModel<Pattern> updatePatternViaPut(@PathVariable UUID patternLanguageId, @PathVariable UUID patternId, @Valid @RequestBody Pattern pattern) {
-        pattern = this.patternService.updatePattern(pattern);
+        PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
+        Pattern persistedVersion = this.patternService.getPatternById(patternId);
+        // Remark: At the moment we do not support changing name, uri of a pattern
+        persistedVersion.setIconUrl(pattern.getIconUrl());
+        persistedVersion.setContent(pattern.getContent());
+
+        pattern = this.patternService.updatePattern(persistedVersion);
         return new EntityModel<>(pattern,
                 linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(patternLanguageId, patternId)).withSelfRel(),
                 linkTo(methodOn(PatternController.class).getPatternContentOfPattern(patternLanguageId, patternId)).withRel("content"),
