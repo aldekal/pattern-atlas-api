@@ -4,8 +4,6 @@ import java.util.List;
 
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternLanguage;
-import com.patternpedia.api.repositories.PatternLanguageRepository;
-import com.patternpedia.api.repositories.PatternRepository;
 import com.patternpedia.api.util.IntegrationTestHelper;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -33,12 +31,6 @@ public class PatternControllerTest extends IntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private PatternRepository patternRepository;
-
-    @Autowired
-    private PatternLanguageRepository patternLanguageRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
