@@ -11,9 +11,9 @@ import java.util.stream.Collectors;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.PatternSchema;
 import com.patternpedia.api.rest.model.PatternLanguageGraphModel;
+import com.patternpedia.api.rest.model.PatternLanguageModel;
 import com.patternpedia.api.service.PatternLanguageService;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.text.CaseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,11 +84,12 @@ public class PatternLanguageController {
     }
 
     @GetMapping
-    CollectionModel<EntityModel<PatternLanguage>> getAllPatternLanguages() {
-        List<EntityModel<PatternLanguage>> patternLanguages = this.patternLanguageService.getPatternLanguages()
+    CollectionModel<EntityModel<PatternLanguageModel>> getAllPatternLanguages() {
+        List<EntityModel<PatternLanguageModel>> patternLanguages = this.patternLanguageService.getPatternLanguages()
                 .stream()
-                .map(patternLanguage -> new EntityModel<>(patternLanguage,
-                        getPatternLanguageLinks(patternLanguage.getId())))
+                .map(PatternLanguageModel::toModel)
+                .map(patternLanguageModel -> new EntityModel<>(patternLanguageModel,
+                        getPatternLanguageLinks(patternLanguageModel.getId())))
                 .collect(Collectors.toList());
 
         return new CollectionModel<>(patternLanguages, getPatternLanguageCollectionLinks());
@@ -159,11 +160,11 @@ public class PatternLanguageController {
 
         PatternLanguageGraphModel model = new PatternLanguageGraphModel();
         if (null == graph) {
-            model.setGraph(this.objectMapper.createObjectNode());
+            model.setGraph(this.objectMapper.createArrayNode());
         } else {
             model.setGraph(graph);
         }
-        EntityModel<Object> entityModel = new EntityModel<>(model,linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"),
+        EntityModel<Object> entityModel = new EntityModel<>(model, linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"),
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageGraph(patternLanguageId)).withSelfRel()
                         .andAffordance(afford(methodOn(PatternLanguageController.class).postPatternLanguageGraph(patternLanguageId, null)))
                         .andAffordance(afford(methodOn(PatternLanguageController.class).putPatternLanguageGraph(patternLanguageId, null)))
