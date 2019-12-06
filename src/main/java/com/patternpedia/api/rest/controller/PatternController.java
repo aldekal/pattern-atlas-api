@@ -22,6 +22,7 @@ import com.patternpedia.api.service.PatternViewService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.validation.Valid;
+import org.apache.commons.text.CaseUtils;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
@@ -318,6 +319,9 @@ public class PatternController {
     @ResponseStatus(HttpStatus.CREATED)
     ResponseEntity<?> addPatternToPatternLanguage(@PathVariable UUID patternLanguageId, @Valid @RequestBody Pattern pattern) {
         PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
+        if (null == pattern.getUri()) {
+            pattern.setUri(patternLanguage.getUri() + '/' + CaseUtils.toCamelCase(pattern.getName(), false));
+        }
 
         pattern = this.patternLanguageService.createPatternAndAddToPatternLanguage(patternLanguageId, pattern);
 
