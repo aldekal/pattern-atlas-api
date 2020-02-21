@@ -34,12 +34,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 @RequestMapping(value = "/patternEvolution", produces = "application/hal+json")
 public class PatternEvolutionController {
 
-    private final PatternEvolutionRepository repo;
     Logger logger = LoggerFactory.getLogger(PatternEvolutionController.class);
 
     private PatternEvolutionService patternEvolutionService;
     private PatternLanguageService patternLanguageService;
-//    private PatternViewService patternViewService;
+    //    private PatternViewService patternViewService;
 //    private PatternRelationDescriptorService patternRelationDescriptorService;
     private ObjectMapper objectMapper;
 
@@ -48,22 +47,36 @@ public class PatternEvolutionController {
             PatternLanguageService patternLanguageService,
 //            PatternViewService patternViewService,
 //            PatternRelationDescriptorService patternRelationDescriptorService,
-            ObjectMapper objectMapper,
-            PatternEvolutionRepository repo
+            ObjectMapper objectMapper
     ) {
         this.patternEvolutionService = patternEvolutionService;
         this.patternLanguageService = patternLanguageService;
 //        this.patternViewService = patternViewService;
 //        this.patternRelationDescriptorService = patternRelationDescriptorService;
         this.objectMapper = objectMapper;
-        this.repo = repo;
     }
 
+    /**
+     * GET Methods
+     */
     @GetMapping(value = "/getAll")
     List<PatternEvolution> all() {
         return this.patternEvolutionService.getAllPatternEvolutions();
     }
 
+    @GetMapping(value = "/getById/{patternEvolutionId}")
+    PatternEvolution getPatternEvolutionById(@PathVariable UUID patternEvolutionId) {
+        return this.patternEvolutionService.getPatternEvolutionById(patternEvolutionId);
+    }
+
+    @GetMapping(value = "/getByUri/{patternEvolutionUri}")
+    PatternEvolution getPatternEvolutionById(@PathVariable String patternEvolutionUri) {
+        return this.patternEvolutionService.getPatternEvolutionByUri(patternEvolutionUri);
+    }
+
+    /**
+     * CREATE Methods
+     */
     @PostMapping(value = "/create")
 //    @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
@@ -72,135 +85,22 @@ public class PatternEvolutionController {
         return this.patternEvolutionService.createPatternEvolution(patternEvolution);
     }
 
-    @PutMapping(value = "/{patternEvolutionId}")
+    /**
+     * UPDATE Methods
+     */
+    @PutMapping(value = "/update/{patternEvolutionId}")
     PatternEvolution putPatternLanguage(@PathVariable UUID patternEvolutionId, @RequestBody PatternEvolution patternEvolution) {
         patternEvolution.setId(patternEvolutionId);
         logger.info(patternEvolution.toString());
         return this.patternEvolutionService.updatePatternEvolution(patternEvolution);
     }
 
-    @DeleteMapping(value = "/{patternEvolutionId}")
+    /**
+     * DELETE Methods
+     */
+    @DeleteMapping(value = "/delete/{patternEvolutionId}")
     ResponseEntity<?> deletePatternLanguage(@PathVariable UUID patternEvolutionId) {
         this.patternEvolutionService.deletePatternEvolution(patternEvolutionId);
         return ResponseEntity.noContent().build();
     }
-
-//    @PostMapping(value = "/patternLanguages/{patternLanguageId}/patternEvolution")
-////    @CrossOrigin(exposedHeaders = "Location")
-//    @ResponseStatus(HttpStatus.CREATED)
-//    ResponseEntity<?> addPatternToPatternLanguage(@PathVariable UUID patternLanguageId, PatternEvolution patternEvolution) {
-////        PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
-////        if (null == pattern.getUri()) {
-////            pattern.setUri(patternLanguage.getUri() + '/' + CaseUtils.toCamelCase(pattern.getName(), false));
-////        }
-//        this.patternEvolutionService.createPatternEvolution(patternEvolution);
-////        pattern = this.patternLanguageService.createPatternAndAddToPatternLanguage(patternLanguageId, pattern);
-//
-//        return null;
-////        return ResponseEntity.created(linkTo(methodOn(PatternController.class)
-////                .getPatternOfPatternLanguageById(patternLanguageId, pattern.getId())).toUri()).build();
-//    }
 }
-
-//    @GetMapping(value = "/patternLanguages/{patternLanguageId}/patterns")
-//    CollectionModel<EntityModel<PatternModel>> getPatternsOfPatternLanguage(@PathVariable UUID patternLanguageId) {
-//        List<EntityModel<PatternModel>> patterns = this.patternLanguageService.getPatternsOfPatternLanguage(patternLanguageId).stream()
-//                .map(PatternModel::from)
-//                .map(patternModel -> new EntityModel<>(patternModel,
-//                        getPatternLinksForPatternLanguageRoute(patternModel.getPattern(), patternLanguageId)))
-//                .collect(Collectors.toList());
-//
-//        return new CollectionModel<>(patterns, getPatternLanguagePatternCollectionLinks(patternLanguageId));
-//    }
-//
-//    @GetMapping(value = "/patternViews/{patternViewId}/patterns")
-//    CollectionModel<EntityModel<PatternModel>> getPatternsOfPatternView(@PathVariable UUID patternViewId) {
-//        List<EntityModel<PatternModel>> patterns = this.patternViewService.getPatternsOfPatternView(patternViewId).stream()
-//                .map(PatternModel::from)
-//                .map(patternModel -> new EntityModel<>(patternModel, getPatternLinksForPatternViewRoute(patternModel.getPattern(), patternViewId)))
-//                .collect(Collectors.toList());
-//        return new CollectionModel<>(patterns, getPatternViewPatternCollectionLinks(patternViewId));
-//    }
-//
-//    @PostMapping(value = "/patternViews/{patternViewId}/patterns")
-//    @CrossOrigin(exposedHeaders = "Location")
-//    @ResponseStatus(HttpStatus.CREATED)
-//    public ResponseEntity<?> addPatternToPatternView(@PathVariable UUID patternViewId, @RequestBody Pattern pattern) {
-//        this.patternViewService.addPatternToPatternView(patternViewId, pattern.getId());
-//        return ResponseEntity.created(linkTo(methodOn(PatternEvolutionController.class)
-//                .getPatternOfPatternViewById(patternViewId, pattern.getId())).toUri()).build();
-//    }
-//
-//    @GetMapping(value = "/patternViews/{patternViewId}/patterns/{patternId}")
-//    EntityModel<Pattern> getPatternOfPatternViewById(@PathVariable UUID patternViewId, @PathVariable UUID patternId) {
-//        Pattern pattern = this.patternViewService.getPatternOfPatternViewById(patternViewId, patternId);
-//
-//        return new EntityModel<>(pattern, getPatternLinksForPatternViewRoute(pattern, patternViewId));
-//    }
-//
-//    @DeleteMapping(value = "/patternViews/{patternViewId}/patterns/{patternId}")
-//    ResponseEntity<?> removePatternFromView(@PathVariable UUID patternViewId, @PathVariable UUID patternId) {
-//        this.patternViewService.removePatternFromPatternView(patternViewId, patternId);
-//        return ResponseEntity.noContent().build();
-//    }
-//
-//    @PostMapping(value = "/patternLanguages/{patternLanguageId}/patterns")
-//    @CrossOrigin(exposedHeaders = "Location")
-//    @ResponseStatus(HttpStatus.CREATED)
-//    ResponseEntity<?> addPatternToPatternLanguage(@PathVariable UUID patternLanguageId, @Valid @RequestBody Pattern pattern) {
-//        PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
-//        if (null == pattern.getUri()) {
-//            pattern.setUri(patternLanguage.getUri() + '/' + CaseUtils.toCamelCase(pattern.getName(), false));
-//        }
-//
-//        pattern = this.patternLanguageService.createPatternAndAddToPatternLanguage(patternLanguageId, pattern);
-//
-//        return ResponseEntity.created(linkTo(methodOn(PatternEvolutionController.class)
-//                .getPatternOfPatternLanguageById(patternLanguageId, pattern.getId())).toUri()).build();
-//    }
-//
-//    @GetMapping(value = "/patternLanguages/{patternLanguageId}/patterns/{patternId}")
-//    EntityModel<Pattern> getPatternOfPatternLanguageById(@PathVariable UUID patternLanguageId, @PathVariable UUID patternId) {
-//        Pattern pattern = this.patternLanguageService.getPatternOfPatternLanguageById(patternLanguageId, patternId);
-//        return new EntityModel<>(pattern, getPatternLinksForPatternLanguageRoute(pattern, patternLanguageId));
-//    }
-//
-//    @PutMapping(value = "/patternLanguages/{patternLanguageId}/patterns/{patternId}")
-//    EntityModel<Pattern> updatePatternViaPut(@PathVariable UUID patternLanguageId, @PathVariable UUID patternId, @Valid @RequestBody Pattern pattern) {
-//        PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
-//        Pattern persistedVersion = this.patternService.getPatternById(patternId);
-//        // Remark: At the moment we do not support changing name, uri of a pattern
-//        persistedVersion.setIconUrl(pattern.getIconUrl());
-//        persistedVersion.setContent(pattern.getContent());
-//
-//        pattern = this.patternService.updatePattern(persistedVersion);
-//        return new EntityModel<>(pattern,
-//                linkTo(methodOn(PatternEvolutionController.class).getPatternOfPatternLanguageById(patternLanguageId, patternId)).withSelfRel(),
-//                linkTo(methodOn(PatternEvolutionController.class).getPatternContentOfPattern(patternLanguageId, patternId)).withRel("content"),
-//                linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
-//    }
-//
-//    @DeleteMapping(value = "/patternLanguages/{patternLanguageId}/patterns/{patternId}")
-//    ResponseEntity<?> deletePatternOfPatternLanguage(@PathVariable UUID patternLanguageId, @PathVariable UUID patternId) {
-//        this.patternLanguageService.deletePatternOfPatternLanguage(patternLanguageId, patternId);
-//        return ResponseEntity.noContent().build();
-//    }
-//
-//    @GetMapping(value = "/patternLanguages/{patternLanguageId}/patterns/{patternId}/content")
-//    EntityModel<Object> getPatternContentOfPattern(@PathVariable UUID patternLanguageId, @PathVariable UUID patternId) {
-//
-//        Pattern pattern = this.patternLanguageService.getPatternOfPatternLanguageById(patternLanguageId, patternId);
-//        PatternContentModel model = new PatternContentModel();
-//
-//        if (null == pattern.getContent()) {
-//            model.setContent(this.objectMapper.createObjectNode());
-//        } else {
-//            model.setContent(pattern.getContent());
-//        }
-//
-//        return new EntityModel<>(model,
-//                linkTo(methodOn(PatternEvolutionController.class).getPatternContentOfPattern(patternLanguageId, patternId)).withSelfRel(),
-//                linkTo(methodOn(PatternEvolutionController.class).getPatternOfPatternLanguageById(patternLanguageId, patternId)).withRel("pattern"),
-//                linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
-//    }
-//}

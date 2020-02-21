@@ -26,42 +26,8 @@ import java.util.UUID;
 @NoArgsConstructor
 public class PatternEvolution extends EntityWithURI {
 
-//    @Id
-//    @GeneratedValue(generator = "pg-uuid")
-//    private UUID id;
-//
-//    private String name;
-
     private int votes;
 
-//    public PatternEvolution(String name) {
-//        this.name = name;
-//    }
 
-//    @NaturalId(mutable = true)
-//    @Column(nullable = false, unique = true)
-//    private String uri;
-//
-//    PatternEvolution(String uri) {
-//        this.uri = uri;
-//    }
 
-//    @Column(nullable = false)
-//    private String name;
-
-//    private String iconUrl;
-
-//    @JsonIgnore
-//    @ToString.Exclude
-//    @ManyToOne
-//    private PatternLanguage patternLanguage;
-
-//    @JsonIgnore
-//    @OneToMany(mappedBy = "pattern", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<PatternViewPattern> patternViews = new ArrayList<>();
-
-//    @Type(type = "jsonb")
-//    @Column(columnDefinition = "jsonb")
-//    @NotNull
-//    private Object content;
 }
