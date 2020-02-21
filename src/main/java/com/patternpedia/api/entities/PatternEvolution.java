@@ -20,20 +20,23 @@ import java.util.UUID;
 //@Entity
 //@Data
 ////@EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
 @Entity
 @Data
-public class PatternEvolution  {
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+public class PatternEvolution extends EntityWithURI {
 
-    @Id
-    @GeneratedValue(generator = "pg-uuid")
-    private UUID id;
+//    @Id
+//    @GeneratedValue(generator = "pg-uuid")
+//    private UUID id;
+//
+//    private String name;
 
-    private String name;
+    private int votes;
 
-    public PatternEvolution(String name) {
-        this.name = name;
-    }
+//    public PatternEvolution(String name) {
+//        this.name = name;
+//    }
 
 //    @NaturalId(mutable = true)
 //    @Column(nullable = false, unique = true)

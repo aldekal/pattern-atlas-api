@@ -4,6 +4,7 @@ import java.util.List;
 import com.patternpedia.api.entities.PatternEvolution;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.*;
 import java.util.UUID;
 
 public interface PatternEvolutionService {
@@ -12,11 +13,11 @@ public interface PatternEvolutionService {
 
     PatternEvolution updatePatternEvolution(PatternEvolution patternEvolution);
 
-    void deletePatternEvolution(PatternEvolution patternEvolution);
+    void deletePatternEvolution(UUID patternEvolutionId);
 
     PatternEvolution getPatternEvolutionById(UUID patternEvolutionId);
 
-//    PatternEvolution getPatternEvolutionByUri(String uri);
+    PatternEvolution getPatternEvolutionByUri(String uri);
 
-    List<PatternEvolution> getPatternEvolutions();
+    List<PatternEvolution> getAllPatternEvolutions();
 }

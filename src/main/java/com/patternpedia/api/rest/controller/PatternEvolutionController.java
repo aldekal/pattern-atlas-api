@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
-//@CrossOrigin(allowedHeaders = "*", origins = "*")
-//@RequestMapping(produces = "application/hal+json")
+@CrossOrigin(allowedHeaders = "*", origins = "*")
+@RequestMapping(value = "/patternEvolution", produces = "application/hal+json")
 public class PatternEvolutionController {
 
     private final PatternEvolutionRepository repo;
@@ -59,32 +59,30 @@ public class PatternEvolutionController {
         this.repo = repo;
     }
 
-    @GetMapping(value = "/getAllPatternEvolutions")
+    @GetMapping(value = "/getAll")
     List<PatternEvolution> all() {
-        PatternEvolution p = new PatternEvolution("Herbert");
-        logger.info(p.toString());
-        repo.save(p);
-        return repo.findAll();
-//    CollectionModel<PatternEvolution> getAllPatternLanguages() {
-//        List<PatternEvolution> patternEvolutions = this.patternEvolutionService.getPatternEvolutions();
-////                .stream()
-////                .map(PatternEvolutionModel::from)
-////                .map(patternEvolutionModel -> new EntityModel<>(patternEvolutionModel,
-////                        getPatternLanguageLinks(patternEvolutionModel.getId())))
-////                .collect(Collectors.toList());
-//
-//        return new CollectionModel<>(patternEvolutions);
+        return this.patternEvolutionService.getAllPatternEvolutions();
     }
 
-    @PostMapping
-    @CrossOrigin(exposedHeaders = "Location")
+    @PostMapping(value = "/create")
+//    @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
     PatternEvolution newPatternEvolution(@RequestBody PatternEvolution patternEvolution) {
-        PatternEvolution p = new PatternEvolution("Herbert");
         logger.info(patternEvolution.toString());
-        return repo.save(p);
-//        return repo.save(patternEvolution);
-//        return this.patternEvolutionService.createPatternEvolution(patternEvolution);
+        return this.patternEvolutionService.createPatternEvolution(patternEvolution);
+    }
+
+    @PutMapping(value = "/{patternEvolutionId}")
+    PatternEvolution putPatternLanguage(@PathVariable UUID patternEvolutionId, @RequestBody PatternEvolution patternEvolution) {
+        patternEvolution.setId(patternEvolutionId);
+        logger.info(patternEvolution.toString());
+        return this.patternEvolutionService.updatePatternEvolution(patternEvolution);
+    }
+
+    @DeleteMapping(value = "/{patternEvolutionId}")
+    ResponseEntity<?> deletePatternLanguage(@PathVariable UUID patternEvolutionId) {
+        this.patternEvolutionService.deletePatternEvolution(patternEvolutionId);
+        return ResponseEntity.noContent().build();
     }
 
 //    @PostMapping(value = "/patternLanguages/{patternLanguageId}/patternEvolution")

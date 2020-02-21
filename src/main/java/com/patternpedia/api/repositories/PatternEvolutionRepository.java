@@ -12,7 +12,7 @@ import java.util.UUID;
 //@RepositoryRestResource(exported = false)
 public interface PatternEvolutionRepository extends JpaRepository<PatternEvolution, UUID> {
 
-//    public Optional<PatternEvolution> findByUri(String uri);
-//
-//    public boolean existsByUri(String uri);
+    public Optional<PatternEvolution> findByUri(String uri);
+
+    public boolean existsByUri(String uri);
 }
