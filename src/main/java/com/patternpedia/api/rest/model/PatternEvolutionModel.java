@@ -1,8 +1,5 @@
 package com.patternpedia.api.rest.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.entities.PatternEvolution;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

@@ -1,23 +1,19 @@
 package com.patternpedia.api.service;
 
-import java.util.List;
-import com.patternpedia.api.entities.PatternEvolution;
-import org.springframework.transaction.annotation.Transactional;
+import com.patternpedia.api.entities.user.UserEntity;
 
-import javax.swing.*;
+import java.util.List;
 import java.util.UUID;
 
-public interface PatternEvolutionService {
+public interface UserService {
 
-    PatternEvolution createPatternEvolution(PatternEvolution patternEvolution);
+    UserEntity createUser(UserEntity user);
 
-    PatternEvolution updatePatternEvolution(PatternEvolution patternEvolution);
+    UserEntity updateUser(UserEntity user);
 
-    void deletePatternEvolution(UUID patternEvolutionId);
+    void deleteUser(UUID UserId);
 
-    PatternEvolution getPatternEvolutionById(UUID patternEvolutionId);
+    UserEntity getUserById(UUID UserId);
 
-    PatternEvolution getPatternEvolutionByUri(String uri);
-
-    List<PatternEvolution> getAllPatternEvolutions();
+    List<UserEntity> getAllUsers();
 }

@@ -1,32 +1,30 @@
 package com.patternpedia.api.service;
 
-import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.entities.PatternEvolution;
+import com.patternpedia.api.entities.user.UserEntity;
 import com.patternpedia.api.exception.NullPatternException;
 import com.patternpedia.api.exception.PatternLanguageNotFoundException;
 import com.patternpedia.api.exception.PatternNotFoundException;
-import com.patternpedia.api.repositories.PatternEvolutionRepository;
+import com.patternpedia.api.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
 @Transactional
-public class PatternEvolutionServiceImpl implements PatternEvolutionService {
+public class UserServiceImpl implements UserService {
 
-    private PatternEvolutionRepository patternEvolutionRepository;
+    private UserRepository userRepository;
 
-    public PatternEvolutionServiceImpl(PatternEvolutionRepository patternEvolutionRepository) {
-        this.patternEvolutionRepository = patternEvolutionRepository;
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
     @Transactional
-    public PatternEvolution createPatternEvolution(PatternEvolution patternEvolution) {
-        if (null == patternEvolution) {
+    public UserEntity createUser(UserEntity user) {
+        if (null == user) {
             throw new NullPatternException();
         }
 
@@ -34,54 +32,47 @@ public class PatternEvolutionServiceImpl implements PatternEvolutionService {
 //            throw new NullPatternLanguageException();
 //        }
 
-        return this.patternEvolutionRepository.save(patternEvolution);
+        return this.userRepository.save(user);
     }
 
     @Override
     @Transactional
-    public PatternEvolution updatePatternEvolution(PatternEvolution patternEvolution) {
-        if (null == patternEvolution) {
+    public UserEntity updateUser(UserEntity user) {
+        if (null == user) {
             throw new NullPatternException();
         }
-        if (!this.patternEvolutionRepository.existsById(patternEvolution.getId())) {
-            throw new PatternLanguageNotFoundException(String.format("PatternEvolution %s not found", patternEvolution.getId()));
+        if (!this.userRepository.existsById(user.getId())) {
+            throw new PatternLanguageNotFoundException(String.format("User %s not found", user.getId()));
         }
 
 //        this.patternEvolutionRepository.
 
-        return this.patternEvolutionRepository.save(patternEvolution);
+        return this.userRepository.save(user);
     }
 
     @Override
     @Transactional
-    public void deletePatternEvolution(UUID patternEvolutionId) {
-        PatternEvolution patternEvolution =  this.getPatternEvolutionById(patternEvolutionId);
-        if (null == patternEvolution) {
+    public void deleteUser(UUID userId) {
+        UserEntity user =  this.getUserById(userId);
+        if (null == user) {
             throw new NullPatternException();
         }
 
         // patternEvolution.setPatternViews(null);
         // this.patternEvolutionRepository.save(patternEvolution);
-        this.patternEvolutionRepository.deleteById(patternEvolutionId);
+        this.userRepository.deleteById(userId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public PatternEvolution getPatternEvolutionById(UUID patternEvolutionId) {
-        return this.patternEvolutionRepository.findById(patternEvolutionId)
-                .orElseThrow(() -> new PatternNotFoundException(patternEvolutionId));
+    public UserEntity getUserById(UUID userId) {
+        return this.userRepository.findById(userId)
+                .orElseThrow(() -> new PatternNotFoundException(userId));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public PatternEvolution getPatternEvolutionByUri(String uri) {
-        return this.patternEvolutionRepository.findByUri(uri)
-                .orElseThrow(() -> new PatternNotFoundException(String.format("Pattern with URI %s not found!", uri)));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<PatternEvolution> getAllPatternEvolutions() {
-        return this.patternEvolutionRepository.findAll();
+    public List<UserEntity> getAllUsers() {
+        return this.userRepository.findAll();
     }
 }

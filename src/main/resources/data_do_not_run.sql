@@ -1,3 +1,4 @@
+INSERT INTO public.user_entity (id, mail, name) VALUES ('71d52830-69fa-44a4-a642-5b1a58cfeb51', 'test@mail.com', 'Herbert');
 
 INSERT INTO public.pattern_language (id, name, uri, logo) VALUES ('82146836-1f69-4f8d-81c5-3d87a8db7663', 'Cloud Computing Patterns', 'https://patternpedia.org/patternlanguages/cloudcomputingpatterns', 'https://www.cloudcomputingpatterns.org/img/book.png');
 INSERT INTO public.pattern_language (id, name, uri, logo) VALUES ('82146836-1f69-4f8d-81c5-3d87a8db7664', 'Enterprise Integration Patterns', 'https://patternpedia.org/patternlanguages/enterpriseintegrationpatterns', 'https://www.enterpriseintegrationpatterns.com/img/0321200683.gif');
@@ -39,4 +40,3 @@ INSERT INTO public.directed_edge (id, description, type, pattern_language_id, so
 
 INSERT INTO public.undirected_edge (id, description, type, p1_id, p2_id, pattern_language_id) VALUES ('9b100c69-7d89-4f18-882d-1a74068a3301', 'null', 'isRelatedTo', 'b6a4503a-5385-4bd4-879e-b9c7998820bd', '67d9b3fa-f6d6-4c0d-a239-695c2998c71e', '54b5c9fa-e25b-4ab6-a98b-0e0738323ca9');
 INSERT INTO public.undirected_edge (id, description, type, p1_id, p2_id, pattern_language_id) VALUES ('3267abbf-1435-436f-865e-278cd200038e', 'null', 'isUsedAfter', '10c55d72-b870-4a65-9c08-b5b38f0a17c8', '84bc7222-cc07-4c93-b40d-41e7870d16e6', '54b5c9fa-e25b-4ab6-a98b-0e0738323ca9');
-

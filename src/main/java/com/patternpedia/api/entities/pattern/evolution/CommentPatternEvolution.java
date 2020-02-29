@@ -1,48 +1,59 @@
-package com.patternpedia.api.entities;
+package com.patternpedia.api.entities.pattern.evolution;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.patternpedia.api.entities.rating.RatingPatternEvolution;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.patternpedia.api.entities.user.UserEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Data
 @NoArgsConstructor
-public class UserEntity implements Serializable{
+public class CommentPatternEvolution implements Serializable{
 
     @Id
     @GeneratedValue(generator = "pg-uuid")
     private UUID id;
 
-    private String mail;
-
-    private String name;
+    private String text;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<RatingPatternEvolution> ratingPatternEvolutions = new HashSet<RatingPatternEvolution>();
+    @ToString.Exclude
+    @ManyToOne
+    private PatternEvolution patternEvolution;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+//    @JsonIgnore
+    @ToString.Exclude
+    @ManyToOne
+    private UserEntity user;
+
+    public CommentPatternEvolution(String text) {
+        this.text = text;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof UserEntity)) return false;
-        UserEntity that = (UserEntity) o;
+        if (!(o instanceof CommentPatternEvolution)) return false;
+        CommentPatternEvolution that = (CommentPatternEvolution) o;
         return id.equals(that.id) &&
-                mail.equals(that.mail) &&
-                name.equals(that.name);
+                text.equals(that.text);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, mail, name);
+        return Objects.hash(id, text);
     }
 
     @Override
     public String toString() {
-        return "User: " + this.id.toString();
+        return "Comment: " + this.text + this.id.toString();
     }
 }

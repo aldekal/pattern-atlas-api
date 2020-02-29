@@ -1,22 +1,15 @@
-package com.patternpedia.api.entities;
+package com.patternpedia.api.entities.pattern.evolution;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.patternpedia.api.entities.rating.RatingDown;
+import com.patternpedia.api.entities.EntityWithURI;
+import com.patternpedia.api.entities.user.UserEntity;
 import com.patternpedia.api.entities.rating.RatingPatternEvolution;
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
-import org.apache.catalina.User;
-import org.hibernate.annotations.NaturalId;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.*;
 
 @Entity
@@ -25,10 +18,36 @@ import java.util.*;
 @NoArgsConstructor
 public class PatternEvolution extends EntityWithURI {
 
-    private int rating;
+    private String description;
+
+    private int rating = 0;
+
+    private String version = "0.1.0";
 
     @JsonIgnore
     @OneToMany(mappedBy = "patternEvolution", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<RatingPatternEvolution> userRating = new HashSet<RatingPatternEvolution>();
+    private Set<RatingPatternEvolution> userRating = new HashSet<>();
+
+//    @JsonIgnore()
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @OneToMany(mappedBy = "patternEvolution", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CommentPatternEvolution> comments = new ArrayList<>();
+
+
+    public void addComment(CommentPatternEvolution comment, UserEntity user) {
+        comments.add(comment);
+        comment.setPatternEvolution(this);
+        comment.setUser(user);
+    }
+
+    public void removeComment(CommentPatternEvolution comment) {
+        comments.remove(comment);
+        comment.setPatternEvolution(null);
+        comment.setUser(null);
+    }
+
+    public String toString() {
+        return this.getId().toString() + userRating.toString();
+    }
 
 }

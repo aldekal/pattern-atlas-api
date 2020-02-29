@@ -1,11 +1,12 @@
-package com.patternpedia.api.entities;
+package com.patternpedia.api.entities.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.patternpedia.api.entities.pattern.evolution.CommentPatternEvolution;
 import com.patternpedia.api.entities.rating.RatingPatternEvolution;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.catalina.User;
+import org.hibernate.annotations.ColumnTransformer;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -20,9 +21,15 @@ public class UserEntity implements Serializable{
     @GeneratedValue(generator = "pg-uuid")
     private UUID id;
 
+    @Enumerated(EnumType.STRING)
+    private UserRole role = UserRole.MEMBER;
+
     private String mail;
 
     private String name;
+
+//    @ColumnTransformer(read = "pgp_sym_decrypt(password, 'mySecretKey')", write = "pgp_sym_encrypt(?, 'mySecretKey')")
+    private String password;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

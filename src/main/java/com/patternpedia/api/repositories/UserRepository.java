@@ -1,15 +1,10 @@
 package com.patternpedia.api.repositories;
 
-import com.patternpedia.api.entities.PatternLanguage;
+import com.patternpedia.api.entities.user.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
 import java.util.UUID;
 
-public interface PatternLanguageRepository extends JpaRepository<PatternLanguage, UUID> {
-
-    public Optional<PatternLanguage> findByUri(String uri);
-
-    public boolean existsByUri(String uri);
+public interface UserRepository extends JpaRepository<UserEntity, UUID> {
 
 }

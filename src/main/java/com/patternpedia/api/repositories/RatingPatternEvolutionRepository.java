@@ -1,23 +1,22 @@
 package com.patternpedia.api.repositories;
 
-import com.patternpedia.api.entities.PatternEvolution;
-import com.patternpedia.api.entities.PatternViewPattern;
-import com.patternpedia.api.entities.PatternViewPatternId;
-import com.patternpedia.api.entities.UserEntity;
+import com.patternpedia.api.entities.pattern.evolution.PatternEvolution;
+import com.patternpedia.api.entities.user.UserEntity;
 import com.patternpedia.api.entities.rating.RatingKey;
-import com.patternpedia.api.entities.rating.RatingUp;
+import com.patternpedia.api.entities.rating.RatingPatternEvolution;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.List;
-import java.util.UUID;
 
 @RepositoryRestResource(exported = false)
-public interface RatingUpRepository extends JpaRepository<RatingUp, RatingKey> {
+public interface RatingPatternEvolutionRepository extends JpaRepository<RatingPatternEvolution, RatingKey> {
 
-    List<RatingUp> findAllByPatternEvolutionUp(PatternEvolution patternEvolution);
+    List<RatingPatternEvolution> findAllByPatternEvolution(PatternEvolution patternEvolution);
 
-//    List<PatternEvolution> findAllByPatternEvolutionUp(PatternEvolution patternEvolutionUp);
+    List<UserEntity> findAllByUser(UserEntity user);
 
-    List<UserEntity> findAllByUserUp(UserEntity userUp);
+    RatingPatternEvolution findByPatternEvolutionAndUser(PatternEvolution patternEvolution, UserEntity user);
+
+//    RatingPatternEvolution findById(RatingKey ratingKey);
 }

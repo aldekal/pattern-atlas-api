@@ -15,7 +15,9 @@ import com.patternpedia.api.rest.model.PatternLanguageModel;
 import com.patternpedia.api.service.PatternLanguageService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import org.apache.commons.text.CaseUtils;
+import org.hibernate.validator.internal.IgnoreForbiddenApisErrors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -38,7 +40,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-@RestController
+//@RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping(value = "/patternLanguages", produces = "application/hal+json")
 public class PatternLanguageController {

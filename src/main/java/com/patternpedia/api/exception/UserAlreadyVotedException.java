@@ -1,22 +1,26 @@
 package com.patternpedia.api.exception;
 
+import com.patternpedia.api.entities.PatternView;
+import lombok.NoArgsConstructor;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
 import java.util.UUID;
 
-import com.patternpedia.api.entities.PatternView;
+@NoArgsConstructor
+@ResponseStatus(HttpStatus.NOT_FOUND)
+public class UserAlreadyVotedException extends RuntimeException {
 
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-
-public class PatternViewNotFoundException extends ResourceNotFoundException {
-
-    public PatternViewNotFoundException(String message) {
+    public UserAlreadyVotedException(String message) {
         super(message);
     }
 
-    public PatternViewNotFoundException(UUID patternViewId) {
+    public UserAlreadyVotedException(UUID patternViewId) {
         super(String.format("PatternView \"%s\" not found!", patternViewId));
     }
 
-    public PatternViewNotFoundException(PatternView patternView) {
+    public UserAlreadyVotedException(PatternView patternView) {
         super(String.format("PatternView \"%s\" not found!", patternView.getId()));
     }
 }
