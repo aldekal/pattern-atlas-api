@@ -359,4 +359,37 @@ public class PatternViewServiceImpl implements PatternViewService {
             }
         }
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Object getGraphOfPatternView(UUID patternViewId) {
+        PatternView patternView = this.getPatternViewById(patternViewId);
+        return patternView.getGraph();
+    }
+
+    @Override
+    @Transactional
+    public Object createGraphOfPatternView(UUID patternViewId, Object graph) {
+        PatternView patternView = this.getPatternViewById(patternViewId);
+        patternView.setGraph(graph);
+        patternView = this.updatePatternView(patternView);
+        return patternView.getGraph();
+    }
+
+    @Override
+    public Object updateGraphOfPatternView(UUID patternViewId, Object graph) {
+        PatternView patternView = this.getPatternViewById(patternViewId);
+        patternView.setGraph(graph);
+        patternView = this.updatePatternView(patternView);
+        return patternView.getGraph();
+    }
+
+    @Override
+    @Transactional
+    public void deleteGraphOfPatternView(UUID patternViewId) {
+        PatternView patternView = this.getPatternViewById(patternViewId);
+        patternView.setGraph(null);
+        this.patternViewRepository.save(patternView);
+    }
+
 }
