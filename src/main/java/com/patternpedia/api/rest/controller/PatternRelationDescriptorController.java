@@ -40,7 +40,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping(produces = "application/hal+json")
+@RequestMapping(value = "/", produces = "application/hal+json")
 public class PatternRelationDescriptorController {
 
     private PatternLanguageService patternLanguageService;

@@ -1,0 +1,17 @@
+server.port={{.Env.API_PORT}}
+spring.profiles.active=default,test
+spring.datasource.initialization-mode=always
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.datasource.url=jdbc:postgresql://{{.Env.JDBC_DATABASE_URL}}:{{.Env.JDBC_DATABASE_PORT}}/postgres
+spring.datasource.username={{.Env.JDBC_DATABASE_USERNAME}}
+spring.datasource.password={{.Env.JDBC_DATABASE_PASSWORD}}
+spring.jpa.show-sql=true
+spring.jpa.generate-ddl=true
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.hibernate.ddl-auto=create
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
+spring.jpa.properties.hibernate.show_sql=true
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.properties.hibernate.use_sql_comments=true
+spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true

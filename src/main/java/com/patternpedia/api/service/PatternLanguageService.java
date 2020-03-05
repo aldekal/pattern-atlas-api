@@ -37,7 +37,7 @@ public interface PatternLanguageService {
     @Transactional
     Pattern createPatternAndAddToPatternLanguage(UUID patternLanguageId, Pattern pattern);
 
-    @Transactional(readOnly = true)
+    @Transactional
     List<Pattern> getPatternsOfPatternLanguage(UUID patternLanguageId);
 
     @Transactional(readOnly = true)
