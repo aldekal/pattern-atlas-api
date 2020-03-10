@@ -255,33 +255,13 @@ public class PatternController {
 
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/patterns")
     CollectionModel<EntityModel<PatternModel>> getPatternsOfPatternLanguage(@PathVariable UUID patternLanguageId) {
-        LOG.debug("pattern request started");
-        List<PatternModel> patterns = this.patternLanguageService.getPatternsOfPatternLanguage(patternLanguageId).stream()
-                .map(PatternModel::from)
+        List<EntityModel<PatternModel>> patterns = this.patternLanguageService.getPatternsOfPatternLanguage(patternLanguageId).stream()
+                .map(pattern -> new EntityModel<>(PatternModel.from(pattern),
+                        linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(patternLanguageId, pattern.getId())).withSelfRel(),
+                        linkTo(methodOn(PatternController.class).getPatternContentOfPattern(patternLanguageId, pattern.getId())).withRel("content"),
+                        linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage")))
                 .collect(Collectors.toList());
-
-        // get links in parallel
-        List<Pair<PatternModel, EdgeResult>> patternEdges = patterns.parallelStream()
-                .map(patternModel -> {
-                    EdgeResult er = getPatternLinksForPatternLanguageRoute(patternModel.getPattern(), patternLanguageId);
-
-                    return Pair.of(patternModel, er);
-                })
-                .collect(Collectors.toList());
-
-        List<EntityModel<PatternModel>> linkedPatterns = new ArrayList<>();
-        for(Pair<PatternModel, EdgeResult> patternEdgeResult: patternEdges) {
-
-            List<Link> links = getLinksForPattern(patternEdgeResult.getSecond(), patternLanguageId);
-
-            linkedPatterns.add(new EntityModel<>(patternEdgeResult.getFirst(), links));
-
-
-        }
-
-
-        LOG.debug("pattern request ended");
-        return new CollectionModel<>(linkedPatterns, getPatternLanguagePatternCollectionLinks(patternLanguageId));
+        return new CollectionModel<>(patterns, getPatternLanguagePatternCollectionLinks(patternLanguageId));
     }
 
     private List<Link> getLinksForPattern(EdgeResult patternEdgeResult, UUID patternLanguageId) {

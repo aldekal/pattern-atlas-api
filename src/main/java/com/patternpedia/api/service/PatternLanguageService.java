@@ -70,7 +70,6 @@ public interface PatternLanguageService {
     @Transactional
     DirectedEdge createDirectedEdgeAndAddToPatternLanguage(UUID patternLanguageId, CreateDirectedEdgeRequest createDirectedEdgeRequest);
 
-    @Transactional(readOnly = true)
     List<DirectedEdge> getDirectedEdgesOfPatternLanguage(UUID patternLanguageId);
 
     @Transactional(readOnly = true)
