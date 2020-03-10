@@ -37,4 +37,8 @@ public class Pattern extends EntityWithURI {
     @Column(columnDefinition = "jsonb")
     @NotNull
     private Object content;
+
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "jsonb")
+    private Object renderedContent;
 }

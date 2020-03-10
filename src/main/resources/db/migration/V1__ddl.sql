@@ -6,6 +6,7 @@ CREATE TABLE pattern
     uri     varchar(255),
     name    varchar(255),
     content jsonb,
+    renderedContent jsonb,
     PRIMARY KEY (id)
 );
 
@@ -15,5 +16,6 @@ CREATE TABLE pattern_language
     uri     varchar(255),
     name    varchar(255),
     content jsonb,
+    renderedContent jsonb,
     PRIMARY KEY (id)
 );
