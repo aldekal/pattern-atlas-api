@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.ObjectCodec;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patternpedia.api.entities.PatternView;
 import com.patternpedia.api.rest.model.PatternLanguageGraphModel;
 import com.patternpedia.api.service.PatternViewService;
@@ -43,8 +44,9 @@ public class PatternViewController {
     private PatternViewService patternViewService;
     private ObjectCodec objectMapper;
 
-    public PatternViewController(PatternViewService patternViewService) {
+    public PatternViewController(PatternViewService patternViewService, ObjectMapper objectMapper) {
         this.patternViewService = patternViewService;
+        this.objectMapper = objectMapper;
     }
 
     private static List<Link> getPatternViewCollectionLinks() {
