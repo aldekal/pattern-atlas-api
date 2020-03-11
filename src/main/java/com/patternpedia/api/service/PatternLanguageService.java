@@ -72,7 +72,6 @@ public interface PatternLanguageService {
 
     List<DirectedEdge> getDirectedEdgesOfPatternLanguage(UUID patternLanguageId);
 
-    @Transactional(readOnly = true)
     DirectedEdge getDirectedEdgeOfPatternLanguageById(UUID patternLanguageId, UUID directedEdgeId);
 
     @Transactional
@@ -87,10 +86,8 @@ public interface PatternLanguageService {
     @Transactional(readOnly = true)
     List<UndirectedEdge> getUndirectedEdgesOfPatternLanguage(UUID patternLanguageId);
 
-    @Transactional(readOnly = true)
     UndirectedEdge getUndirectedEdgeOfPatternLanguageById(UUID patternLanguageId, UUID undirectedEdgeId) throws UndirectedEdgeNotFoundException;
 
-    @Transactional
     UndirectedEdge updateUndirectedEdgeOfPatternLanguage(UUID patternLanguageId, UndirectedEdge undirectedEdge);
 
     @Transactional
