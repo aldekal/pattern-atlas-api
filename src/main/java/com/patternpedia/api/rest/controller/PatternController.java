@@ -304,13 +304,12 @@ public class PatternController {
     @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> addPatternToPatternView(@PathVariable UUID patternViewId, @RequestBody Pattern pattern)  {
-        try(FileWriter fileWriter = new FileWriter("src/test/resources/renderFile.tex")) {
-            fileWriter.write("test1");
-        } catch (IOException e){
-            System.out.println(e.toString());
-            e.printStackTrace();
+        Object renderedContent = patternRenderService.renderContent(pattern);
+        if (renderedContent != null){
+            pattern.setRenderedContent(renderedContent);
+        } else {
+            pattern.setRenderedContent(pattern.getContent());
         }
-        this.patternRenderService.renderContent(pattern);
         this.patternViewService.addPatternToPatternView(patternViewId, pattern.getId());
         return ResponseEntity.created(linkTo(methodOn(PatternController.class)
                 .getPatternOfPatternViewById(patternViewId, pattern.getId())).toUri()).build();
@@ -333,17 +332,16 @@ public class PatternController {
     @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
     ResponseEntity<?> addPatternToPatternLanguage(@PathVariable UUID patternLanguageId, @Valid @RequestBody Pattern pattern) {
-        try(FileWriter fileWriter = new FileWriter("src/test/resources/renderFile.tex")) {
-            fileWriter.write("tes2t");
-        } catch (IOException e){
-            System.out.println(e.toString());
-            e.printStackTrace();
-        }
         PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
         if (null == pattern.getUri()) {
             pattern.setUri(patternLanguage.getUri() + '/' + CaseUtils.toCamelCase(pattern.getName(), false));
         }
-        this.patternRenderService.renderContent(pattern);
+        Object renderedContent = patternRenderService.renderContent(pattern);
+        if (renderedContent != null){
+            pattern.setRenderedContent(renderedContent);
+        } else {
+            pattern.setRenderedContent(pattern.getContent());
+        }
         pattern = this.patternLanguageService.createPatternAndAddToPatternLanguage(patternLanguageId, pattern);
 
         return ResponseEntity.created(linkTo(methodOn(PatternController.class)
@@ -363,8 +361,8 @@ public class PatternController {
         // Remark: At the moment we do not support changing name, uri of a pattern
         persistedVersion.setIconUrl(pattern.getIconUrl());
         persistedVersion.setContent(pattern.getContent());
-        persistedVersion.setRenderedContent(pattern.getContent());
-        String renderedContent = patternRenderService.renderContent(pattern);
+        Object renderedContent = patternRenderService.renderContent(pattern);
+        System.out.print(renderedContent);
         if (renderedContent != null){
             persistedVersion.setRenderedContent(renderedContent);
         } else {

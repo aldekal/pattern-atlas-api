@@ -17,6 +17,7 @@ import java.nio.file.Paths;
 import org.springframework.core.io.Resource;
 
 import java.io.*;
+import java.util.Map;
 
 @Component
 public class PatternRenderServiceImpl implements PatternRenderService {
@@ -25,7 +26,7 @@ public class PatternRenderServiceImpl implements PatternRenderService {
     private FileStorageService fileStorageService;
 
     @Override
-    public String renderContent(Pattern pattern) {
+    public Object renderContent(Pattern pattern) {
         String jsonString = null;
         ObjectMapper mapper = new ObjectMapper();
         //Converting the Object to JSONString
@@ -39,7 +40,15 @@ public class PatternRenderServiceImpl implements PatternRenderService {
         AlgorithmType type = checkForAlgorithmInput(jsonString);
         switch (type) {
             case QUANTIKZ:
-                return renderQuantikz(jsonString);
+                Map<String,Object> map = null;
+                try {
+                    String returnJson =  renderQuantikz(jsonString);
+                    System.out.println(returnJson);
+                    map = mapper.readValue(returnJson, Map.class);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+                return map;
             case QCIRCUIT:
                 break;
             case NONE:
@@ -69,7 +78,7 @@ public class PatternRenderServiceImpl implements PatternRenderService {
             String quantikzContent;
             String originalContent = content;
             String fileDownloadUri = null;
-            quantikzContent = content.substring(content.indexOf("\\begin{quantikz}"), content.indexOf("\\end{quantikz}") + 14);
+            quantikzContent = content.substring(content.indexOf("\\\\begin{quantikz}"), content.indexOf("\\end{quantikz}") + 14);
             String latexDocClass = "\\documentclass[border=0.50001bp,convert={convertexe={imgconvert},outext=.png}]{standalone} \n";
             String latexPackages = "\\usepackage{tikz} \n" + "\\usetikzlibrary{quantikz} \n";
             String docStart = "\\begin{document} \n";
@@ -114,8 +123,7 @@ public class PatternRenderServiceImpl implements PatternRenderService {
                 e.printStackTrace();
             }
             System.out.println(fileDownloadUri);
-            String showimage =  " ![](" + fileDownloadUri +")";
-            System.out.println(content.replace(quantikzContent , showimage));
+            String showimage =  "![](" + fileDownloadUri +")";
             return content.replace(quantikzContent , showimage).replaceAll("\\\\" , "\\\\\\\\" );
         }
         return null;

@@ -9,7 +9,7 @@ import java.io.IOException;
 public interface PatternRenderService {
 
     @Transactional (readOnly = false)
-    String renderContent (Pattern pattern);
+    Object renderContent (Pattern pattern);
 
     @Transactional (readOnly = false)
     AlgorithmType checkForAlgorithmInput (String content);
