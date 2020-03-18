@@ -265,7 +265,7 @@ public class PatternRelationDescriptorController {
 
         return ResponseEntity
                 .created(linkTo(methodOn(PatternRelationDescriptorController.class).getUndirectedEdgeOfPatternLanguageById(patternLanguageId, undirectedEdge.getId())).toUri())
-                .build();
+                .body(undirectedEdge);
     }
 
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/undirectedEdges")
