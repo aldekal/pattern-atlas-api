@@ -21,6 +21,8 @@ public class PatternLanguageModel {
 
     private int patternCount;
 
+    private String creativeCommonsReference;
+
     public static PatternLanguageModel toModel(PatternLanguage patternLanguage) {
         PatternLanguageModel model = new PatternLanguageModel();
         model.setId(patternLanguage.getId());
@@ -28,6 +30,7 @@ public class PatternLanguageModel {
         model.setName(patternLanguage.getName());
         model.setLogo(patternLanguage.getLogo());
         model.setPatternCount(patternLanguage.getPatterns().size());
+        model.setCreativeCommonsReference(patternLanguage.getCreativeCommonsReference());
         return model;
     }
 }

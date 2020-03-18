@@ -4,11 +4,9 @@ import java.net.URL;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+
+import javax.persistence.*;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -20,6 +18,10 @@ import lombok.NoArgsConstructor;
 public class PatternLanguage extends PatternGraph {
 
     private URL logo;
+
+    @Column(nullable = true)
+    private String creativeCommonsReference;
+
 
     @JsonIgnore
     @OneToMany(mappedBy = "patternLanguage")

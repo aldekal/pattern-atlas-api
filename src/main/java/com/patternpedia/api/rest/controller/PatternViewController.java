@@ -8,7 +8,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.ObjectCodec;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patternpedia.api.entities.PatternView;
+import com.patternpedia.api.rest.model.PatternLanguageGraphModel;
 import com.patternpedia.api.service.PatternViewService;
 
 import org.apache.commons.text.CaseUtils;
@@ -39,9 +42,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class PatternViewController {
 
     private PatternViewService patternViewService;
+    private ObjectCodec objectMapper;
 
-    public PatternViewController(PatternViewService patternViewService) {
+    public PatternViewController(PatternViewService patternViewService, ObjectMapper objectMapper) {
         this.patternViewService = patternViewService;
+        this.objectMapper = objectMapper;
     }
 
     private static List<Link> getPatternViewCollectionLinks() {
@@ -57,6 +62,7 @@ public class PatternViewController {
         links.add(linkTo(methodOn(PatternViewController.class).getAllPatternViews()).withSelfRel()
                 .andAffordance(afford(methodOn(PatternViewController.class).createPatternView(null))));
         links.add(linkTo(methodOn(PatternViewController.class).getAllPatternViews()).withRel("patternViews"));
+        links.add(linkTo(methodOn(PatternViewController.class).getAllPatternViews()).withRel("graph"));
 
         return links;
     }
@@ -71,10 +77,29 @@ public class PatternViewController {
         );
         links.add(linkTo(methodOn(PatternViewController.class).getAllPatternViews()).withRel("patternViews"));
         links.add(linkTo(methodOn(PatternController.class).getPatternsOfPatternView(patternView.getId())).withRel("patterns"));
+        links.add(linkTo(methodOn(PatternViewController.class).getPatterViewGraph(patternView.getId())).withRel("graph"));
         links.add(linkTo(methodOn(PatternRelationDescriptorController.class).getDirectedEdgesOfView(patternView.getId())).withRel("directedEdges"));
         links.add(linkTo(methodOn(PatternRelationDescriptorController.class).getUndirectedEdgesOfView(patternView.getId())).withRel("undirectedEdges"));
 
         return links;
+    }
+
+    @GetMapping(value = "/{patternViewId}/graph")
+    ResponseEntity<?> getPatterViewGraph(@PathVariable UUID patternViewId) {
+        Object graph = this.patternViewService.getGraphOfPatternView(patternViewId);
+
+        PatternLanguageGraphModel model = new PatternLanguageGraphModel();
+        if (null == graph) {
+            model.setGraph(this.objectMapper.createArrayNode());
+        } else {
+            model.setGraph(graph);
+        }
+        EntityModel<Object> entityModel = new EntityModel<>(model, linkTo(methodOn(PatternViewController.class).getPatternViewById(patternViewId)).withRel("patternLanguage"),
+                linkTo(methodOn(PatternViewController.class).getPatterViewGraph(patternViewId)).withSelfRel()
+                        .andAffordance(afford(methodOn(PatternViewController.class).postPatternViewGraph(patternViewId, null)))
+                        .andAffordance(afford(methodOn(PatternViewController.class).putPatternViewGraph(patternViewId, null)))
+                        .andAffordance(afford(methodOn(PatternViewController.class).deletePatternViewGraph(patternViewId))));
+        return ResponseEntity.ok(entityModel);
     }
 
     @GetMapping
@@ -127,6 +152,25 @@ public class PatternViewController {
 
     @DeleteMapping(value = "/{patternViewId}")
     public ResponseEntity<?> deletePatternView(@PathVariable UUID patternViewId) {
+        this.patternViewService.deletePatternView(patternViewId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(value = "/{patternViewId}/graph")
+    ResponseEntity<?> postPatternViewGraph(@PathVariable UUID patternViewId, @RequestBody Object graph) {
+        this.patternViewService.updateGraphOfPatternView(patternViewId, graph);
+        return ResponseEntity.created(linkTo(methodOn(PatternLanguageController.class).getPatternLanguageGraph(patternViewId)).toUri())
+                .build();
+    }
+
+    @PutMapping(value = "/{patternViewId}/graph")
+    ResponseEntity<?> putPatternViewGraph(@PathVariable UUID patternViewId, @RequestBody Object graph) {
+        this.patternViewService.updateGraphOfPatternView(patternViewId, graph);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping(value = "/{patternViewId}/graph")
+    ResponseEntity<?> deletePatternViewGraph(@PathVariable UUID patternViewId) {
         this.patternViewService.deletePatternView(patternViewId);
         return ResponseEntity.noContent().build();
     }

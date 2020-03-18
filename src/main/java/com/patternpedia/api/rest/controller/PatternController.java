@@ -1,9 +1,6 @@
 package com.patternpedia.api.rest.controller;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.patternpedia.api.entities.DirectedEdge;
@@ -21,8 +18,13 @@ import com.patternpedia.api.service.PatternService;
 import com.patternpedia.api.service.PatternViewService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import javax.validation.Valid;
+
 import org.apache.commons.text.CaseUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.util.Pair;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
@@ -39,14 +41,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping(produces = "application/hal+json")
+@RequestMapping(value = "/", produces = "application/hal+json")
 public class PatternController {
+
+    final private static Logger LOG = LoggerFactory.getLogger(PatternController.class);
+
 
     private PatternService patternService;
     private PatternLanguageService patternLanguageService;
@@ -104,23 +110,16 @@ public class PatternController {
         return links;
     }
 
-    List<Link> getPatternLinksForPatternLanguageRoute(Pattern pattern, UUID patternLanguageId) {
-        List<Link> links = this.getPatternLinks(pattern);
+    EdgeResult getPatternLinksForPatternLanguageRoute(Pattern pattern, UUID patternLanguageId) {
+
 
         List<DirectedEdge> outgoingEdges;
+
+
         try {
             outgoingEdges = this.patternRelationDescriptorService.findDirectedEdgeBySource(pattern);
         } catch (DirectedEdgeNotFoundException ex) {
             outgoingEdges = Collections.emptyList();
-        }
-        if (null != outgoingEdges) {
-            for (DirectedEdge directedEdge : outgoingEdges) {
-                if (null != directedEdge.getPatternLanguage() && directedEdge.getPatternLanguage().getId().equals(patternLanguageId)) {
-                    // edge is part of pattern language, thus reference the route to edge in pattern language
-                    links.add(linkTo(methodOn(PatternRelationDescriptorController.class)
-                            .getDirectedEdgeOfPatternLanguageById(directedEdge.getPatternLanguage().getId(), directedEdge.getId())).withRel("outgoingDirectedEdges"));
-                }
-            }
         }
 
         List<DirectedEdge> ingoingEdges;
@@ -129,15 +128,6 @@ public class PatternController {
         } catch (DirectedEdgeNotFoundException ex) {
             ingoingEdges = Collections.emptyList();
         }
-        if (null != ingoingEdges) {
-            for (DirectedEdge directedEdge : ingoingEdges) {
-                if (null != directedEdge.getPatternLanguage() && directedEdge.getPatternLanguage().getId().equals(patternLanguageId)) {
-                    // edge is part of pattern language, thus reference the route to edge in pattern language
-                    links.add(linkTo(methodOn(PatternRelationDescriptorController.class)
-                            .getDirectedEdgeOfPatternLanguageById(directedEdge.getPatternLanguage().getId(), directedEdge.getId())).withRel("ingoingDirectedEdges"));
-                }
-            }
-        }
 
         List<UndirectedEdge> undirectedEdges;
         try {
@@ -145,17 +135,8 @@ public class PatternController {
         } catch (UndirectedEdgeNotFoundException ex) {
             undirectedEdges = Collections.emptyList();
         }
-        if (null != undirectedEdges) {
-            for (UndirectedEdge undirectedEdge : undirectedEdges) {
-                if (null != undirectedEdge.getPatternLanguage() && undirectedEdge.getPatternLanguage().getId().equals(patternLanguageId)) {
-                    // edge is part of pattern language, thus reference the route to edge in pattern language
-                    links.add(linkTo(methodOn(PatternRelationDescriptorController.class)
-                            .getUndirectedEdgeOfPatternLanguageById(undirectedEdge.getPatternLanguage().getId(), undirectedEdge.getId())).withRel("undirectedEdges"));
-                }
-            }
-        }
 
-        return links;
+        return new EdgeResult(outgoingEdges, ingoingEdges, undirectedEdges, this.getPatternLinks(pattern));
     }
 
     List<Link> getPatternLinksForPatternViewRoute(Pattern pattern, UUID patternViewId) {
@@ -275,12 +256,46 @@ public class PatternController {
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/patterns")
     CollectionModel<EntityModel<PatternModel>> getPatternsOfPatternLanguage(@PathVariable UUID patternLanguageId) {
         List<EntityModel<PatternModel>> patterns = this.patternLanguageService.getPatternsOfPatternLanguage(patternLanguageId).stream()
-                .map(PatternModel::from)
-                .map(patternModel -> new EntityModel<>(patternModel,
-                        getPatternLinksForPatternLanguageRoute(patternModel.getPattern(), patternLanguageId)))
+                .map(pattern -> new EntityModel<>(PatternModel.from(pattern),
+                        linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(patternLanguageId, pattern.getId())).withSelfRel(),
+                        linkTo(methodOn(PatternController.class).getPatternContentOfPattern(patternLanguageId, pattern.getId())).withRel("content"),
+                        linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage")))
                 .collect(Collectors.toList());
-
         return new CollectionModel<>(patterns, getPatternLanguagePatternCollectionLinks(patternLanguageId));
+    }
+
+    private List<Link> getLinksForPattern(EdgeResult patternEdgeResult, UUID patternLanguageId) {
+
+        List<Link> links = new ArrayList<Link>();
+
+        for (UndirectedEdge undirectedEdge : patternEdgeResult.getUndirectedEdges()) {
+            if (null != undirectedEdge.getPatternLanguage() && undirectedEdge.getPatternLanguage().getId().equals(patternLanguageId)) {
+                // edge is part of pattern language, thus reference the route to edge in pattern language
+                links.add(linkTo(methodOn(PatternRelationDescriptorController.class)
+                        .getUndirectedEdgeOfPatternLanguageById(undirectedEdge.getPatternLanguage().getId(), undirectedEdge.getId())).withRel("undirectedEdges"));
+            }
+
+        }
+
+        for (DirectedEdge directedEdge : patternEdgeResult.getIngoingEdges()) {
+            if (null != directedEdge.getPatternLanguage() && directedEdge.getPatternLanguage().getId().equals(patternLanguageId)) {
+                // edge is part of pattern language, thus reference the route to edge in pattern language
+                links.add(linkTo(methodOn(PatternRelationDescriptorController.class)
+                        .getDirectedEdgeOfPatternLanguageById(directedEdge.getPatternLanguage().getId(), directedEdge.getId())).withRel("ingoingDirectedEdges"));
+            }
+        }
+
+        for (DirectedEdge directedEdge : patternEdgeResult.getOutgoingEdges()) {
+            if (null != directedEdge.getPatternLanguage() && directedEdge.getPatternLanguage().getId().equals(patternLanguageId)) {
+                // edge is part of pattern language, thus reference the route to edge in pattern language
+                links.add(linkTo(methodOn(PatternRelationDescriptorController.class)
+                        .getDirectedEdgeOfPatternLanguageById(directedEdge.getPatternLanguage().getId(), directedEdge.getId())).withRel("ingoingDirectedEdges"));
+            }
+        }
+
+        links.addAll(patternEdgeResult.getStandardPatternLinks());
+
+        return links;
     }
 
     @GetMapping(value = "/patternViews/{patternViewId}/patterns")
@@ -301,6 +316,7 @@ public class PatternController {
                 .getPatternOfPatternViewById(patternViewId, pattern.getId())).toUri()).build();
     }
 
+    @CrossOrigin(exposedHeaders = "Location")
     @GetMapping(value = "/patternViews/{patternViewId}/patterns/{patternId}")
     EntityModel<Pattern> getPatternOfPatternViewById(@PathVariable UUID patternViewId, @PathVariable UUID patternId) {
         Pattern pattern = this.patternViewService.getPatternOfPatternViewById(patternViewId, patternId);
@@ -332,7 +348,9 @@ public class PatternController {
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/patterns/{patternId}")
     EntityModel<Pattern> getPatternOfPatternLanguageById(@PathVariable UUID patternLanguageId, @PathVariable UUID patternId) {
         Pattern pattern = this.patternLanguageService.getPatternOfPatternLanguageById(patternLanguageId, patternId);
-        return new EntityModel<>(pattern, getPatternLinksForPatternLanguageRoute(pattern, patternLanguageId));
+        EdgeResult patternLinksForPatternLanguageRoute = getPatternLinksForPatternLanguageRoute(pattern, patternLanguageId);
+        List<Link> patternLinks = getLinksForPattern(patternLinksForPatternLanguageRoute, patternLanguageId);
+        return new EntityModel<>(pattern, patternLinks);
     }
 
     @PutMapping(value = "/patternLanguages/{patternLanguageId}/patterns/{patternId}")
