@@ -29,3 +29,10 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### TexRendering ###
+*.png
+*.tex
+*.pdf
+*.log
+*.aux

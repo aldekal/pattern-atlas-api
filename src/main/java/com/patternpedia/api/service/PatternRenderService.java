@@ -5,6 +5,7 @@ import com.patternpedia.api.rest.model.AlgorithmType;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.Map;
 
 public interface PatternRenderService {
 
@@ -17,4 +18,9 @@ public interface PatternRenderService {
     @Transactional (readOnly = false)
     String renderQuantikz (String content) throws IOException;
 
+//    @Transactional (readOnly = false)
+//    Map<Integer, Integer> getBeginAndEndIndexes(String content, String begin, String end);
+
+    @Transactional (readOnly = false)
+    String renderLatex(String content, int begin, int end, AlgorithmType type);
 }
