@@ -2,7 +2,7 @@ package com.patternpedia.api.service;
 
 import java.util.UUID;
 
-import com.patternpedia.api.entities.Pattern;
+import com.patternpedia.api.entities.pattern.pattern.Pattern;
 import com.patternpedia.api.validator.PatternContentConstraint;
 
 import javax.validation.Valid;

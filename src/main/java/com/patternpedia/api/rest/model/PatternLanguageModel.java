@@ -3,7 +3,7 @@ package com.patternpedia.api.rest.model;
 import java.net.URL;
 import java.util.UUID;
 
-import com.patternpedia.api.entities.PatternLanguage;
+import com.patternpedia.api.entities.pattern.language.PatternLanguage;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -2,7 +2,7 @@ package com.patternpedia.api.service;
 
 import java.util.UUID;
 
-import com.patternpedia.api.entities.Pattern;
+import com.patternpedia.api.entities.pattern.pattern.Pattern;
 import com.patternpedia.api.exception.NullPatternException;
 import com.patternpedia.api.exception.NullPatternLanguageException;
 import com.patternpedia.api.exception.PatternNotFoundException;

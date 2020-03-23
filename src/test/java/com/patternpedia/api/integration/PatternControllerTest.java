@@ -2,8 +2,8 @@ package com.patternpedia.api.integration;
 
 import java.util.List;
 
-import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.entities.PatternLanguage;
+import com.patternpedia.api.entities.pattern.pattern.Pattern;
+import com.patternpedia.api.entities.pattern.language.PatternLanguage;
 import com.patternpedia.api.util.IntegrationTestHelper;
 
 import com.fasterxml.jackson.databind.JsonNode;

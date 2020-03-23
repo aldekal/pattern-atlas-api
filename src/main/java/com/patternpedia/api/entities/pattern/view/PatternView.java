@@ -1,4 +1,4 @@
-package com.patternpedia.api.entities;
+package com.patternpedia.api.entities.pattern.view;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -8,6 +8,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+
+import com.patternpedia.api.entities.edge.DirectedEdge;
+import com.patternpedia.api.entities.pattern.pattern.Pattern;
+import com.patternpedia.api.entities.pattern.graph.PatternGraph;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

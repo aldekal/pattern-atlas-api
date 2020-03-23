@@ -1,7 +1,7 @@
 package com.patternpedia.api.repositories;
 
-import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.entities.UndirectedEdge;
+import com.patternpedia.api.entities.pattern.pattern.Pattern;
+import com.patternpedia.api.entities.edge.UndirectedEdge;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 

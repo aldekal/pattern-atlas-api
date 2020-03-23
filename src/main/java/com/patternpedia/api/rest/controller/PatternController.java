@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.patternpedia.api.entities.DirectedEdge;
-import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.entities.PatternLanguage;
-import com.patternpedia.api.entities.PatternViewPattern;
-import com.patternpedia.api.entities.UndirectedEdge;
+import com.patternpedia.api.entities.edge.DirectedEdge;
+import com.patternpedia.api.entities.pattern.pattern.Pattern;
+import com.patternpedia.api.entities.pattern.language.PatternLanguage;
+import com.patternpedia.api.entities.pattern.view.PatternViewPattern;
+import com.patternpedia.api.entities.edge.UndirectedEdge;
 import com.patternpedia.api.exception.DirectedEdgeNotFoundException;
 import com.patternpedia.api.exception.UndirectedEdgeNotFoundException;
 import com.patternpedia.api.rest.model.PatternContentModel;
@@ -37,7 +37,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;

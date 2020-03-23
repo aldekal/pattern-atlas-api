@@ -1,8 +1,7 @@
 package com.patternpedia.api.exception;
 
-import com.patternpedia.api.entities.PatternView;
+import com.patternpedia.api.entities.pattern.view.PatternView;
 import lombok.NoArgsConstructor;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 

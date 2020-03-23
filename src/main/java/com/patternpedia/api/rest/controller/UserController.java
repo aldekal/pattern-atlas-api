@@ -1,5 +1,7 @@
 package com.patternpedia.api.rest.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patternpedia.api.entities.user.UserEntity;
 import com.patternpedia.api.service.UserService;
@@ -12,13 +14,14 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@CrossOrigin(allowedHeaders = "*", origins = "*")
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping(value = "/user", produces = "application/hal+json")
 public class UserController {
 
     Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    private UserService userService;
+    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 //    private PatternLanguageService patternLanguageService;
 //    private PatternViewService patternViewService;
 //    private PatternRelationDescriptorService patternRelationDescriptorService;
@@ -26,12 +29,14 @@ public class UserController {
 
     public UserController(
             UserService userService,
+            PasswordEncoder passwordEncoder,
 //            PatternLanguageService patternLanguageService,
 //            PatternViewService patternViewService,
 //            PatternRelationDescriptorService patternRelationDescriptorService,
             ObjectMapper objectMapper
     ) {
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
 //        this.patternLanguageService = patternLanguageService;
 //        this.patternViewService = patternViewService;
 //        this.patternRelationDescriptorService = patternRelationDescriptorService;
@@ -41,7 +46,9 @@ public class UserController {
     /**
      * GET Methods
      */
+//    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping(value = "/getAll")
+    @PreAuthorize(value = "hasAuthority('MEMBER')")
     List<UserEntity> all() {
         return this.userService.getAllUsers();
     }
@@ -57,16 +64,18 @@ public class UserController {
     @PostMapping(value = "/create")
 //    @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
-    UserEntity newPatternEvolution(@RequestBody UserEntity user) {
-        logger.info(user.toString());
+    public UserEntity newUser(@RequestParam String name, @RequestParam String mail, @RequestParam String password) {
+        UserEntity user = new UserEntity(name, mail, passwordEncoder.encode(password));
+//        UserEntity user = new UserEntity(name, mail, password);
         return this.userService.createUser(user);
+
     }
 
     /**
      * UPDATE Methods
      */
     @PutMapping(value = "/update/{userId}")
-    UserEntity putPatternLanguage(@PathVariable UUID userId, @RequestBody UserEntity user) {
+    UserEntity updateUser(@PathVariable UUID userId, @RequestBody UserEntity user) {
         user.setId(userId);
         logger.info(user.toString());
         return this.userService.updateUser(user);
@@ -76,7 +85,7 @@ public class UserController {
      * DELETE Methods
      */
     @DeleteMapping(value = "/delete/{patternEvolutionId}")
-    void deletePatternLanguage(@PathVariable UUID userId) {
+    void deleteUser(@PathVariable UUID userId) {
         this.userService.deleteUser(userId);
 //        return ResponseEntity.noContent().build();
     }

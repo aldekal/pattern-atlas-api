@@ -1,9 +1,12 @@
-package com.patternpedia.api.entities;
+package com.patternpedia.api.entities.edge;
 
 import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+
+import com.patternpedia.api.entities.pattern.pattern.Pattern;
+import com.patternpedia.api.entities.PatternRelationDescriptor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

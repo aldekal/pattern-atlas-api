@@ -1,4 +1,4 @@
-package com.patternpedia.api.entities;
+package com.patternpedia.api.entities.pattern.language;
 
 import java.net.URL;
 import java.util.List;
@@ -9,6 +9,12 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+
+import com.patternpedia.api.entities.PatternSchema;
+import com.patternpedia.api.entities.edge.DirectedEdge;
+import com.patternpedia.api.entities.edge.UndirectedEdge;
+import com.patternpedia.api.entities.pattern.graph.PatternGraph;
+import com.patternpedia.api.entities.pattern.pattern.Pattern;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

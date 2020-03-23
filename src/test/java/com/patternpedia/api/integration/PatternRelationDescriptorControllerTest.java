@@ -1,9 +1,9 @@
 package com.patternpedia.api.integration;
 
-import com.patternpedia.api.entities.DirectedEdge;
-import com.patternpedia.api.entities.PatternLanguage;
-import com.patternpedia.api.entities.PatternView;
-import com.patternpedia.api.entities.UndirectedEdge;
+import com.patternpedia.api.entities.edge.DirectedEdge;
+import com.patternpedia.api.entities.pattern.language.PatternLanguage;
+import com.patternpedia.api.entities.pattern.view.PatternView;
+import com.patternpedia.api.entities.edge.UndirectedEdge;
 import com.patternpedia.api.rest.model.AddDirectedEdgeToViewRequest;
 import com.patternpedia.api.rest.model.AddUndirectedEdgeToViewRequest;
 import com.patternpedia.api.rest.model.CreateDirectedEdgeRequest;

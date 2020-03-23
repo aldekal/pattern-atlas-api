@@ -2,7 +2,7 @@ package com.patternpedia.api.rest.model;
 
 import java.util.UUID;
 
-import com.patternpedia.api.entities.Pattern;
+import com.patternpedia.api.entities.pattern.pattern.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;

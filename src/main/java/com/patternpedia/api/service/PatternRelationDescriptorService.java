@@ -3,9 +3,9 @@ package com.patternpedia.api.service;
 import java.util.List;
 import java.util.UUID;
 
-import com.patternpedia.api.entities.DirectedEdge;
-import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.entities.UndirectedEdge;
+import com.patternpedia.api.entities.edge.DirectedEdge;
+import com.patternpedia.api.entities.pattern.pattern.Pattern;
+import com.patternpedia.api.entities.edge.UndirectedEdge;
 
 import org.springframework.transaction.annotation.Transactional;
 

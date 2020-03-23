@@ -40,6 +40,12 @@ public class UserEntity implements Serializable{
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommentPatternEvolution> comments = new ArrayList<>();
 
+    public UserEntity(String name, String mail, String password) {
+        this.name = name;
+        this.mail = mail;
+        this.password = password;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

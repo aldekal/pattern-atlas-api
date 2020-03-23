@@ -1,14 +1,18 @@
-package com.patternpedia.api.entities;
+package com.patternpedia.api.entities.edge;
 
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.patternpedia.api.entities.pattern.pattern.Pattern;
+import com.patternpedia.api.entities.pattern.language.PatternLanguage;
+import com.patternpedia.api.entities.PatternRelationDescriptor;
+import com.patternpedia.api.entities.pattern.view.PatternViewDirectedEdge;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -19,18 +23,18 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @Table(indexes = {
-        @Index(name = "p1PatternIdx", columnList = "p1_id"),
-        @Index(name = "p2PatternIdx", columnList = "p2_id")
+        @Index(name = "sourcePatternIdx", columnList = "source_id"),
+        @Index(name = "targetPatternIdx", columnList = "target_id")
 })
-public class UndirectedEdge extends PatternRelationDescriptor {
+public class DirectedEdge extends PatternRelationDescriptor {
 
     @JsonIgnore
     @ManyToOne(optional = false)
-    private Pattern p1;
+    private Pattern source;
 
     @JsonIgnore
     @ManyToOne(optional = false)
-    private Pattern p2;
+    private Pattern target;
 
     @JsonIgnore
     @ToString.Exclude
@@ -39,6 +43,6 @@ public class UndirectedEdge extends PatternRelationDescriptor {
 
     @JsonIgnore
     @ToString.Exclude
-    @OneToMany(mappedBy = "undirectedEdge", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PatternViewUndirectedEdge> patternViews;
+    @OneToMany(mappedBy = "directedEdge")
+    private List<PatternViewDirectedEdge> patternViews;
 }

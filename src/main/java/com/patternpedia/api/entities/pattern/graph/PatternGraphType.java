@@ -1,4 +1,4 @@
-package com.patternpedia.api.entities;
+package com.patternpedia.api.entities.pattern.graph;
 
 public enum PatternGraphType {
     PATTERN_LANGUAGE,

@@ -2,7 +2,7 @@ package com.patternpedia.api.integration;
 
 import java.util.UUID;
 
-import com.patternpedia.api.entities.PatternLanguage;
+import com.patternpedia.api.entities.pattern.language.PatternLanguage;
 import com.patternpedia.api.entities.PatternSchema;
 import com.patternpedia.api.util.IntegrationTestHelper;
 
