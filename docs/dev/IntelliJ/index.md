@@ -1,0 +1,1 @@
+This document will contain information about how to setup IntelliJ. 
