@@ -289,7 +289,7 @@ public class PatternController {
             if (null != directedEdge.getPatternLanguage() && directedEdge.getPatternLanguage().getId().equals(patternLanguageId)) {
                 // edge is part of pattern language, thus reference the route to edge in pattern language
                 links.add(linkTo(methodOn(PatternRelationDescriptorController.class)
-                        .getDirectedEdgeOfPatternLanguageById(directedEdge.getPatternLanguage().getId(), directedEdge.getId())).withRel("ingoingDirectedEdges"));
+                        .getDirectedEdgeOfPatternLanguageById(directedEdge.getPatternLanguage().getId(), directedEdge.getId())).withRel("outgoingDirectedEdges"));
             }
         }
 
