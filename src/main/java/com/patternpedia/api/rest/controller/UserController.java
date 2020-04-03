@@ -1,5 +1,6 @@
 package com.patternpedia.api.rest.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -57,6 +59,13 @@ public class UserController {
     UserEntity getUserById(@PathVariable UUID userId) {
         return this.userService.getUserById(userId);
     }
+
+    @GetMapping(value = "/getUser")
+    @PreAuthorize("hasAuthority('MEMBER')")
+    public ResponseEntity<Principal> get(final Principal principal) {
+        return ResponseEntity.ok(principal);
+    }
+
 
     /**
      * CREATE Methods

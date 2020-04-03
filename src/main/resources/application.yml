@@ -9,7 +9,7 @@ spring:
     initialization-mode: always
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update #craete
     properties:
       hibernate:
         enable_lazy_load_no_trans: true
@@ -25,48 +25,11 @@ security:
   oauth2:
     resource:
 #      user-info-uri: http://localhost:8081/userinfo
-      token-info-uri: http://localhost:8081/oauth/check_token
-
-    client:
-      clientId: pattern-pedia-client
-      clientSecret: iamaghost
-
-#security:
-#  jwt:
-#    public-key: classpath:public.txt
-
-
-
-#security:
-#  oauth2:
-#    client:
-#      client-id: pattern-pedia-client
-#      client-secret: iamaghost
-#    resource:
-#      tokenInfoUri: https://idp.example.com/oauth2/check_token
-#      jwt:
-#        key-value: |
-#          -----BEGIN PUBLIC KEY-----
-#          MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC...
-#          -----END PUBLIC KEY-----
-#      jwk:
-#        key-set-uri: http://localhost:8081/sso-auth-server/.well-known/jwks.json
-#
-#  security.oauth2.resource.jwk.key-set-uri=
-#  http://localhost:8081/sso-auth-server/.well-known/jwks.json
+#      token-info-uri: http://localhost:8081/oauth/check_token
+      jwk:
+        key-set-uri: http://localhost:8081/.well-known/jwks.json
 
 springdoc:
   swagger-ui:
-    path: /backend.html
+    path: /swagger-ui.html
 
-#  spring.datasource.url=jdbc:postgresql://localhost:5432/postgres
-#spring.datasource.username=postgres
-#spring.datasource.password=postgres
-#spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
-#spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
-#spring.jpa.hibernate.ddl-auto=create
-#spring.datasource.initialization-mode=always
-#spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true
-#okta.oauth2.issuer=https://dev-918271.okta.com/oauth2/default
-#okta.oauth2.clientId=0oa1eflyl1wZDVLLg357
-#springdoc.swagger-ui.path=/backend.html
