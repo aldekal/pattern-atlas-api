@@ -105,7 +105,7 @@ public class UserController {
     /**
      * DELETE Methods
      */
-    @DeleteMapping(value = "/delete/{patternEvolutionId}")
+    @DeleteMapping(value = "/delete/{userId}")
     void deleteUser(@PathVariable UUID userId) {
         this.userService.deleteUser(userId);
 //        return ResponseEntity.noContent().build();

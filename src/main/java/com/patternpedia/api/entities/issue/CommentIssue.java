@@ -1,4 +1,4 @@
-package com.patternpedia.api.entities.evolution;
+package com.patternpedia.api.entities.issue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -15,7 +15,7 @@ import java.util.UUID;
 @Entity
 @Data
 @NoArgsConstructor
-public class CommentPatternEvolution implements Serializable{
+public class CommentIssue implements Serializable{
 
     @Id
     @GeneratedValue(generator = "pg-uuid")
@@ -26,7 +26,7 @@ public class CommentPatternEvolution implements Serializable{
     @JsonIgnore
     @ToString.Exclude
     @ManyToOne
-    private PatternEvolution patternEvolution;
+    private Issue issue;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
 //    @JsonIgnore
@@ -34,15 +34,15 @@ public class CommentPatternEvolution implements Serializable{
     @ManyToOne
     private UserEntity user;
 
-    public CommentPatternEvolution(String text) {
+    public CommentIssue(String text) {
         this.text = text;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CommentPatternEvolution)) return false;
-        CommentPatternEvolution that = (CommentPatternEvolution) o;
+        if (!(o instanceof CommentIssue)) return false;
+        CommentIssue that = (CommentIssue) o;
         return id.equals(that.id) &&
                 text.equals(that.text);
     }

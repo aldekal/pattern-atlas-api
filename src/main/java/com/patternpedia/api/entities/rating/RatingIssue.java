@@ -1,6 +1,6 @@
 package com.patternpedia.api.entities.rating;
 
-import com.patternpedia.api.entities.evolution.PatternEvolution;
+import com.patternpedia.api.entities.issue.Issue;
 import com.patternpedia.api.entities.user.UserEntity;
 import lombok.*;
 
@@ -11,7 +11,7 @@ import java.util.Objects;
 @Data
 @NoArgsConstructor
 //@EqualsAndHashCode
-public class RatingPatternEvolution {
+public class RatingIssue {
 
     @EmbeddedId
     @EqualsAndHashCode.Include
@@ -20,7 +20,7 @@ public class RatingPatternEvolution {
     @ManyToOne
     @MapsId("patternId")
     @EqualsAndHashCode.Include
-    private PatternEvolution patternEvolution;
+    private Issue issue;
 
     @ManyToOne
     @MapsId("userId")
@@ -29,10 +29,10 @@ public class RatingPatternEvolution {
 
     private int rating;
 
-    public RatingPatternEvolution(PatternEvolution patternEvolution, UserEntity user) {
-        this.patternEvolution = patternEvolution;
+    public RatingIssue(Issue issue, UserEntity user) {
+        this.issue = issue;
         this.user = user;
-        this.id = new RatingKey(patternEvolution.getId(), user.getId());
+        this.id = new RatingKey(issue.getId(), user.getId());
     }
 
     @Override
@@ -43,15 +43,15 @@ public class RatingPatternEvolution {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof RatingPatternEvolution)) return false;
-        RatingPatternEvolution that = (RatingPatternEvolution) o;
-        return Objects.equals(patternEvolution.getName(), that.patternEvolution.getName()) &&
+        if (!(o instanceof RatingIssue)) return false;
+        RatingIssue that = (RatingIssue) o;
+        return Objects.equals(issue.getName(), that.issue.getName()) &&
                 Objects.equals(user.getName(), that.user.getName()) &&
                 Objects.equals(rating, that.rating);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(patternEvolution.getName(), user.getName(), rating);
+        return Objects.hash(issue.getName(), user.getName(), rating);
     }
 }

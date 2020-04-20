@@ -1,10 +1,10 @@
-package com.patternpedia.api.entities.evolution;
+package com.patternpedia.api.entities.issue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.patternpedia.api.entities.EntityWithURI;
 import com.patternpedia.api.entities.user.UserEntity;
-import com.patternpedia.api.entities.rating.RatingPatternEvolution;
+import com.patternpedia.api.entities.rating.RatingIssue;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -16,7 +16,7 @@ import java.util.*;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-public class PatternEvolution extends EntityWithURI {
+public class Issue extends EntityWithURI {
 
     private String description;
 
@@ -25,24 +25,24 @@ public class PatternEvolution extends EntityWithURI {
     private String version = "0.1.0";
 
     @JsonIgnore
-    @OneToMany(mappedBy = "patternEvolution", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<RatingPatternEvolution> userRating = new HashSet<>();
+    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<RatingIssue> userRating = new HashSet<>();
 
 //    @JsonIgnore()
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @OneToMany(mappedBy = "patternEvolution", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CommentPatternEvolution> comments = new ArrayList<>();
+    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CommentIssue> comments = new ArrayList<>();
 
 
-    public void addComment(CommentPatternEvolution comment, UserEntity user) {
+    public void addComment(CommentIssue comment, UserEntity user) {
         comments.add(comment);
-        comment.setPatternEvolution(this);
+        comment.setIssue(this);
         comment.setUser(user);
     }
 
-    public void removeComment(CommentPatternEvolution comment) {
+    public void removeComment(CommentIssue comment) {
         comments.remove(comment);
-        comment.setPatternEvolution(null);
+        comment.setIssue(null);
         comment.setUser(null);
     }
 

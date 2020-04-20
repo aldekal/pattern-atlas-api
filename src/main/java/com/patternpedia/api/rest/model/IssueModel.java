@@ -9,7 +9,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class PatternEvolutionModel {
+public class IssueModel {
 
     private UUID id;
 

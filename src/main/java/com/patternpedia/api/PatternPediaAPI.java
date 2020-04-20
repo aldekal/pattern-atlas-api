@@ -1,9 +1,9 @@
 package com.patternpedia.api;
 
-import com.patternpedia.api.entities.evolution.PatternEvolution;
+import com.patternpedia.api.entities.issue.Issue;
 //import com.patternpedia.api.rest.controller.UserController;
 import com.patternpedia.api.rest.controller.UserController;
-import com.patternpedia.api.service.PatternEvolutionService;
+import com.patternpedia.api.service.IssueService;
 import com.vladmihalcea.hibernate.type.util.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class PatternPediaAPI implements CommandLineRunner {
     private UserController userController;
 
     @Autowired
-    private PatternEvolutionService patternEvolutionService;
+    private IssueService issueService;
 
 //    @GetMapping("/test")
 //    @PreAuthorize("#oauth2.hasScope('delete')")
@@ -58,10 +58,10 @@ public class PatternPediaAPI implements CommandLineRunner {
 //        UserEntity u = userController.newUser("Paul", "a@a", "pass");
 //        log.info(u.toString());
 
-        PatternEvolution patternEvolution = new PatternEvolution();
-        patternEvolution.setUri("uri");
-        patternEvolution.setName("name");
-        PatternEvolution p = patternEvolutionService.createPatternEvolution(patternEvolution);
+        Issue issue = new Issue();
+        issue.setUri("uri");
+        issue.setName("name");
+        Issue p = issueService.createIssue(issue);
         log.info(p.toString());
     }
 
