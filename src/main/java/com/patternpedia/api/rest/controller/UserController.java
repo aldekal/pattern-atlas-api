@@ -1,5 +1,6 @@
 package com.patternpedia.api.rest.controller;
 
+import com.patternpedia.api.entities.user.UserRole;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,11 +13,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping(value = "/user", produces = "application/hal+json")
 public class UserController {
 
@@ -50,7 +53,7 @@ public class UserController {
      */
 //    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping(value = "/getAll")
-    @PreAuthorize(value = "hasAuthority('MEMBER')")
+//    @PreAuthorize(value = "hasAuthority('MEMBER')")
     List<UserEntity> all() {
         return this.userService.getAllUsers();
     }
@@ -78,6 +81,15 @@ public class UserController {
 //        UserEntity user = new UserEntity(name, mail, password);
         return this.userService.createUser(user);
 
+    }
+
+    public void defaultUser() {
+        List <UserRole> role = new ArrayList<>(Arrays.asList(UserRole.MEMBER));
+        UserEntity userMember = new UserEntity("Member User", "member@mail", passwordEncoder.encode("pass"), role);
+        this.userService.createUser(userMember);
+        role.add(UserRole.ADMIN);
+        UserEntity userAdmin = new UserEntity("Admin User", "admin@mail", passwordEncoder.encode("pass"), role);
+        this.userService.createUser(userAdmin);
     }
 
     /**

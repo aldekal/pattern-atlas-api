@@ -8,13 +8,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@CrossOrigin(allowedHeaders = "*", origins = "*")
+//@CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping(value = "/patternEvolution", produces = "application/hal+json")
 public class PatternEvolutionController {
 
@@ -49,6 +50,7 @@ public class PatternEvolutionController {
     }
 
     @GetMapping(value = "/getById/{patternEvolutionId}")
+    @PreAuthorize(value = "#oauth2.hasScope('read')")
     PatternEvolution getPatternEvolutionById(@PathVariable UUID patternEvolutionId) {
         return this.patternEvolutionService.getPatternEvolutionById(patternEvolutionId);
     }
@@ -62,6 +64,7 @@ public class PatternEvolutionController {
      * CREATE Methods
      */
     @PostMapping(value = "/create")
+//    @PreAuthorize(value = "#oauth2.hasScope('write')")
 //    @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
     PatternEvolution newPatternEvolution(@RequestBody PatternEvolution patternEvolution) {
@@ -69,6 +72,7 @@ public class PatternEvolutionController {
     }
 
     @PostMapping(value = "/createComment/{patternEvolutionId}&{userId}")
+//    @PreAuthorize(value = "#oauth2.hasScope('write')")
 //    @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
     PatternEvolution newPatternEvolutionComment(@PathVariable UUID patternEvolutionId, @PathVariable UUID userId, @RequestBody CommentPatternEvolution commentPatternEvolution) {
@@ -94,6 +98,7 @@ public class PatternEvolutionController {
      * DELETE Methods
      */
     @DeleteMapping(value = "/delete/{patternEvolutionId}")
+//    @PreAuthorize(value = "#oauth2.hasScope('de')")
     ResponseEntity<?> deletePatternEvolution(@PathVariable UUID patternEvolutionId) {
         this.patternEvolutionService.deletePatternEvolution(patternEvolutionId);
         return ResponseEntity.noContent().build();

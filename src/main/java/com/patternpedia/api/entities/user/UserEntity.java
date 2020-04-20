@@ -3,10 +3,14 @@ package com.patternpedia.api.entities.user;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.patternpedia.api.entities.pattern.evolution.CommentPatternEvolution;
 import com.patternpedia.api.entities.rating.RatingPatternEvolution;
+import com.vladmihalcea.hibernate.type.array.EnumArrayType;
+import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.catalina.User;
 import org.hibernate.annotations.ColumnTransformer;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -15,14 +19,23 @@ import java.util.*;
 @Entity
 @Data
 @NoArgsConstructor
+@TypeDef(name = "pgsql_enum", typeClass = PostgreSQLEnumType.class)
 public class UserEntity implements Serializable{
 
     @Id
     @GeneratedValue(generator = "pg-uuid")
     private UUID id;
 
+//    @Enumerated( EnumArrayType.SQL_ARRAY_TYPE)
+//    @OneToMany
+//@Parameter(
+////        name = EnumArrayType.SQL_ARRAY_TYPE,
+////        value = "sensor_state"
+////)
     @Enumerated(EnumType.STRING)
-    private UserRole role = UserRole.MEMBER;
+    @ElementCollection
+    @Type(type = "pgsql_enum")
+    private List<UserRole> role = new ArrayList<>(Arrays.asList(UserRole.MEMBER));
 
     private String mail;
 
@@ -44,6 +57,13 @@ public class UserEntity implements Serializable{
         this.name = name;
         this.mail = mail;
         this.password = password;
+    }
+
+    public UserEntity(String name, String mail, String password, List<UserRole> role) {
+        this.name = name;
+        this.mail = mail;
+        this.password = password;
+        this.role = role;
     }
 
     @Override

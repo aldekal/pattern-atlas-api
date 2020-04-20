@@ -1,5 +1,6 @@
 package com.patternpedia.api.config;
 
+import com.patternpedia.api.entities.user.UserRole;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -9,6 +10,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
@@ -48,15 +50,25 @@ class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         // @formatter:off
         http
+//                .anonymous()
+//                .and()
                 .requestMatchers()
-                .antMatchers("/swagger-ui/**")
+                .antMatchers("/**")
                 .and()
                 .authorizeRequests()
                 .antMatchers("/swagger-ui/**").permitAll()
-                .antMatchers("/home").access("#oauth2.hasScope('write')")
-                .antMatchers("/test/**").access("#oauth2.hasScope('delete')")
-                .antMatchers("/user/**").access("#oauth2.hasScope('read')")
-                .anyRequest().authenticated();
+                .antMatchers(HttpMethod.GET, "/**").permitAll()
+//                .antMatchers(HttpMethod.POST, "/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/**").access("#oauth2.hasScope('write')")
+                .antMatchers(HttpMethod.PUT, "/**").access("#oauth2.hasScope('write')")
+                .antMatchers(HttpMethod.DELETE, "/**").hasAuthority("ADMIN")
+//                .antMatchers("/test/**").access("#oauth2.hasScope('delete')")
+//                .antMatchers("/user/**").access("#oauth2.hasScope('read')")
+                .anyRequest().authenticated()
+//                .anyRequest().permitAll()
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         // @formatter:on
     }
 
