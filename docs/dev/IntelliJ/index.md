@@ -78,9 +78,10 @@
     ![checkstyle](graphics/open-database.png)
     - Go to "postgres@localhost > databases > postgres > schemas > public > tables"
     - Right-Click on "tables"
+    ![checkstyle](graphics/dump-data.png)
     - Go to "Dump Data to File(s)"
-    - Click on the drop-down menu and choose "SQL Inserts"
+    - Click on "SQL Inserts"
     - Click on the "Output directory"
     - Choose the target sql file
-    - Click "Dump Data"
+    - Hit "Enter"
 
