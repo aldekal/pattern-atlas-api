@@ -3,11 +3,7 @@ package com.patternpedia.api.service;
 import java.util.List;
 import java.util.UUID;
 
-import com.patternpedia.api.entities.edge.DirectedEdge;
-import com.patternpedia.api.entities.pattern.pattern.Pattern;
-import com.patternpedia.api.entities.pattern.language.PatternLanguage;
-import com.patternpedia.api.entities.PatternSchema;
-import com.patternpedia.api.entities.edge.UndirectedEdge;
+import com.patternpedia.api.entities.*;
 import com.patternpedia.api.exception.UndirectedEdgeNotFoundException;
 import com.patternpedia.api.rest.model.CreateDirectedEdgeRequest;
 import com.patternpedia.api.rest.model.CreateUndirectedEdgeRequest;
@@ -37,7 +33,7 @@ public interface PatternLanguageService {
     @Transactional
     Pattern createPatternAndAddToPatternLanguage(UUID patternLanguageId, Pattern pattern);
 
-    @Transactional(readOnly = true)
+    @Transactional
     List<Pattern> getPatternsOfPatternLanguage(UUID patternLanguageId);
 
     @Transactional(readOnly = true)
@@ -70,10 +66,8 @@ public interface PatternLanguageService {
     @Transactional
     DirectedEdge createDirectedEdgeAndAddToPatternLanguage(UUID patternLanguageId, CreateDirectedEdgeRequest createDirectedEdgeRequest);
 
-    @Transactional(readOnly = true)
     List<DirectedEdge> getDirectedEdgesOfPatternLanguage(UUID patternLanguageId);
 
-    @Transactional(readOnly = true)
     DirectedEdge getDirectedEdgeOfPatternLanguageById(UUID patternLanguageId, UUID directedEdgeId);
 
     @Transactional
@@ -88,10 +82,8 @@ public interface PatternLanguageService {
     @Transactional(readOnly = true)
     List<UndirectedEdge> getUndirectedEdgesOfPatternLanguage(UUID patternLanguageId);
 
-    @Transactional(readOnly = true)
     UndirectedEdge getUndirectedEdgeOfPatternLanguageById(UUID patternLanguageId, UUID undirectedEdgeId) throws UndirectedEdgeNotFoundException;
 
-    @Transactional
     UndirectedEdge updateUndirectedEdgeOfPatternLanguage(UUID patternLanguageId, UndirectedEdge undirectedEdge);
 
     @Transactional

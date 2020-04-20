@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.patternpedia.api.entities.edge.DirectedEdge;
-import com.patternpedia.api.entities.pattern.pattern.Pattern;
+import com.patternpedia.api.entities.DirectedEdge;
+import com.patternpedia.api.entities.Pattern;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;

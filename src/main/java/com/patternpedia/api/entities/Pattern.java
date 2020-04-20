@@ -1,4 +1,4 @@
-package com.patternpedia.api.entities.pattern.pattern;
+package com.patternpedia.api.entities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +11,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
-import com.patternpedia.api.entities.EntityWithURI;
-import com.patternpedia.api.entities.pattern.language.PatternLanguage;
-import com.patternpedia.api.entities.pattern.view.PatternViewPattern;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

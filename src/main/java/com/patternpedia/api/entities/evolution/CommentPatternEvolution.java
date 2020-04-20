@@ -1,4 +1,4 @@
-package com.patternpedia.api.entities.pattern.evolution;
+package com.patternpedia.api.entities.evolution;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

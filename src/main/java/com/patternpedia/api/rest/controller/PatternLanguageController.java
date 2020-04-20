@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.patternpedia.api.entities.pattern.language.PatternLanguage;
+import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.PatternSchema;
 import com.patternpedia.api.rest.model.PatternLanguageGraphModel;
 import com.patternpedia.api.rest.model.PatternLanguageModel;

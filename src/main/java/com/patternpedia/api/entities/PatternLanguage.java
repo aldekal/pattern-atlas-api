@@ -1,20 +1,12 @@
-package com.patternpedia.api.entities.pattern.language;
+package com.patternpedia.api.entities;
 
 import java.net.URL;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
-import com.patternpedia.api.entities.PatternSchema;
-import com.patternpedia.api.entities.edge.DirectedEdge;
-import com.patternpedia.api.entities.edge.UndirectedEdge;
-import com.patternpedia.api.entities.pattern.graph.PatternGraph;
-import com.patternpedia.api.entities.pattern.pattern.Pattern;
+import javax.persistence.*;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -26,6 +18,10 @@ import lombok.NoArgsConstructor;
 public class PatternLanguage extends PatternGraph {
 
     private URL logo;
+
+    @Column(nullable = true)
+    private String creativeCommonsReference;
+
 
     @JsonIgnore
     @OneToMany(mappedBy = "patternLanguage")

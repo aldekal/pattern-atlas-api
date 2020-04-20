@@ -2,8 +2,8 @@ package com.patternpedia.api.service;
 
 import java.util.List;
 
-import com.patternpedia.api.entities.pattern.evolution.CommentPatternEvolution;
-import com.patternpedia.api.entities.pattern.evolution.PatternEvolution;
+import com.patternpedia.api.entities.evolution.CommentPatternEvolution;
+import com.patternpedia.api.entities.evolution.PatternEvolution;
 
 import java.util.UUID;
 

@@ -1,6 +1,6 @@
 package com.patternpedia.api.repositories;
 
-import com.patternpedia.api.entities.pattern.language.PatternLanguage;
+import com.patternpedia.api.entities.PatternLanguage;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

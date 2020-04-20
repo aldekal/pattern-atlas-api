@@ -1,7 +1,7 @@
 package com.patternpedia.api.service;
 
-import com.patternpedia.api.entities.pattern.evolution.CommentPatternEvolution;
-import com.patternpedia.api.entities.pattern.evolution.PatternEvolution;
+import com.patternpedia.api.entities.evolution.CommentPatternEvolution;
+import com.patternpedia.api.entities.evolution.PatternEvolution;
 import com.patternpedia.api.entities.user.UserEntity;
 import com.patternpedia.api.entities.rating.RatingPatternEvolution;
 import com.patternpedia.api.exception.NullPatternException;

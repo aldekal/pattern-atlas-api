@@ -3,9 +3,9 @@ package com.patternpedia.api.repositories;
 import java.util.List;
 import java.util.UUID;
 
-import com.patternpedia.api.entities.pattern.view.PatternViewDirectedEdge;
-import com.patternpedia.api.entities.pattern.view.PatternViewUndirectedEdge;
-import com.patternpedia.api.entities.pattern.view.PatternViewUndirectedEdgeId;
+import com.patternpedia.api.entities.PatternViewDirectedEdge;
+import com.patternpedia.api.entities.PatternViewUndirectedEdge;
+import com.patternpedia.api.entities.PatternViewUndirectedEdgeId;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;

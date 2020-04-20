@@ -1,11 +1,10 @@
-package com.patternpedia.api.entities.pattern.view;
+package com.patternpedia.api.entities;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
-import com.patternpedia.api.entities.edge.UndirectedEdge;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -14,11 +13,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode
-public class PatternViewUndirectedEdge {
+public class PatternViewPattern {
 
     @EmbeddedId
     @EqualsAndHashCode.Exclude
-    private PatternViewUndirectedEdgeId id;
+    private PatternViewPatternId id;
 
     @ManyToOne
     @MapsId("patternViewId")
@@ -26,13 +25,13 @@ public class PatternViewUndirectedEdge {
     private PatternView patternView;
 
     @ManyToOne
-    @MapsId("undirectedEdgeId")
+    @MapsId("patternId")
     @EqualsAndHashCode.Include
-    private UndirectedEdge undirectedEdge;
+    private Pattern pattern;
 
-    public PatternViewUndirectedEdge(PatternView patternView, UndirectedEdge undirectedEdge) {
+    public PatternViewPattern(PatternView patternView, Pattern pattern) {
         this.patternView = patternView;
-        this.undirectedEdge = undirectedEdge;
-        this.id = new PatternViewUndirectedEdgeId(patternView.getId(), undirectedEdge.getId());
+        this.pattern = pattern;
+        this.id = new PatternViewPatternId(patternView.getId(), pattern.getId());
     }
 }

@@ -2,9 +2,9 @@ package com.patternpedia.api.exception;
 
 import java.util.UUID;
 
-import com.patternpedia.api.entities.pattern.graph.PatternGraphType;
-import com.patternpedia.api.entities.pattern.language.PatternLanguage;
-import com.patternpedia.api.entities.pattern.view.PatternView;
+import com.patternpedia.api.entities.PatternGraphType;
+import com.patternpedia.api.entities.PatternLanguage;
+import com.patternpedia.api.entities.PatternView;
 
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 

@@ -3,7 +3,7 @@ package com.patternpedia.api.validator;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.patternpedia.api.entities.pattern.pattern.Pattern;
+import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternSchema;
 import com.patternpedia.api.entities.PatternSectionSchema;
 import com.patternpedia.api.service.PatternLanguageService;

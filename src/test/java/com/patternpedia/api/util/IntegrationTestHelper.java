@@ -7,11 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import com.patternpedia.api.entities.pattern.pattern.Pattern;
-import com.patternpedia.api.entities.pattern.language.PatternLanguage;
-import com.patternpedia.api.entities.PatternSchema;
-import com.patternpedia.api.entities.PatternSectionSchema;
-import com.patternpedia.api.entities.pattern.view.PatternView;
+import com.patternpedia.api.entities.*;
 import com.patternpedia.api.repositories.DirectedEdgeRepository;
 import com.patternpedia.api.repositories.PatternLanguageRepository;
 import com.patternpedia.api.repositories.PatternRepository;

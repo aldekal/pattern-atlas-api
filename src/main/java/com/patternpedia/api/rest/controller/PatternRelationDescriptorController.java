@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.patternpedia.api.entities.edge.DirectedEdge;
-import com.patternpedia.api.entities.edge.UndirectedEdge;
+import com.patternpedia.api.entities.DirectedEdge;
+import com.patternpedia.api.entities.UndirectedEdge;
 import com.patternpedia.api.rest.model.AddDirectedEdgeToViewRequest;
 import com.patternpedia.api.rest.model.AddUndirectedEdgeToViewRequest;
 import com.patternpedia.api.rest.model.CreateDirectedEdgeRequest;
@@ -31,7 +31,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping(produces = "application/hal+json")
+@RequestMapping(value = "/", produces = "application/hal+json")
 public class PatternRelationDescriptorController {
 
     private PatternLanguageService patternLanguageService;
@@ -105,7 +105,7 @@ public class PatternRelationDescriptorController {
 
     private static List<Link> getNonRouteRelatedLinksOfDirectedEdge(DirectedEdge directedEdge, List<Link> links) {
         if (null != directedEdge.getPatternViews()) {
-            List<Link> newLinks = directedEdge.getPatternViews().stream()
+            List<Link> newLinks = directedEdge.getPatternViews().parallelStream()
                     .map(patternViewDirectedEdge -> linkTo(methodOn(PatternViewController.class).getPatternViewById(patternViewDirectedEdge.getPatternView().getId())).withRel("patternView")
                     ).collect(Collectors.toList());
             links.addAll(newLinks);
@@ -221,7 +221,7 @@ public class PatternRelationDescriptorController {
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/directedEdges")
     public CollectionModel<EntityModel<DirectedEdgeModel>> getDirectedEdgesOfPatternLanguage(@PathVariable UUID patternLanguageId) {
         List<EntityModel<DirectedEdgeModel>> directedEdges = this.patternLanguageService.getDirectedEdgesOfPatternLanguage(patternLanguageId)
-                .stream()
+                .parallelStream()
                 .map(DirectedEdgeModel::from)
                 .map(directedEdgeModel -> new EntityModel<>(directedEdgeModel, getDirectedEdgeLinksForPatternLanguageRoute(directedEdgeModel.getDirectedEdge())))
                 .collect(Collectors.toList());

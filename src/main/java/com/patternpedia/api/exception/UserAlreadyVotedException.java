@@ -1,6 +1,6 @@
 package com.patternpedia.api.exception;
 
-import com.patternpedia.api.entities.pattern.view.PatternView;
+import com.patternpedia.api.entities.PatternView;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

@@ -1,4 +1,4 @@
-package com.patternpedia.api.entities.pattern.view;
+package com.patternpedia.api.entities;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -14,7 +14,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class PatternViewUndirectedEdgeId implements Serializable {
+public class PatternViewPatternId implements Serializable {
+
     protected UUID patternViewId;
-    protected UUID undirectedEdgeId;
+    protected UUID patternId;
 }

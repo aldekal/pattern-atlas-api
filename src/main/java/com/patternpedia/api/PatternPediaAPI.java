@@ -1,28 +1,16 @@
 package com.patternpedia.api;
 
-import com.patternpedia.api.entities.user.UserEntity;
-import com.patternpedia.api.entities.pattern.evolution.PatternEvolution;
+import com.patternpedia.api.entities.evolution.PatternEvolution;
 //import com.patternpedia.api.rest.controller.UserController;
 import com.patternpedia.api.rest.controller.UserController;
 import com.patternpedia.api.service.PatternEvolutionService;
-import com.patternpedia.api.service.UserService;
 import com.vladmihalcea.hibernate.type.util.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 
 @Slf4j

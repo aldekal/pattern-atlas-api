@@ -2,7 +2,7 @@ package com.patternpedia.api.rest.model;
 
 import java.util.UUID;
 
-import com.patternpedia.api.entities.edge.UndirectedEdge;
+import com.patternpedia.api.entities.UndirectedEdge;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.Column;

@@ -1,6 +1,6 @@
 package com.patternpedia.api.entities.rating;
 
-import com.patternpedia.api.entities.pattern.evolution.PatternEvolution;
+import com.patternpedia.api.entities.evolution.PatternEvolution;
 import com.patternpedia.api.entities.user.UserEntity;
 import lombok.*;
 

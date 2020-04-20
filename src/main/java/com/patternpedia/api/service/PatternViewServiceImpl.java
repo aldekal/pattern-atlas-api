@@ -4,17 +4,17 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.patternpedia.api.entities.edge.DirectedEdge;
-import com.patternpedia.api.entities.pattern.pattern.Pattern;
-import com.patternpedia.api.entities.pattern.graph.PatternGraphType;
-import com.patternpedia.api.entities.pattern.view.PatternView;
-import com.patternpedia.api.entities.pattern.view.PatternViewDirectedEdge;
-import com.patternpedia.api.entities.pattern.view.PatternViewDirectedEdgeId;
-import com.patternpedia.api.entities.pattern.view.PatternViewPattern;
-import com.patternpedia.api.entities.pattern.view.PatternViewPatternId;
-import com.patternpedia.api.entities.pattern.view.PatternViewUndirectedEdge;
-import com.patternpedia.api.entities.pattern.view.PatternViewUndirectedEdgeId;
-import com.patternpedia.api.entities.edge.UndirectedEdge;
+import com.patternpedia.api.entities.DirectedEdge;
+import com.patternpedia.api.entities.Pattern;
+import com.patternpedia.api.entities.PatternGraphType;
+import com.patternpedia.api.entities.PatternView;
+import com.patternpedia.api.entities.PatternViewDirectedEdge;
+import com.patternpedia.api.entities.PatternViewDirectedEdgeId;
+import com.patternpedia.api.entities.PatternViewPattern;
+import com.patternpedia.api.entities.PatternViewPatternId;
+import com.patternpedia.api.entities.PatternViewUndirectedEdge;
+import com.patternpedia.api.entities.PatternViewUndirectedEdgeId;
+import com.patternpedia.api.entities.UndirectedEdge;
 import com.patternpedia.api.exception.DirectedEdgeNotFoundException;
 import com.patternpedia.api.exception.NullPatternViewException;
 import com.patternpedia.api.exception.PatternNotFoundException;
@@ -359,4 +359,37 @@ public class PatternViewServiceImpl implements PatternViewService {
             }
         }
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Object getGraphOfPatternView(UUID patternViewId) {
+        PatternView patternView = this.getPatternViewById(patternViewId);
+        return patternView.getGraph();
+    }
+
+    @Override
+    @Transactional
+    public Object createGraphOfPatternView(UUID patternViewId, Object graph) {
+        PatternView patternView = this.getPatternViewById(patternViewId);
+        patternView.setGraph(graph);
+        patternView = this.updatePatternView(patternView);
+        return patternView.getGraph();
+    }
+
+    @Override
+    public Object updateGraphOfPatternView(UUID patternViewId, Object graph) {
+        PatternView patternView = this.getPatternViewById(patternViewId);
+        patternView.setGraph(graph);
+        patternView = this.updatePatternView(patternView);
+        return patternView.getGraph();
+    }
+
+    @Override
+    @Transactional
+    public void deleteGraphOfPatternView(UUID patternViewId) {
+        PatternView patternView = this.getPatternViewById(patternViewId);
+        patternView.setGraph(null);
+        this.patternViewRepository.save(patternView);
+    }
+
 }

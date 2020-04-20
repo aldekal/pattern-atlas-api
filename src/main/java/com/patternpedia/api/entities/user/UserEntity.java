@@ -1,14 +1,11 @@
 package com.patternpedia.api.entities.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.patternpedia.api.entities.pattern.evolution.CommentPatternEvolution;
+import com.patternpedia.api.entities.evolution.CommentPatternEvolution;
 import com.patternpedia.api.entities.rating.RatingPatternEvolution;
-import com.vladmihalcea.hibernate.type.array.EnumArrayType;
 import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.catalina.User;
-import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 

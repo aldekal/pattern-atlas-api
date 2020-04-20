@@ -1,6 +1,6 @@
 package com.patternpedia.api.validator;
 
-import com.patternpedia.api.entities.pattern.pattern.Pattern;
+import com.patternpedia.api.entities.Pattern;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,8 +1,8 @@
 package com.patternpedia.api.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.patternpedia.api.entities.pattern.evolution.CommentPatternEvolution;
-import com.patternpedia.api.entities.pattern.evolution.PatternEvolution;
+import com.patternpedia.api.entities.evolution.CommentPatternEvolution;
+import com.patternpedia.api.entities.evolution.PatternEvolution;
 import com.patternpedia.api.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
