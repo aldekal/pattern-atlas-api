@@ -7,7 +7,7 @@ This document provides an index to all development guidelines and background inf
 1. Clone the repository `git clone https://github.com/PatternPedia/pattern-pedia-views-backend.git`.
 2. Build the repository `mvn package -DskipTests` (skiping the tests for a faster build), Java 8 required.
 3. Clone the repository `git clone https://github.com/PatternPedia/pattern-pedia-views-ui.git`.
-4. Build the repository `mvn package -DskipTests` (skiping the tests for a faster build), Java 8 required.
+4. Build the repository `mvn package -DskipTests` (skiping the tests for a faster build), npm is required. (plus yarn, optionally)
 5. Continue your IDE setup:
     - [IntelliJ Ultimate](/IntelliJ/)
 6. Set up database:
@@ -27,11 +27,11 @@ This document provides an index to all development guidelines and background inf
 7. Start the application (via the runconfig that you configured in step 5)
 
 ## Main API Endpoints
-API-Root: /pattern-pedia-views-backend (?)
+API-Root:   /
 
-Swagger-Documentation: /swagger-ui (?)
+Swagger-UI: http://localhost:8080/swagger-ui/index.html?url=/v3/api-docs#/
 
-HAL - Browser: /explorer (?)
+HAL - Browser: On "/" -> redirects to http://localhost:8080/explorer/index.html#uri=/
 
 
 ## License
