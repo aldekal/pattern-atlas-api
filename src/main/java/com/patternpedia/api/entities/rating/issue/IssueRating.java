@@ -1,4 +1,4 @@
-package com.patternpedia.api.entities.rating;
+package com.patternpedia.api.entities.rating.issue;
 
 import com.patternpedia.api.entities.issue.Issue;
 import com.patternpedia.api.entities.user.UserEntity;
@@ -11,14 +11,14 @@ import java.util.Objects;
 @Data
 @NoArgsConstructor
 //@EqualsAndHashCode
-public class RatingIssue {
+public class IssueRating {
 
     @EmbeddedId
     @EqualsAndHashCode.Include
-    private RatingKey id;
+    private IssueRatingKey id;
 
     @ManyToOne
-    @MapsId("patternId")
+    @MapsId("issueId")
     @EqualsAndHashCode.Include
     private Issue issue;
 
@@ -29,10 +29,10 @@ public class RatingIssue {
 
     private int rating;
 
-    public RatingIssue(Issue issue, UserEntity user) {
+    public IssueRating(Issue issue, UserEntity user) {
         this.issue = issue;
         this.user = user;
-        this.id = new RatingKey(issue.getId(), user.getId());
+        this.id = new IssueRatingKey(issue.getId(), user.getId());
     }
 
     @Override
@@ -43,8 +43,8 @@ public class RatingIssue {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof RatingIssue)) return false;
-        RatingIssue that = (RatingIssue) o;
+        if (!(o instanceof IssueRating)) return false;
+        IssueRating that = (IssueRating) o;
         return Objects.equals(issue.getName(), that.issue.getName()) &&
                 Objects.equals(user.getName(), that.user.getName()) &&
                 Objects.equals(rating, that.rating);

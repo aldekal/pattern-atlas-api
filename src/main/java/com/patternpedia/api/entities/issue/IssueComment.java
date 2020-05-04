@@ -2,6 +2,7 @@ package com.patternpedia.api.entities.issue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.patternpedia.api.entities.rating.issue.comment.IssueCommentRating;
 import com.patternpedia.api.entities.user.UserEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,19 +10,23 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
 @Data
 @NoArgsConstructor
-public class CommentIssue implements Serializable{
+public class IssueComment implements Serializable{
 
     @Id
     @GeneratedValue(generator = "pg-uuid")
     private UUID id;
 
     private String text;
+
+    private int rating = 0;
 
     @JsonIgnore
     @ToString.Exclude
@@ -34,15 +39,19 @@ public class CommentIssue implements Serializable{
     @ManyToOne
     private UserEntity user;
 
-    public CommentIssue(String text) {
+    @JsonIgnore
+    @OneToMany(mappedBy = "issueComment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<IssueCommentRating> userRating = new HashSet<>();
+
+    public IssueComment(String text) {
         this.text = text;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CommentIssue)) return false;
-        CommentIssue that = (CommentIssue) o;
+        if (!(o instanceof IssueComment)) return false;
+        IssueComment that = (IssueComment) o;
         return id.equals(that.id) &&
                 text.equals(that.text);
     }
@@ -54,6 +63,6 @@ public class CommentIssue implements Serializable{
 
     @Override
     public String toString() {
-        return "Comment: " + this.text + this.id.toString();
+        return "Comment: " + this.text + this.id.toString() + this.rating;
     }
 }

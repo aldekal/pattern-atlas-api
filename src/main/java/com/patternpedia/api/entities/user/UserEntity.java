@@ -1,8 +1,8 @@
 package com.patternpedia.api.entities.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.patternpedia.api.entities.issue.CommentIssue;
-import com.patternpedia.api.entities.rating.RatingIssue;
+import com.patternpedia.api.entities.issue.IssueComment;
+import com.patternpedia.api.entities.rating.issue.IssueRating;
 import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -43,12 +43,12 @@ public class UserEntity implements Serializable{
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<RatingIssue> ratingIssues = new HashSet<RatingIssue>();
+    private Set<IssueRating> issueRatings = new HashSet<IssueRating>();
 
 //    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CommentIssue> comments = new ArrayList<>();
+    private List<IssueComment> comments = new ArrayList<>();
 
     public UserEntity(String name, String mail, String password) {
         this.name = name;

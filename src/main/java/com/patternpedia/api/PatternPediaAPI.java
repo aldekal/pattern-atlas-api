@@ -54,13 +54,14 @@ public class PatternPediaAPI implements CommandLineRunner {
     public void run(String... args) {
 
         log.info("PatternPediaAPI is up");
-        userController.defaultUser();
+        userController.defaultUsers();
 //        UserEntity u = userController.newUser("Paul", "a@a", "pass");
 //        log.info(u.toString());
 
         Issue issue = new Issue();
         issue.setUri("uri");
         issue.setName("name");
+        issue.setDescription("description");
         Issue p = issueService.createIssue(issue);
         log.info(p.toString());
     }

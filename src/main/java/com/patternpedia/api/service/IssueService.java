@@ -2,7 +2,7 @@ package com.patternpedia.api.service;
 
 import java.util.List;
 
-import com.patternpedia.api.entities.issue.CommentIssue;
+import com.patternpedia.api.entities.issue.IssueComment;
 import com.patternpedia.api.entities.issue.Issue;
 
 import java.util.UUID;
@@ -26,5 +26,11 @@ public interface IssueService {
     Issue userRating(UUID issueId, UUID userId, String rating);
 
     /** Comment */
-    Issue createComment(UUID issueId, UUID userId, CommentIssue commentIssue);
+    Issue createComment(UUID issueId, UUID userId, IssueComment issueComment);
+
+    IssueComment getCommentById(UUID issueCommentId);
+
+    IssueComment updateComment(IssueComment issueComment);
+
+    Issue commentUserRating(UUID issueCommentId, UUID userId, String rating);
 }

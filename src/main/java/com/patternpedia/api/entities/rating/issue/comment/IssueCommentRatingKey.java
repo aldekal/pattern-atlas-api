@@ -1,4 +1,4 @@
-package com.patternpedia.api.entities.rating;
+package com.patternpedia.api.entities.rating.issue.comment;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,8 +14,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class RatingKey implements Serializable {
+public class IssueCommentRatingKey implements Serializable {
 
-    protected UUID patternId;
+    protected UUID issueCommentId;
     protected UUID userId;
 }

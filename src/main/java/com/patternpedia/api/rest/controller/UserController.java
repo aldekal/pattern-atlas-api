@@ -83,7 +83,7 @@ public class UserController {
 
     }
 
-    public void defaultUser() {
+    public void defaultUsers() {
         List <UserRole> role = new ArrayList<>(Arrays.asList(UserRole.MEMBER));
         UserEntity userMember = new UserEntity("Member User", "member@mail", passwordEncoder.encode("pass"), role);
         this.userService.createUser(userMember);

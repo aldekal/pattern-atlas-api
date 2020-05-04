@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.patternpedia.api.entities.EntityWithURI;
 import com.patternpedia.api.entities.user.UserEntity;
-import com.patternpedia.api.entities.rating.RatingIssue;
+import com.patternpedia.api.entities.rating.issue.IssueRating;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -26,28 +26,39 @@ public class Issue extends EntityWithURI {
 
     @JsonIgnore
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<RatingIssue> userRating = new HashSet<>();
+    private Set<IssueRating> userRating = new HashSet<>();
 
 //    @JsonIgnore()
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CommentIssue> comments = new ArrayList<>();
+    private List<IssueComment> comments = new ArrayList<>();
 
 
-    public void addComment(CommentIssue comment, UserEntity user) {
+    public void addComment(IssueComment comment, UserEntity user) {
         comments.add(comment);
         comment.setIssue(this);
         comment.setUser(user);
     }
 
-    public void removeComment(CommentIssue comment) {
+    public void updateComment(IssueComment updateComment) {
+        ListIterator<IssueComment> commentIterator = comments.listIterator();
+        while (commentIterator.hasNext()) {
+            IssueComment next = commentIterator.next();
+            if (next.getId().equals(updateComment.getId())) {
+                commentIterator.set(updateComment);
+                break;
+            }
+        }
+    }
+
+    public void removeComment(IssueComment comment) {
         comments.remove(comment);
         comment.setIssue(null);
         comment.setUser(null);
     }
 
     public String toString() {
-        return this.getId().toString() + userRating.toString();
+        return this.getId().toString() + this.getDescription();
     }
 
 }

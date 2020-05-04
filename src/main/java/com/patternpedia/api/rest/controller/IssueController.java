@@ -1,7 +1,7 @@
 package com.patternpedia.api.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.patternpedia.api.entities.issue.CommentIssue;
+import com.patternpedia.api.entities.issue.IssueComment;
 import com.patternpedia.api.entities.issue.Issue;
 import com.patternpedia.api.service.*;
 import org.slf4j.Logger;
@@ -75,8 +75,8 @@ public class IssueController {
 //    @PreAuthorize(value = "#oauth2.hasScope('write')")
 //    @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
-    Issue newIssueComment(@PathVariable UUID issueId, @PathVariable UUID userId, @RequestBody CommentIssue commentIssue) {
-        return this.issueService.createComment(issueId, userId, commentIssue);
+    Issue newIssueComment(@PathVariable UUID issueId, @PathVariable UUID userId, @RequestBody IssueComment issueComment) {
+        return this.issueService.createComment(issueId, userId, issueComment);
     }
 
     /**
@@ -92,6 +92,11 @@ public class IssueController {
     @PutMapping(value = "/updateRating/{issueId}&{userId}&{rating}")
     Issue putIssueRating(@PathVariable UUID issueId, @PathVariable UUID userId, @PathVariable String rating) {
         return this.issueService.userRating(issueId, userId, rating);
+    }
+
+    @PutMapping(value = "/updateCommentRating/{issueCommentId}&{userId}&{rating}")
+    Issue putIssueCommentRating(@PathVariable UUID issueCommentId, @PathVariable UUID userId, @PathVariable String rating) {
+        return this.issueService.commentUserRating(issueCommentId, userId, rating);
     }
 
     /**

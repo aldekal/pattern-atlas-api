@@ -1,15 +1,16 @@
 package com.patternpedia.api.service;
 
-import com.patternpedia.api.entities.issue.CommentIssue;
+import com.patternpedia.api.entities.issue.IssueComment;
 import com.patternpedia.api.entities.issue.Issue;
+import com.patternpedia.api.entities.rating.issue.comment.IssueCommentRating;
 import com.patternpedia.api.entities.user.UserEntity;
-import com.patternpedia.api.entities.rating.RatingIssue;
-import com.patternpedia.api.exception.NullPatternException;
-import com.patternpedia.api.exception.PatternLanguageNotFoundException;
-import com.patternpedia.api.exception.PatternNotFoundException;
-import com.patternpedia.api.repositories.CommentIssueRepository;
+import com.patternpedia.api.entities.rating.issue.IssueRating;
+import com.patternpedia.api.exception.*;
+import com.patternpedia.api.repositories.IssueCommentRatingRepository;
+import com.patternpedia.api.repositories.IssueCommentRepository;
 import com.patternpedia.api.repositories.IssueRepository;
-import com.patternpedia.api.repositories.RatingIssueRepository;
+import com.patternpedia.api.repositories.IssueRatingRepository;
+import com.patternpedia.api.util.RatingHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -23,22 +24,27 @@ import java.util.UUID;
 public class IssueServiceImpl implements IssueService {
 
     private IssueRepository issueRepository;
-    private RatingIssueRepository ratingIssueRepository;
-    private CommentIssueRepository commentIssueRepository;
+    private IssueRatingRepository issueRatingRepository;
+    private IssueCommentRepository issueCommentRepository;
+    private IssueCommentRatingRepository issueCommentRatingRepository;
     private UserService userService;
+    private RatingHelper ratingHelper;
 
     Logger logger = LoggerFactory.getLogger(IssueServiceImpl.class);
 
     public IssueServiceImpl(
             IssueRepository issueRepository,
-            RatingIssueRepository ratingIssueRepository,
-            UserService userService,
-            CommentIssueRepository commentIssueRepository
+            IssueRatingRepository issueRatingRepository,
+            IssueCommentRepository issueCommentRepository,
+            IssueCommentRatingRepository issueCommentRatingRepository,
+            UserService userService
     ) {
         this.issueRepository = issueRepository;
-        this.ratingIssueRepository = ratingIssueRepository;
-        this.commentIssueRepository = commentIssueRepository;
+        this.issueRatingRepository = issueRatingRepository;
+        this.issueCommentRepository = issueCommentRepository;
+        this.issueCommentRatingRepository = issueCommentRatingRepository;
         this.userService = userService;
+        this.ratingHelper = new RatingHelper();
     }
 
     /**
@@ -48,14 +54,12 @@ public class IssueServiceImpl implements IssueService {
     @Transactional
     public Issue createIssue(Issue issue) {
         if (null == issue) {
-            throw new NullPatternException();
+            throw new NullIssueException();
         }
 
-//        if (null == patternEvolution.getPatternLanguage()) {
-//            throw new NullPatternLanguageException();
-//        }
-
-        return this.issueRepository.save(issue);
+        Issue newIssue = this.issueRepository.save(issue);
+        logger.info(String.format("Create Issue %s: ", newIssue.toString()));
+        return newIssue;
     }
 
     @Override
@@ -119,40 +123,25 @@ public class IssueServiceImpl implements IssueService {
 
         logger.info(String.format("User %s updates rating for Issue %s", user.getId(), issue.getId()));
 
-        RatingIssue ratingIssue = new RatingIssue(issue, user);
+        IssueRating issueRating = new IssueRating(issue, user);
 
-        if (this.ratingIssueRepository.existsById(ratingIssue.getId())) {
-            ratingIssue = this.ratingIssueRepository.findByIssueAndUser(issue, user);
-            logger.info(String.format("Rating for user %s exists with rating %s", user.getId(), ratingIssue.getRating()));
+        if (this.issueRatingRepository.existsById(issueRating.getId())) {
+            issueRating = this.issueRatingRepository.findByIssueAndUser(issue, user);
+            logger.info(String.format("Rating for user %s exists with rating %s", user.getId(), issueRating.getRating()));
         } else {
             logger.info(String.format("Rating for user %s does not exist", user.getId()));
         }
 
-        if (rating.equals("up")) {
-            if (ratingIssue.getRating() == 1) {
-                ratingIssue.setRating(0);
-                logger.info(String.format("User %s deleted up", user.getId()));
-            } else {
-                ratingIssue.setRating(1);
-                logger.info(String.format("User %s rated up", user.getId()));
-            }
-
-        } else if (rating.equals("down")) {
-            if (ratingIssue.getRating() == -1) {
-                ratingIssue.setRating(0);
-                logger.info(String.format("User %s deleted down", user.getId()));
-            } else {
-                ratingIssue.setRating(-1);
-                logger.info(String.format("User %s rated down", user.getId()));
-            }
-        } else {
-            logger.info(String.format("Wrong rating value: %s", rating));
+        int newRating = this.ratingHelper.updateRating(rating, issueRating.getRating(), user);
+        if (newRating == -2) {
             return null;
+        } else {
+            issueRating.setRating(newRating);
         }
 
-        issue.getUserRating().add(ratingIssue);
-        int issueRating = issue.getUserRating().stream().mapToInt(RatingIssue::getRating).sum();
-        issue.setRating(issueRating);
+        issue.getUserRating().add(issueRating);
+        int updateRating = issue.getUserRating().stream().mapToInt(IssueRating::getRating).sum();
+        issue.setRating(updateRating);
         logger.info(String.format("New rating is: %d", issueRating));
 
         return this.updateIssue(issue);
@@ -163,14 +152,74 @@ public class IssueServiceImpl implements IssueService {
      */
     @Override
     @Transactional
-    public Issue createComment(UUID issueId, UUID userId, CommentIssue commentIssue) {
+    public Issue createComment(UUID issueId, UUID userId, IssueComment issueComment) {
         Issue issue = this.getIssueById(issueId);
         UserEntity user = this.userService.getUserById(userId);
 
-        CommentIssue comment = new CommentIssue(commentIssue.getText());
+        IssueComment comment = new IssueComment(issueComment.getText());
         issue.addComment(comment, user);
 
         return this.updateIssue(issue);
+    }
+
+    @Override
+    @Transactional
+    public IssueComment updateComment(IssueComment issueComment) {
+        if (null == issueComment) {
+            throw new NullPatternException();
+        }
+        if (!this.issueCommentRepository.existsById(issueComment.getId())) {
+            throw new PatternLanguageNotFoundException(String.format("Issue %s not found", issueComment.getId()));
+        }
+
+        logger.info(String.format("Update Issue: %s", issueComment.toString()));
+        return this.issueCommentRepository.save(issueComment);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public IssueComment getCommentById(UUID commentId) {
+        return this.issueCommentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException(commentId));
+    }
+
+    /**
+     * Voting IssueComment
+     *
+     * @param rating up, down
+     * @apiNote If user already up- or downvoted and does so again it neutralises vote.
+     */
+    @Override
+    @Transactional
+    public Issue commentUserRating(UUID issueCommentId, UUID userId, String rating) {
+        IssueComment issueComment = this.getCommentById(issueCommentId);
+        UserEntity user = this.userService.getUserById(userId);
+
+        logger.info(String.format("User %s updates rating for Comment %s", user.getId(), issueComment.getId()));
+
+        IssueCommentRating issueCommentRating = new IssueCommentRating(issueComment, user);
+
+        if (this.issueCommentRatingRepository.existsById(issueCommentRating.getId())) {
+            issueCommentRating = this.issueCommentRatingRepository.findByIssueCommentAndUser(issueComment, user);
+            logger.info(String.format("Rating for user %s exists with rating %s", user.getId(), issueCommentRating.getRating()));
+        } else {
+            logger.info(String.format("Rating for user %s does not exist", user.getId()));
+        }
+
+        int newRating = this.ratingHelper.updateRating(rating, issueCommentRating.getRating(), user);
+        if (newRating == -2) {
+            return null;
+        } else {
+            issueCommentRating.setRating(newRating);
+        }
+
+        issueComment.getUserRating().add(issueCommentRating);
+        int updateRating = issueComment.getUserRating().stream().mapToInt(IssueCommentRating::getRating).sum();
+        issueComment.setRating((updateRating));
+        logger.info(String.format("New rating for comment is: %d", updateRating));
+        this.updateComment(issueComment);
+
+        return this.getIssueById(issueComment.getIssue().getId());
     }
 
 
