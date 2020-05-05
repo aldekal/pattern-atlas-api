@@ -4,7 +4,7 @@
 2. Enable checkstyle:
   - Install the [IntelliJ CheckStyle-IDEA Plugin](https://plugins.jetbrains.com/plugin/1065-checkstyle-idea). It can be found via plug-in repository  
   (File > Settings > Plugins > Marketplace; **Mac**: IntelliJ IDEA > Preferences > Plugins > Marketplace).  
-    ![checkstyle](graphics/checkstyle.PNG)
+    ![checkstyle](graphics/checkstyle.png)
     
   - Install the CheckStyle-IDEA Plugin, click "Apply" and restart the project upon request.
   - Repeat the previous steps for the Lombok Plugin
@@ -12,16 +12,16 @@
   - Go to "Settings > Checkstyle".
   - Click on "+" under Configuration File and add `checkstyle.xml`. It is located in `docs/dev/config/IntelliJ`. Confirm.
   
-    ![checkstyle](graphics/checkstyle-config.PNG)
+    ![checkstyle](graphics/checkstyle-config.png)
     
   - Activate the settings and confirm:
   
-    ![checkstyle](graphics/checkstyle-active.PNG)  
+    ![checkstyle](graphics/checkstyle-active.png)  
    
 3. Enable Lombok:
   - Install the [IntelliJ Lombok-IDEA Plugin](https://plugins.jetbrains.com/plugin/6317-lombok). It can be found via plug-in repository  
       (File > Settings > Plugins > Marketplace; **Mac**: IntelliJ IDEA > Preferences > Plugins > Marketplace).
-    ![checkstyle](graphics/lombok-config.PNG)
+    ![checkstyle](graphics/lombok-config.png)
   - Install the CheckStyle-IDEA Plugin, click "Apply" and restart the project upon request.    
   
   
