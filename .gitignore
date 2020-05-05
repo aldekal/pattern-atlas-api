@@ -36,3 +36,4 @@ build/
 *.pdf
 *.log
 *.aux
+*.svg
