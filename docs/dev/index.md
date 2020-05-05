@@ -9,7 +9,7 @@ This document provides an index to all development guidelines and background inf
 3. Clone the repository `git clone https://github.com/PatternPedia/pattern-pedia-views-ui.git`.
 4. Build the repository `mvn package -DskipTests` (skiping the tests for a faster build), npm is required. (plus yarn, optionally)
 5. Continue your IDE setup:
-    - [IntelliJ Ultimate](/IntelliJ/)
+    - [IntelliJ Ultimate](IntelliJ/)
 6. Set up database:
     - Open Terminal in IntelliJ
     ![checkstyle](IntelliJ/graphics/terminal.png)
