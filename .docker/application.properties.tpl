@@ -1,10 +1,10 @@
-server.port=-1
+server.port={{.Env.API_PORT}}
 spring.profiles.active=default,test
 spring.datasource.initialization-mode=always
 spring.datasource.driver-class-name=org.postgresql.Driver
-spring.datasource.url=${JDBC_DATABASE_URL}
-spring.datasource.username=${JDBC_DATABASE_USERNAME}
-spring.datasource.password=${JDBC_DATABASE_PASSWORD}
+spring.datasource.url=jdbc:postgresql://{{.Env.JDBC_DATABASE_URL}}:{{.Env.JDBC_DATABASE_PORT}}/postgres
+spring.datasource.username={{.Env.JDBC_DATABASE_USERNAME}}
+spring.datasource.password={{.Env.JDBC_DATABASE_PASSWORD}}
 spring.jpa.show-sql=true
 spring.jpa.generate-ddl=true
 spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
