@@ -1,19 +1,10 @@
 package com.patternpedia.api.rest.controller;
 
-
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.patternpedia.api.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.UUID;
 
 

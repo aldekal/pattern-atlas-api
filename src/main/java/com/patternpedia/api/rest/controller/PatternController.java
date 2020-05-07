@@ -362,7 +362,6 @@ public class PatternController {
         persistedVersion.setIconUrl(pattern.getIconUrl());
         persistedVersion.setContent(pattern.getContent());
         Object renderedContent = patternRenderService.renderContent(pattern);
-        System.out.print(renderedContent);
         if (renderedContent != null){
             persistedVersion.setRenderedContent(renderedContent);
         } else {
