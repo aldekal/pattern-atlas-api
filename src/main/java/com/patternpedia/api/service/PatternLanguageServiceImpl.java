@@ -213,12 +213,15 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
         // 1.1 Remove DirectedEdges the pattern is included
         List<DirectedEdge> directedEdges = new ArrayList<>();
         try {
-
             directedEdges.addAll(this.patternRelationDescriptorService.findDirectedEdgeBySource(pattern));
-        } catch (DirectedEdgeNotFoundException ex) {}
+        } catch (DirectedEdgeNotFoundException ex) {
+                // no handling required, if ex is thrown there are no edges
+        }
         try {
             directedEdges.addAll(this.patternRelationDescriptorService.findDirectedEdgeByTarget(pattern));
-        } catch (DirectedEdgeNotFoundException ex) {}
+        } catch (DirectedEdgeNotFoundException ex) {
+            // no handling required, if ex is thrown there are no edges
+        }
         this.patternRelationDescriptorService.deleteAllDirectedEdges(directedEdges);
 
         // 1.2 Remove UndirectedEdges the pattern is included
@@ -226,7 +229,9 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
             List<UndirectedEdge> undirectedEdges = this.patternRelationDescriptorService.findUndirectedEdgeByPattern(pattern);
             this.patternRelationDescriptorService.deleteAllUndirectedEdges(undirectedEdges);
         }
-        catch (UndirectedEdgeNotFoundException ex) {}
+        catch (UndirectedEdgeNotFoundException ex) {
+            // no handling required, if ex is thrown there are no edges
+        }
 
         // 2. Remove Pattern from Views it is included
         pattern.setPatternViews(null);

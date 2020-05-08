@@ -43,14 +43,12 @@ public class PatternRelationDescriptorServiceImpl implements PatternRelationDesc
     }
 
     @Override
-    //@Transactional(readOnly = true, noRollbackFor = DirectedEdgeNotFoundException.class)
     public List<DirectedEdge> findDirectedEdgeBySource(Pattern pattern) throws DirectedEdgeNotFoundException {
         return this.directedEdgeRepository.findBySource(pattern)
                 .orElseThrow(() -> new DirectedEdgeNotFoundException(String.format("No DirectedEdge found with Pattern %s as source", pattern.getId())));
     }
 
     @Override
-    //@Transactional(readOnly = true)
     public List<DirectedEdge> findDirectedEdgeByTarget(Pattern pattern) throws DirectedEdgeNotFoundException {
         return this.directedEdgeRepository.findByTarget(pattern)
                 .orElseThrow(() -> new DirectedEdgeNotFoundException(String.format("No DirectedEdge found with Pattern %s as target", pattern.getId())));
@@ -99,7 +97,6 @@ public class PatternRelationDescriptorServiceImpl implements PatternRelationDesc
     }
 
     @Override
-    //@Transactional(readOnly = true)
     public List<UndirectedEdge> findUndirectedEdgeByPattern(Pattern pattern) throws UndirectedEdgeNotFoundException {
         List<UndirectedEdge> undirectedEdges = new ArrayList<>();
         undirectedEdges.addAll(this.findUndirectedEdgeByP1(pattern));
