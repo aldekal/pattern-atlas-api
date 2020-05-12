@@ -256,7 +256,7 @@ public class PatternRelationDescriptorController {
 
         return ResponseEntity
                 .created(linkTo(methodOn(PatternRelationDescriptorController.class).getUndirectedEdgeOfPatternLanguageById(patternLanguageId, undirectedEdge.getId())).toUri())
-                .build();
+                .body(undirectedEdge);
     }
 
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/undirectedEdges")
@@ -299,7 +299,7 @@ public class PatternRelationDescriptorController {
         if (request.isNewEdge()) {
             DirectedEdge directedEdge = this.patternViewService.createDirectedEdgeAndAddToPatternView(patternViewId, request);
             return ResponseEntity.created(linkTo(methodOn(PatternRelationDescriptorController.class)
-                    .getDirectedEdgeOfPatternViewById(patternViewId, directedEdge.getId())).toUri()).build();
+                    .getDirectedEdgeOfPatternViewById(patternViewId, directedEdge.getId())).toUri()).body(directedEdge);
         } else {
             this.patternViewService.addDirectedEdgeToPatternView(patternViewId, request.getDirectedEdgeId());
             return ResponseEntity.created(linkTo(methodOn(PatternRelationDescriptorController.class)
