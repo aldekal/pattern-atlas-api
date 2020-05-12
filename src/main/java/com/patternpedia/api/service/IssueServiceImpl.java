@@ -2,9 +2,9 @@ package com.patternpedia.api.service;
 
 import com.patternpedia.api.entities.issue.IssueComment;
 import com.patternpedia.api.entities.issue.Issue;
-import com.patternpedia.api.entities.rating.issue.comment.IssueCommentRating;
+import com.patternpedia.api.entities.issue.rating.IssueCommentRating;
 import com.patternpedia.api.entities.user.UserEntity;
-import com.patternpedia.api.entities.rating.issue.IssueRating;
+import com.patternpedia.api.entities.issue.rating.IssueRating;
 import com.patternpedia.api.exception.*;
 import com.patternpedia.api.repositories.IssueCommentRatingRepository;
 import com.patternpedia.api.repositories.IssueCommentRepository;
@@ -63,13 +63,33 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Issue getIssueById(UUID IssueId) {
+        return this.issueRepository.findById(IssueId)
+                .orElseThrow(() -> new IssueNotFoundException(IssueId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Issue getIssueByURI(String uri) {
+        return this.issueRepository.findByUri(uri)
+                .orElseThrow(() -> new IssueNotFoundException(String.format("Issue with URI %s not found!", uri)));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Issue> getAllIssues() {
+        return this.issueRepository.findAll();
+    }
+
+    @Override
     @Transactional
     public Issue updateIssue(Issue issue) {
         if (null == issue) {
-            throw new NullPatternException();
+            throw new NullIssueException();
         }
         if (!this.issueRepository.existsById(issue.getId())) {
-            throw new PatternLanguageNotFoundException(String.format("Issue %s not found", issue.getId()));
+            throw new IssueNotFoundException(String.format("Issue %s not found", issue.getId()));
         }
 
         logger.info(String.format("Update Issue: %s", issue.toString()));
@@ -81,32 +101,10 @@ public class IssueServiceImpl implements IssueService {
     public void deleteIssue(UUID IssueId) {
         Issue issue = this.getIssueById(IssueId);
         if (null == issue) {
-            throw new NullPatternException();
+            throw new NullIssueException();
         }
 
-        // patternEvolution.setPatternViews(null);
-        // this.patternEvolutionRepository.save(patternEvolution);
         this.issueRepository.deleteById(IssueId);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Issue getIssueById(UUID IssueId) {
-        return this.issueRepository.findById(IssueId)
-                .orElseThrow(() -> new PatternNotFoundException(IssueId));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Issue getIssueByURI(String uri) {
-        return this.issueRepository.findByUri(uri)
-                .orElseThrow(() -> new PatternNotFoundException(String.format("Pattern with URI %s not found!", uri)));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Issue> getAllIssues() {
-        return this.issueRepository.findAll();
     }
 
     /**
@@ -142,7 +140,7 @@ public class IssueServiceImpl implements IssueService {
         issue.getUserRating().add(issueRating);
         int updateRating = issue.getUserRating().stream().mapToInt(IssueRating::getRating).sum();
         issue.setRating(updateRating);
-        logger.info(String.format("New rating is: %d", issueRating));
+//        logger.info(String.format("New rating is: %d", issueRating));
 
         return this.updateIssue(issue);
     }
@@ -166,13 +164,13 @@ public class IssueServiceImpl implements IssueService {
     @Transactional
     public IssueComment updateComment(IssueComment issueComment) {
         if (null == issueComment) {
-            throw new NullPatternException();
+            throw new NullCommentException();
         }
         if (!this.issueCommentRepository.existsById(issueComment.getId())) {
-            throw new PatternLanguageNotFoundException(String.format("Issue %s not found", issueComment.getId()));
+            throw new CommentNotFoundException(String.format("Comment %s for issue %s not found", issueComment.getId(), issueComment.getIssue().getId()));
         }
 
-        logger.info(String.format("Update Issue: %s", issueComment.toString()));
+        logger.info(String.format("Update issue comment: %s", issueComment.toString()));
         return this.issueCommentRepository.save(issueComment);
     }
 

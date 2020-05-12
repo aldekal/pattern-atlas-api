@@ -9,11 +9,11 @@ public interface UserService {
 
     UserEntity createUser(UserEntity user);
 
-    UserEntity updateUser(UserEntity user);
-
-    void deleteUser(UUID UserId);
-
     UserEntity getUserById(UUID UserId);
 
     List<UserEntity> getAllUsers();
+
+    UserEntity updateUser(UserEntity user);
+
+    void deleteUser(UUID UserId);
 }

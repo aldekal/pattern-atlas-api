@@ -1,4 +1,4 @@
-package com.patternpedia.api.entities.rating.issue;
+package com.patternpedia.api.entities.issue.rating;
 
 import com.patternpedia.api.entities.issue.Issue;
 import com.patternpedia.api.entities.user.UserEntity;

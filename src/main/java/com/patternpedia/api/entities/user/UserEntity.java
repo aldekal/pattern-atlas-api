@@ -1,11 +1,15 @@
 package com.patternpedia.api.entities.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.patternpedia.api.entities.candidate.CandidateComment;
+import com.patternpedia.api.entities.candidate.rating.CandidateRating;
 import com.patternpedia.api.entities.issue.IssueComment;
-import com.patternpedia.api.entities.rating.issue.IssueRating;
+import com.patternpedia.api.entities.issue.rating.IssueRating;
 import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -19,48 +23,63 @@ import java.util.*;
 @TypeDef(name = "pgsql_enum", typeClass = PostgreSQLEnumType.class)
 public class UserEntity implements Serializable{
 
+    /** User fields*/
     @Id
     @GeneratedValue(generator = "pg-uuid")
     private UUID id;
 
-//    @Enumerated( EnumArrayType.SQL_ARRAY_TYPE)
-//    @OneToMany
-//@Parameter(
-////        name = EnumArrayType.SQL_ARRAY_TYPE,
-////        value = "sensor_state"
-////)
     @Enumerated(EnumType.STRING)
     @ElementCollection
     @Type(type = "pgsql_enum")
-    private List<UserRole> role = new ArrayList<>(Arrays.asList(UserRole.MEMBER));
+    private List<UserRole> roles = new ArrayList<>(Arrays.asList(UserRole.MEMBER));
 
-    private String mail;
+    @NaturalId(mutable = true)
+    @Column(nullable = false, unique = true)
+    private String email;
 
     private String name;
 
-//    @ColumnTransformer(read = "pgp_sym_decrypt(password, 'mySecretKey')", write = "pgp_sym_encrypt(?, 'mySecretKey')")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
+    /** Issue fields*/
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<IssueRating> issueRatings = new HashSet<IssueRating>();
+    private Set<IssueRating> issueRatings = new HashSet<>();
 
-//    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<IssueComment> comments = new ArrayList<>();
+    private List<IssueComment> issueComments = new ArrayList<>();
 
-    public UserEntity(String name, String mail, String password) {
+    /** Candidate fields*/
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CandidateRating> candidateRatings = new HashSet<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CandidateComment> candidateComments = new ArrayList<>();
+
+    /** Pattern fields*/
+//    @JsonIgnore
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<CandidateRating> candidateRatings = new HashSet<>();
+//
+//    @JsonIgnore
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<CandidateComment> candidateComments = new ArrayList<>();
+
+    public UserEntity(String name, String email, String password) {
         this.name = name;
-        this.mail = mail;
+        this.email = email;
         this.password = password;
     }
 
-    public UserEntity(String name, String mail, String password, List<UserRole> role) {
+    public UserEntity(String name, String email, String password, List<UserRole> roles) {
         this.name = name;
-        this.mail = mail;
+        this.email = email;
         this.password = password;
-        this.role = role;
+        this.roles = roles;
     }
 
     @Override
@@ -69,17 +88,17 @@ public class UserEntity implements Serializable{
         if (!(o instanceof UserEntity)) return false;
         UserEntity that = (UserEntity) o;
         return id.equals(that.id) &&
-                mail.equals(that.mail) &&
+                email.equals(that.email) &&
                 name.equals(that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, mail, name);
+        return Objects.hash(id, email, name);
     }
 
     @Override
     public String toString() {
-        return "User: " + this.id.toString();
+        return "User: " + this.name;
     }
 }

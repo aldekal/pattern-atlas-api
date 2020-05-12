@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.patternpedia.api.entities.EntityWithURI;
 import com.patternpedia.api.entities.user.UserEntity;
-import com.patternpedia.api.entities.rating.issue.IssueRating;
+import com.patternpedia.api.entities.issue.rating.IssueRating;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -28,7 +28,6 @@ public class Issue extends EntityWithURI {
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<IssueRating> userRating = new HashSet<>();
 
-//    @JsonIgnore()
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<IssueComment> comments = new ArrayList<>();

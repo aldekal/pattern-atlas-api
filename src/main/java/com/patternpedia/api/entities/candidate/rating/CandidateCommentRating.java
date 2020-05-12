@@ -1,6 +1,7 @@
-package com.patternpedia.api.entities.rating.issue.comment;
+package com.patternpedia.api.entities.candidate.rating;
 
-import com.patternpedia.api.entities.issue.IssueComment;
+import com.patternpedia.api.entities.candidate.Candidate;
+import com.patternpedia.api.entities.candidate.CandidateComment;
 import com.patternpedia.api.entities.user.UserEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,16 +16,16 @@ import java.util.Objects;
 @Entity
 @Data
 @NoArgsConstructor
-public class IssueCommentRating {
+public class CandidateCommentRating {
 
     @EmbeddedId
     @EqualsAndHashCode.Include
-    private IssueCommentRatingKey id;
+    private CandidateCommentRatingKey id;
 
     @ManyToOne
-    @MapsId("issueCommentId")
+    @MapsId("candidateCommentId")
     @EqualsAndHashCode.Include
-    private IssueComment issueComment;
+    private CandidateComment candidateComment;
 
     @ManyToOne
     @MapsId("userId")
@@ -33,10 +34,10 @@ public class IssueCommentRating {
 
     private int rating;
 
-    public IssueCommentRating(IssueComment issueComment, UserEntity user) {
-        this.issueComment = issueComment;
+    public CandidateCommentRating(CandidateComment candidateComment, UserEntity user) {
+        this.candidateComment = candidateComment;
         this.user = user;
-        this.id = new IssueCommentRatingKey(issueComment.getId(), user.getId());
+        this.id = new CandidateCommentRatingKey(candidateComment.getId(), user.getId());
     }
 
     @Override
@@ -47,16 +48,15 @@ public class IssueCommentRating {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof IssueCommentRating)) return false;
-        IssueCommentRating that = (IssueCommentRating) o;
-        return Objects.equals(issueComment.getText(), that.issueComment.getText()) &&
+        if (!(o instanceof CandidateCommentRating)) return false;
+        CandidateCommentRating that = (CandidateCommentRating) o;
+        return Objects.equals(candidateComment.getText(), that.candidateComment.getText()) &&
                 Objects.equals(user.getName(), that.user.getName()) &&
                 Objects.equals(rating, that.rating);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(issueComment.getText(), user.getName(), rating);
+        return Objects.hash(candidateComment.getText(), user.getName(), rating);
     }
 }
-

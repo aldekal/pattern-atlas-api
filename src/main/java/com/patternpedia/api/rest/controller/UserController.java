@@ -76,9 +76,12 @@ public class UserController {
     @PostMapping(value = "/create")
 //    @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserEntity newUser(@RequestParam String name, @RequestParam String mail, @RequestParam String password) {
-        UserEntity user = new UserEntity(name, mail, passwordEncoder.encode(password));
+    public UserEntity newUser(@RequestBody UserEntity user) {
+//        UserEntity newUser = new UserEntity(user.getName(), user.getEmail(), passwordEncoder.encode(user.getPassword()));
 //        UserEntity user = new UserEntity(name, mail, password);
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        logger.info(user.getPassword());
         return this.userService.createUser(user);
 
     }
@@ -95,9 +98,9 @@ public class UserController {
     /**
      * UPDATE Methods
      */
-    @PutMapping(value = "/update/{userId}")
-    UserEntity updateUser(@PathVariable UUID userId, @RequestBody UserEntity user) {
-        user.setId(userId);
+    @PutMapping(value = "/update")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    UserEntity updateUser(@RequestBody UserEntity user) {
         logger.info(user.toString());
         return this.userService.updateUser(user);
     }

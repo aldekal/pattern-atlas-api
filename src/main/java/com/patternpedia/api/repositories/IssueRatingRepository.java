@@ -2,8 +2,8 @@ package com.patternpedia.api.repositories;
 
 import com.patternpedia.api.entities.issue.Issue;
 import com.patternpedia.api.entities.user.UserEntity;
-import com.patternpedia.api.entities.rating.issue.IssueRatingKey;
-import com.patternpedia.api.entities.rating.issue.IssueRating;
+import com.patternpedia.api.entities.issue.rating.IssueRatingKey;
+import com.patternpedia.api.entities.issue.rating.IssueRating;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 

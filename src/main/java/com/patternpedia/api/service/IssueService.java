@@ -12,15 +12,15 @@ public interface IssueService {
     /** CRUD  */
     Issue createIssue(Issue issue);
 
-    Issue updateIssue(Issue issue);
-
-    void deleteIssue(UUID issueId);
-
     Issue getIssueById(UUID issueId);
 
     Issue getIssueByURI(String uri);
 
     List<Issue> getAllIssues();
+
+    Issue updateIssue(Issue issue);
+
+    void deleteIssue(UUID issueId);
 
     /** Voting */
     Issue userRating(UUID issueId, UUID userId, String rating);
