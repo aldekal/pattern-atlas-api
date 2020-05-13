@@ -6,6 +6,7 @@ import com.patternpedia.api.entities.candidate.CandidateComment;
 import com.patternpedia.api.entities.issue.Issue;
 import com.patternpedia.api.exception.*;
 import com.patternpedia.api.repositories.*;
+import com.patternpedia.api.rest.model.CandidateModel;
 import com.patternpedia.api.util.RatingHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,13 +53,20 @@ public class CandidateServiceImpl implements CandidateService {
      */
     @Override
     @Transactional
-    public Candidate createCandidate(Candidate candidate, UUID patternLanguageId) {
+    public Candidate createCandidate(CandidateModel candidateModel) {
+        Candidate candidate = new Candidate(candidateModel);
+
         if (null == candidate) {
             throw new NullCandidateException();
         }
 
-        PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
-        candidate.setPatternLanguage(patternLanguage);
+        if (candidateModel.getPatternLanguageId() != null) {
+            PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(candidateModel.getPatternLanguageId());
+            candidate.setPatternLanguage(patternLanguage);
+        } else {
+            candidate.setPatternLanguage(null);
+        }
+
         Candidate newCandidate = this.candidateRepository.save(candidate);
         logger.info(String.format("Create Candidate %s: ", newCandidate.toString()));
         return newCandidate;

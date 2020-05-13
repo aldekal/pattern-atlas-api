@@ -6,6 +6,7 @@ import com.patternpedia.api.entities.EntityWithURI;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.candidate.rating.CandidateRating;
 import com.patternpedia.api.entities.user.UserEntity;
+import com.patternpedia.api.rest.model.CandidateModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -24,14 +25,10 @@ public class Candidate extends EntityWithURI {
 
     private String iconUrl;
 
-//    @JsonIgnore
+    @JsonIgnore
     @ToString.Exclude
     @ManyToOne
     private PatternLanguage patternLanguage;
-
-//    @JsonIgnore
-//    @OneToMany(mappedBy = "pattern", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<PatternViewPattern> patternViews = new ArrayList<>();
 
 //    @Type(type = "jsonb")
 //    @Column(columnDefinition = "jsonb")
@@ -42,8 +39,6 @@ public class Candidate extends EntityWithURI {
 
     private String version = "0.1.0";
 
-//    private String patternLanguage;
-
     @JsonIgnore
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CandidateRating> userRating = new HashSet<>();
@@ -51,6 +46,16 @@ public class Candidate extends EntityWithURI {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CandidateComment> comments = new ArrayList<>();
+
+    public Candidate (CandidateModel candidateModel) {
+        this.setId(candidateModel.getId());
+        this.setUri(candidateModel.getUri());
+        this.setName(candidateModel.getName());
+        this.setIconUrl(candidateModel.getIconUrl());
+       //patternLanguage
+        this.setContent(candidateModel.getContent());
+        this.setVersion(candidateModel.getVersion());
+    }
 
 
     public void addComment(CandidateComment comment, UserEntity user) {

@@ -4,13 +4,14 @@ import com.patternpedia.api.entities.candidate.Candidate;
 import com.patternpedia.api.entities.candidate.CandidateComment;
 import com.patternpedia.api.entities.issue.Issue;
 import com.patternpedia.api.entities.issue.IssueComment;
+import com.patternpedia.api.rest.model.CandidateModel;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface CandidateService {
     /** CRUD  */
-    Candidate createCandidate(Candidate candidate, UUID patternLanguageId);
+    Candidate createCandidate(CandidateModel candidateModel);
 
     Candidate updateCandidate(Candidate candidate);
 

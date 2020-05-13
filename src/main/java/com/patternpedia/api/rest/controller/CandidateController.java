@@ -76,15 +76,13 @@ public class CandidateController {
     /**
      * CREATE Methods
      */
-    @PostMapping(value = "/create/{patternLanguageId}")
+    @PostMapping(value = "/create")
 //    @PostMapping(value = "/create")
 //    @PreAuthorize(value = "#oauth2.hasScope('write')")
 //    @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
-    Candidate newCandidate(@PathVariable UUID patternLanguageId, @RequestBody Candidate candidate) {
-//        PatternLanguage patternLanguage = patternLanguageService.getPatternLanguageById(patternLanguageId);
-//        candidate.setPatternLanguage(null);
-        return this.candidateService.createCandidate(candidate, patternLanguageId);
+    Candidate newCandidate(@RequestBody CandidateModel candidate) {
+        return this.candidateService.createCandidate(candidate);
     }
 
     @PostMapping(value = "/createComment/{candidateId}&{userId}")
