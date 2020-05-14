@@ -12,6 +12,7 @@ import com.patternpedia.api.rest.model.AddUndirectedEdgeToViewRequest;
 import com.patternpedia.api.rest.model.CreateUndirectedEdgeRequest;
 import com.patternpedia.api.rest.model.UpdateDirectedEdgeRequest;
 import com.patternpedia.api.rest.model.UpdateUndirectedEdgeRequest;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface PatternViewService {
 
@@ -58,4 +59,16 @@ public interface PatternViewService {
     UndirectedEdge updateUndirectedEdgeOfPatternView(UUID patternViewId, UpdateUndirectedEdgeRequest request);
 
     void removeUndirectedEdgeFromPatternView(UUID patternViewId, UUID undirectedEdgeId);
+
+    @Transactional(readOnly = true)
+    Object getGraphOfPatternView(UUID patternLanguageId);
+
+    @Transactional
+    Object createGraphOfPatternView(UUID patternLanguageId, Object graph);
+
+    @Transactional
+    Object updateGraphOfPatternView(UUID patternLanguageId, Object graph);
+
+    @Transactional
+    void deleteGraphOfPatternView(UUID patternLanguageId);
 }
