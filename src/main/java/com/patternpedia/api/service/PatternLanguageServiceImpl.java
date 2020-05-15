@@ -23,7 +23,9 @@ import com.patternpedia.api.rest.model.CreateDirectedEdgeRequest;
 import com.patternpedia.api.rest.model.CreateUndirectedEdgeRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -193,7 +195,7 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
     }
 
     @Override
-    @Transactional
+    @Transactional(noRollbackFor = Exception.class)
     public void deletePatternOfPatternLanguage(UUID patternLanguageId, UUID patternId) {
         if (!this.patternLanguageRepository.existsById(patternLanguageId)) {
             throw new PatternLanguageNotFoundException(patternLanguageId);
@@ -203,19 +205,33 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
         PatternLanguage patternLanguage = this.getPatternLanguageById(patternLanguageId);
 
         if (null != pattern.getPatternLanguage()) {
-            if (pattern.getPatternLanguage().getId() != patternLanguageId) {
+            if (!pattern.getPatternLanguage().getId().equals(patternLanguageId)) {
                 throw new PatternNotFoundException(patternLanguage, patternId);
             }
         }
 
         // 1.1 Remove DirectedEdges the pattern is included
-        List<DirectedEdge> directedEdges = this.patternRelationDescriptorService.findDirectedEdgeBySource(pattern);
-        directedEdges.addAll(this.patternRelationDescriptorService.findDirectedEdgeByTarget(pattern));
+        List<DirectedEdge> directedEdges = new ArrayList<>();
+        try {
+            directedEdges.addAll(this.patternRelationDescriptorService.findDirectedEdgeBySource(pattern));
+        } catch (DirectedEdgeNotFoundException ex) {
+                // no handling required, if ex is thrown there are no edges
+        }
+        try {
+            directedEdges.addAll(this.patternRelationDescriptorService.findDirectedEdgeByTarget(pattern));
+        } catch (DirectedEdgeNotFoundException ex) {
+            // no handling required, if ex is thrown there are no edges
+        }
         this.patternRelationDescriptorService.deleteAllDirectedEdges(directedEdges);
 
         // 1.2 Remove UndirectedEdges the pattern is included
-        List<UndirectedEdge> undirectedEdges = this.patternRelationDescriptorService.findUndirectedEdgeByPattern(pattern);
-        this.patternRelationDescriptorService.deleteAllUndirectedEdges(undirectedEdges);
+        try {
+            List<UndirectedEdge> undirectedEdges = this.patternRelationDescriptorService.findUndirectedEdgeByPattern(pattern);
+            this.patternRelationDescriptorService.deleteAllUndirectedEdges(undirectedEdges);
+        }
+        catch (UndirectedEdgeNotFoundException ex) {
+            // no handling required, if ex is thrown there are no edges
+        }
 
         // 2. Remove Pattern from Views it is included
         pattern.setPatternViews(null);

@@ -39,7 +39,7 @@ public class PatternServiceImpl implements PatternService {
     }
 
     @Override
-    @Transactional
+    @Transactional(noRollbackFor = Exception.class)
     public Pattern updatePattern(@Valid @PatternContentConstraint Pattern pattern) {
         if (null == pattern) {
             throw new NullPatternException();
@@ -52,7 +52,7 @@ public class PatternServiceImpl implements PatternService {
     }
 
     @Override
-    @Transactional
+    @Transactional(noRollbackFor = Exception.class)
     public void deletePattern(Pattern pattern) {
         if (null == pattern) {
             throw new NullPatternException();
