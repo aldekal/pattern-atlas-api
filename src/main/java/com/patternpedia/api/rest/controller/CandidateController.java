@@ -27,7 +27,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
-//@CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping(value = "/candidate", produces = "application/hal+json")
 public class CandidateController {
 
@@ -77,45 +76,16 @@ public class CandidateController {
      * CREATE Methods
      */
     @PostMapping(value = "/create")
-//    @PostMapping(value = "/create")
-//    @PreAuthorize(value = "#oauth2.hasScope('write')")
-//    @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
     Candidate newCandidate(@RequestBody CandidateModel candidate) {
         return this.candidateService.createCandidate(candidate);
     }
 
     @PostMapping(value = "/createComment/{candidateId}&{userId}")
-//    @PreAuthorize(value = "#oauth2.hasScope('write')")
-//    @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
     Candidate newCandidateComment(@PathVariable UUID candidateId, @PathVariable UUID userId, @RequestBody CandidateComment candidateComment) {
         return this.candidateService.createComment(candidateId, userId, candidateComment);
     }
-
-//    @PostMapping(value = "/createFromIssue/{patternLanguageId}")
-////    @PreAuthorize(value = "#oauth2.hasScope('write')")
-////    @CrossOrigin(exposedHeaders = "Location")
-//    @ResponseStatus(HttpStatus.CREATED)
-//    Candidate newCandidateFromIssue(@PathVariable String patternLanguageId, @RequestBody Issue issue) {
-//        logger.info(issue.getDescription());
-//        JSONObject contextObject = new JSONObject();
-//        contextObject.put("Context", issue.getDescription());
-//
-//        JSONArray contentArray = new JSONArray();
-//        contentArray.appendElement(contextObject);
-//
-//        JSONObject contentObject = new JSONObject();
-//        contentObject.put("content", contentArray);
-//
-//        Candidate candidate = new Candidate();
-//        candidate.setUri(issue.getName());
-//        candidate.setContent(contentObject);
-//        candidate.setName(issue.getName());
-//        candidate.setPatternLanguage(patternLanguageId.toString());
-////        return candidate;
-//        return this.candidateService.createCandidate(candidate);
-//    }
 
     /**
      * UPDATE Methods

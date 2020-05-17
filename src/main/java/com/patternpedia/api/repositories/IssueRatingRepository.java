@@ -17,6 +17,4 @@ public interface IssueRatingRepository extends JpaRepository<IssueRating, IssueR
     List<UserEntity> findAllByUser(UserEntity user);
 
     IssueRating findByIssueAndUser(Issue issue, UserEntity user);
-
-//    RatingPatternEvolution findById(RatingKey ratingKey);
 }

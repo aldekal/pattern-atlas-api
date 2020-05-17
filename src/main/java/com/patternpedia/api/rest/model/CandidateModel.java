@@ -38,12 +38,8 @@ public class CandidateModel {
 
     private List<CandidateComment> comments;
 
-//    @JsonIgnore
-//    private Pattern pattern;
-
     private CandidateModel(Candidate candidate) {
         PatternLanguage patternLanguage = candidate.getPatternLanguage();
-//        this.pattern = pattern;
         this.id = candidate.getId();
         this.uri = candidate.getUri();
         this.name = candidate.getName();

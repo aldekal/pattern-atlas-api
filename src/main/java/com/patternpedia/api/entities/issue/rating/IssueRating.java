@@ -10,7 +10,6 @@ import java.util.Objects;
 @Entity
 @Data
 @NoArgsConstructor
-//@EqualsAndHashCode
 public class IssueRating {
 
     @EmbeddedId

@@ -21,14 +21,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class IssueComment extends Comment implements Serializable {
 
-//    @Id
-//    @GeneratedValue(generator = "pg-uuid")
-//    private UUID id;
-//
-//    private String text;
-//
-//    private int rating = 0;
-
     @JsonIgnore
     @ToString.Exclude
     @ManyToOne
@@ -46,23 +38,4 @@ public class IssueComment extends Comment implements Serializable {
     public IssueComment(String text) {
         super(text);
     }
-
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (!(o instanceof IssueComment)) return false;
-//        IssueComment that = (IssueComment) o;
-//        return id.equals(that.id) &&
-//                text.equals(that.text);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(id, text);
-//    }
-//
-//    @Override
-//    public String toString() {
-//        return "Comment: " + this.text + this.id.toString() + this.rating;
-//    }
 }

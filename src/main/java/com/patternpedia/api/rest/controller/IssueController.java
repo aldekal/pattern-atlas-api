@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-//@CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping(value = "/issue", produces = "application/hal+json")
 public class IssueController {
 
@@ -23,21 +22,15 @@ public class IssueController {
 
     private IssueService issueService;
     private PatternLanguageService patternLanguageService;
-    //    private PatternViewService patternViewService;
-//    private PatternRelationDescriptorService patternRelationDescriptorService;
     private ObjectMapper objectMapper;
 
     public IssueController(
             IssueService issueService,
             PatternLanguageService patternLanguageService,
-//            PatternViewService patternViewService,
-//            PatternRelationDescriptorService patternRelationDescriptorService,
             ObjectMapper objectMapper
     ) {
         this.issueService = issueService;
         this.patternLanguageService = patternLanguageService;
-//        this.patternViewService = patternViewService;
-//        this.patternRelationDescriptorService = patternRelationDescriptorService;
         this.objectMapper = objectMapper;
     }
 
@@ -65,7 +58,6 @@ public class IssueController {
      */
     @PostMapping(value = "/create")
 //    @PreAuthorize(value = "#oauth2.hasScope('write')")
-//    @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
     Issue newIssue(@RequestBody Issue issue) {
         return this.issueService.createIssue(issue);
@@ -73,7 +65,6 @@ public class IssueController {
 
     @PostMapping(value = "/createComment/{issueId}&{userId}")
 //    @PreAuthorize(value = "#oauth2.hasScope('write')")
-//    @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
     Issue newIssueComment(@PathVariable UUID issueId, @PathVariable UUID userId, @RequestBody IssueComment issueComment) {
         return this.issueService.createComment(issueId, userId, issueComment);

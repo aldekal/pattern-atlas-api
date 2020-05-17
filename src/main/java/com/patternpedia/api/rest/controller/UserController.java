@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-//@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping(value = "/user", produces = "application/hal+json")
 public class UserController {
 
@@ -27,31 +26,21 @@ public class UserController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-//    private PatternLanguageService patternLanguageService;
-//    private PatternViewService patternViewService;
-//    private PatternRelationDescriptorService patternRelationDescriptorService;
     private ObjectMapper objectMapper;
 
     public UserController(
             UserService userService,
             PasswordEncoder passwordEncoder,
-//            PatternLanguageService patternLanguageService,
-//            PatternViewService patternViewService,
-//            PatternRelationDescriptorService patternRelationDescriptorService,
             ObjectMapper objectMapper
     ) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
-//        this.patternLanguageService = patternLanguageService;
-//        this.patternViewService = patternViewService;
-//        this.patternRelationDescriptorService = patternRelationDescriptorService;
         this.objectMapper = objectMapper;
     }
 
     /**
      * GET Methods
      */
-//    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping(value = "/getAll")
 //    @PreAuthorize(value = "hasAuthority('MEMBER')")
     List<UserEntity> all() {
@@ -74,12 +63,8 @@ public class UserController {
      * CREATE Methods
      */
     @PostMapping(value = "/create")
-//    @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
     public UserEntity newUser(@RequestBody UserEntity user) {
-//        UserEntity newUser = new UserEntity(user.getName(), user.getEmail(), passwordEncoder.encode(user.getPassword()));
-//        UserEntity user = new UserEntity(name, mail, password);
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         logger.info(user.getPassword());
         return this.userService.createUser(user);
@@ -111,6 +96,5 @@ public class UserController {
     @DeleteMapping(value = "/delete/{userId}")
     void deleteUser(@PathVariable UUID userId) {
         this.userService.deleteUser(userId);
-//        return ResponseEntity.noContent().build();
     }
 }

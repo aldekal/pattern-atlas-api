@@ -140,7 +140,6 @@ public class IssueServiceImpl implements IssueService {
         issue.getUserRating().add(issueRating);
         int updateRating = issue.getUserRating().stream().mapToInt(IssueRating::getRating).sum();
         issue.setRating(updateRating);
-//        logger.info(String.format("New rating is: %d", issueRating));
 
         return this.updateIssue(issue);
     }

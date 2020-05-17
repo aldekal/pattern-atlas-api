@@ -28,19 +28,4 @@ public class IssueModel {
     private String version;
 
     private Boolean active;
-
-//    @JsonIgnore
-//    private PatternEvolution patternEvolution;
-
-//    PatternEvolution()
-
-//     PatternEvolutionModel() {
-////        this.id = patternEvolution.getId();
-//        // this.uri = pattern.getUri();
-////        this.name = patternEvolution.getName();
-//        // this.iconUrl = pattern.getIconUrl();
-//    }
-
-//    public static PatternEvolutionModel from(PatternEvolution patternEvolution) {
-//        return new PatternEvolutionModel(patternEvolution); }
 }

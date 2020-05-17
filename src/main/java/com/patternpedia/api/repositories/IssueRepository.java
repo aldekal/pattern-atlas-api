@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 import java.util.UUID;
 
-//@RepositoryRestResource(exported = false)
 public interface IssueRepository extends JpaRepository<Issue, UUID> {
 
     public Optional<Issue> findByUri(String uri);
