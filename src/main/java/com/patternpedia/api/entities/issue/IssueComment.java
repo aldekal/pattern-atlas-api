@@ -6,6 +6,7 @@ import com.patternpedia.api.entities.issue.rating.IssueCommentRating;
 import com.patternpedia.api.entities.shared.Comment;
 import com.patternpedia.api.entities.user.UserEntity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -19,6 +20,7 @@ import java.util.UUID;
 @Entity
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper=false)
 public class IssueComment extends Comment implements Serializable {
 
     @JsonIgnore

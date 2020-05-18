@@ -27,7 +27,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "/candidate", produces = "application/hal+json")
+@RequestMapping(value = "/candidates", produces = "application/hal+json")
 public class CandidateController {
 
     Logger logger = LoggerFactory.getLogger(CandidateController.class);
@@ -49,7 +49,7 @@ public class CandidateController {
     /**
      * GET Methods
      */
-    @GetMapping(value = "/getAll")
+    @GetMapping(value = "")
     CollectionModel<EntityModel<CandidateModel>> all() {
 
         List<EntityModel<CandidateModel>> candidates = this.candidateService.getAllCandidates()
@@ -61,13 +61,13 @@ public class CandidateController {
         return new CollectionModel<>(candidates);
     }
 
-    @GetMapping(value = "/getById/{candidateId}")
+    @GetMapping(value = "/{candidateId}")
     @PreAuthorize(value = "#oauth2.hasScope('read')")
     Candidate getCandidateById(@PathVariable UUID candidateId) {
         return this.candidateService.getCandidateById(candidateId);
     }
 
-    @GetMapping(value = "/getByUri/{candidateUri}")
+    @GetMapping(value = "/?uri={candidateUri}")
     Candidate getCandidateByUri(@PathVariable String candidateUri) {
         return this.candidateService.getCandidateByURI(candidateUri);
     }
@@ -75,13 +75,13 @@ public class CandidateController {
     /**
      * CREATE Methods
      */
-    @PostMapping(value = "/create")
+    @PostMapping(value = "")
     @ResponseStatus(HttpStatus.CREATED)
     Candidate newCandidate(@RequestBody CandidateModel candidate) {
         return this.candidateService.createCandidate(candidate);
     }
 
-    @PostMapping(value = "/createComment/{candidateId}&{userId}")
+    @PostMapping(value = "/{candidateId}/comments/{userId}")
     @ResponseStatus(HttpStatus.CREATED)
     Candidate newCandidateComment(@PathVariable UUID candidateId, @PathVariable UUID userId, @RequestBody CandidateComment candidateComment) {
         return this.candidateService.createComment(candidateId, userId, candidateComment);
@@ -90,18 +90,18 @@ public class CandidateController {
     /**
      * UPDATE Methods
      */
-    @PutMapping(value = "/update")
-    Candidate putCandidate(@RequestBody Candidate candidate) {
+    @PutMapping(value = "/{candidateId}")
+    Candidate putCandidate(@PathVariable UUID candidateId, @RequestBody Candidate candidate) {
         logger.info(candidate.toString());
         return this.candidateService.updateCandidate(candidate);
     }
 
-    @PutMapping(value = "/updateRating/{candidateId}&{userId}&{rating}")
+    @PutMapping(value = "/{candidateId}/users/{userId}/rating/{rating}")
     Candidate putCandidateRating(@PathVariable UUID candidateId, @PathVariable UUID userId, @PathVariable String rating) {
         return this.candidateService.userRating(candidateId, userId, rating);
     }
 
-    @PutMapping(value = "/updateCommentRating/{candidateCommentId}&{userId}&{rating}")
+    @PutMapping(value = "/comments/{candidateCommentId}/users/{userId}/rating/{rating}")
     Candidate putCandidateCommentRating(@PathVariable UUID candidateCommentId, @PathVariable UUID userId, @PathVariable String rating) {
         return this.candidateService.commentUserRating(candidateCommentId, userId, rating);
     }
@@ -109,7 +109,7 @@ public class CandidateController {
     /**
      * DELETE Methods
      */
-    @DeleteMapping(value = "/delete/{candidateId}")
+    @DeleteMapping(value = "/{candidateId}")
 //    @PreAuthorize(value = "#oauth2.hasScope('de')")
     ResponseEntity<?> deleteCandidate(@PathVariable UUID candidateId) {
         this.candidateService.deleteCandidate(candidateId);

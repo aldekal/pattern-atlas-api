@@ -10,13 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 
+@EnableTransactionManagement
+@EnableWebMvc
 @Slf4j
-//@EnableWebMvc
-//@EnableTransactionManagement
-//@EnableResourceServer
 @RestController
 @SpringBootApplication
 public class PatternPediaAPI implements CommandLineRunner {
@@ -26,24 +27,6 @@ public class PatternPediaAPI implements CommandLineRunner {
 
     @Autowired
     private IssueService issueService;
-
-//    @GetMapping("/test")
-//    @PreAuthorize("#oauth2.hasScope('delete')")
-//    public Map<String,Object> home() {
-//        Map<String,Object> model = new HashMap<String,Object>();
-//        model.put("id", UUID.randomUUID().toString());
-//        model.put("content", "Hello test");
-//        return model;
-//    }
-//
-//    @GetMapping("/home")
-//    @PreAuthorize("#oauth2.hasScope('read')")
-//    public Map<String,Object> test() {
-//        Map<String,Object> model = new HashMap<String,Object>();
-//        model.put("id", UUID.randomUUID().toString());
-//        model.put("content", "Hello home");
-//        return model;
-//    }
 
     public static void main(String[] args) {
         System.setProperty(Configuration.PropertyKey.PRINT_BANNER.getKey(), Boolean.FALSE.toString());
@@ -55,8 +38,6 @@ public class PatternPediaAPI implements CommandLineRunner {
 
         log.info("PatternPediaAPI is up");
         userController.defaultUsers();
-//        UserEntity u = userController.newUser("Paul", "a@a", "pass");
-//        log.info(u.toString());
 
         Issue issue = new Issue();
         issue.setUri("uri");
@@ -65,16 +46,4 @@ public class PatternPediaAPI implements CommandLineRunner {
         Issue p = issueService.createIssue(issue);
         log.info(p.toString());
     }
-
-   /* @Configuration
-    static class OktaOAuth2WebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
-
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http
-                    .authorizeRequests().anyRequest().authenticated()
-                    .and()
-                    .oauth2ResourceServer().jwt();
-        }
-    }*/
 }

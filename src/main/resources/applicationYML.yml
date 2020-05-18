@@ -25,11 +25,9 @@ security:
   oauth2:
     resource:
 #      user-info-uri: http://localhost:8081/userinfo
-
 #      token-info-uri: http://localhost:8081/oauth/check_token
       jwk:
         key-set-uri: http://localhost:8081/.well-known/jwks.json
-#        key-set-uri: http://localhost:8081/oauth/token_key
 
 springdoc:
   swagger-ui:

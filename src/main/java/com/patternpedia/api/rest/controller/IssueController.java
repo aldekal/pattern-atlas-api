@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(value = "/issue", produces = "application/hal+json")
+@RequestMapping(value = "/issues", produces = "application/hal+json")
 public class IssueController {
 
     Logger logger = LoggerFactory.getLogger(IssueController.class);
@@ -37,18 +37,18 @@ public class IssueController {
     /**
      * GET Methods
      */
-    @GetMapping(value = "/getAll")
+    @GetMapping(value = "")
     List<Issue> all() {
         return this.issueService.getAllIssues();
     }
 
-    @GetMapping(value = "/getById/{issueId}")
+    @GetMapping(value = "/{issueId}")
     @PreAuthorize(value = "#oauth2.hasScope('read')")
     Issue getIssueById(@PathVariable UUID issueId) {
         return this.issueService.getIssueById(issueId);
     }
 
-    @GetMapping(value = "/getByUri/{issueUri}")
+    @GetMapping(value = "/?uri={issueUri}")
     Issue getIssueByUri(@PathVariable String issueUri) {
         return this.issueService.getIssueByURI(issueUri);
     }
@@ -56,14 +56,14 @@ public class IssueController {
     /**
      * CREATE Methods
      */
-    @PostMapping(value = "/create")
+    @PostMapping(value = "")
 //    @PreAuthorize(value = "#oauth2.hasScope('write')")
     @ResponseStatus(HttpStatus.CREATED)
     Issue newIssue(@RequestBody Issue issue) {
         return this.issueService.createIssue(issue);
     }
 
-    @PostMapping(value = "/createComment/{issueId}&{userId}")
+    @PostMapping(value = "/{issueId}/comments/{userId}")
 //    @PreAuthorize(value = "#oauth2.hasScope('write')")
     @ResponseStatus(HttpStatus.CREATED)
     Issue newIssueComment(@PathVariable UUID issueId, @PathVariable UUID userId, @RequestBody IssueComment issueComment) {
@@ -73,19 +73,18 @@ public class IssueController {
     /**
      * UPDATE Methods
      */
-    @PutMapping(value = "/update/{issueId}")
+    @PutMapping(value = "/{issueId}")
     Issue putIssue(@PathVariable UUID issueId, @RequestBody Issue issue) {
-        issue.setId(issueId);
         logger.info(issue.toString());
         return this.issueService.updateIssue(issue);
     }
 
-    @PutMapping(value = "/updateRating/{issueId}&{userId}&{rating}")
+    @PutMapping(value = "/{issueId}/users/{userId}/rating/{rating}")
     Issue putIssueRating(@PathVariable UUID issueId, @PathVariable UUID userId, @PathVariable String rating) {
         return this.issueService.userRating(issueId, userId, rating);
     }
 
-    @PutMapping(value = "/updateCommentRating/{issueCommentId}&{userId}&{rating}")
+    @PutMapping(value = "/comments/{issueCommentId}/users/{userId}/rating/{rating}")
     Issue putIssueCommentRating(@PathVariable UUID issueCommentId, @PathVariable UUID userId, @PathVariable String rating) {
         return this.issueService.commentUserRating(issueCommentId, userId, rating);
     }
@@ -93,7 +92,7 @@ public class IssueController {
     /**
      * DELETE Methods
      */
-    @DeleteMapping(value = "/delete/{issueId}")
+    @DeleteMapping(value = "/{issueId}")
 //    @PreAuthorize(value = "#oauth2.hasScope('de')")
     ResponseEntity<?> deleteIssue(@PathVariable UUID issueId) {
         this.issueService.deleteIssue(issueId);

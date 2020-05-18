@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(value = "/user", produces = "application/hal+json")
+@RequestMapping(value = "/users", produces = "application/hal+json")
 public class UserController {
 
     Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -41,32 +41,24 @@ public class UserController {
     /**
      * GET Methods
      */
-    @GetMapping(value = "/getAll")
-//    @PreAuthorize(value = "hasAuthority('MEMBER')")
+    @GetMapping(value = "")
+    @PreAuthorize(value = "hasAuthority('ADMIN')")
     List<UserEntity> all() {
         return this.userService.getAllUsers();
     }
 
-    @GetMapping(value = "/getById/{userId}")
+    @GetMapping(value = "/{userId}")
     UserEntity getUserById(@PathVariable UUID userId) {
         return this.userService.getUserById(userId);
     }
 
-    @GetMapping(value = "/getUser")
-    @PreAuthorize("hasAuthority('MEMBER')")
-    public ResponseEntity<Principal> get(final Principal principal) {
-        return ResponseEntity.ok(principal);
-    }
-
-
     /**
      * CREATE Methods
      */
-    @PostMapping(value = "/create")
+    @PostMapping(value = "")
     @ResponseStatus(HttpStatus.CREATED)
     public UserEntity newUser(@RequestBody UserEntity user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        logger.info(user.getPassword());
         return this.userService.createUser(user);
 
     }
@@ -83,17 +75,16 @@ public class UserController {
     /**
      * UPDATE Methods
      */
-    @PutMapping(value = "/update")
+    @PutMapping(value = "/{userId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    UserEntity updateUser(@RequestBody UserEntity user) {
-        logger.info(user.toString());
+    UserEntity updateUser(@PathVariable UUID userId, @RequestBody UserEntity user) {
         return this.userService.updateUser(user);
     }
 
     /**
      * DELETE Methods
      */
-    @DeleteMapping(value = "/delete/{userId}")
+    @DeleteMapping(value = "/{userId}")
     void deleteUser(@PathVariable UUID userId) {
         this.userService.deleteUser(userId);
     }
