@@ -3,11 +3,7 @@ package com.patternpedia.api.rest.controller;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.patternpedia.api.entities.DirectedEdge;
-import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.entities.PatternLanguage;
-import com.patternpedia.api.entities.PatternViewPattern;
-import com.patternpedia.api.entities.UndirectedEdge;
+import com.patternpedia.api.entities.*;
 import com.patternpedia.api.exception.DirectedEdgeNotFoundException;
 import com.patternpedia.api.exception.UndirectedEdgeNotFoundException;
 import com.patternpedia.api.rest.model.PatternContentModel;
@@ -24,22 +20,12 @@ import javax.validation.Valid;
 import org.apache.commons.text.CaseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.util.Pair;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;

@@ -4,7 +4,6 @@ import java.net.URL;
 import java.util.UUID;
 
 import com.patternpedia.api.entities.PatternLanguage;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
