@@ -24,6 +24,11 @@ This document provides an index to all development guidelines and background inf
 #### IntelliJ
 3. [Follow PatternPediaAPI from Step 5 pls](#step5)
 
+#### Default User
+During development default users are
+- Admin: name: `admin@mail` password: `pass` 
+- Member: name: `member@mail` password: `pass` 
+
 ### PatternPediaAPI
 1. Clone the repository `git clone https://github.com/PatternPedia/pattern-pedia-views-backend.git`.
 2. Build the repository `mvn package -DskipTests` (skiping the tests for a faster build), Java 8 required.
