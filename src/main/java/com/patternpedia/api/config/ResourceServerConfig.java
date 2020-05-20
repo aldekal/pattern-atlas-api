@@ -19,7 +19,9 @@ import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableResourceServer
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+// START::Comment for local development with authorization
+//@EnableGlobalMethodSecurity(prePostEnabled = true)
+// END::Comment for local development with authorization
 class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     @Override
@@ -30,11 +32,16 @@ class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/swagger-ui/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/**").access("#oauth2.hasScope('write')")
-                .antMatchers(HttpMethod.PUT, "/**").access("#oauth2.hasScope('write')")
-                .antMatchers(HttpMethod.DELETE, "/**").hasAuthority("ADMIN")
-                .anyRequest().authenticated()
+                // START::Comment for local development with authorization
+//                .antMatchers(HttpMethod.GET, "/**").permitAll()
+//                .antMatchers(HttpMethod.POST, "/**").access("#oauth2.hasScope('write')")
+//                .antMatchers(HttpMethod.PUT, "/**").access("#oauth2.hasScope('write')")
+//                .antMatchers(HttpMethod.DELETE, "/**").hasAuthority("ADMIN")
+//                .anyRequest().authenticated()
+                //END::Comment for local development with authorization
+                // START::Uncomment for local development without authorization
+                .anyRequest().permitAll()
+                // END::Uncomment for local development without authorization
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

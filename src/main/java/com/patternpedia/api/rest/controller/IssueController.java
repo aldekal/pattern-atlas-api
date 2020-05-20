@@ -57,7 +57,7 @@ public class IssueController {
      * CREATE Methods
      */
     @PostMapping(value = "")
-//    @PreAuthorize(value = "#oauth2.hasScope('write')")
+    @PreAuthorize(value = "#oauth2.hasScope('write')")
     @ResponseStatus(HttpStatus.CREATED)
     Issue newIssue(@RequestBody Issue issue) {
         return this.issueService.createIssue(issue);
