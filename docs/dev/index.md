@@ -24,6 +24,7 @@ This document provides an index to all development guidelines and background inf
 #### IntelliJ
 3. [Follow PatternPediaAPI from Step 5](#abcd)
 
+### PatternPediaAPI
 1. Clone the repository `git clone https://github.com/PatternPedia/pattern-pedia-views-backend.git`.
 2. Build the repository `mvn package -DskipTests` (skiping the tests for a faster build), Java 8 required.
 3. Clone the repository `git clone https://github.com/PatternPedia/pattern-pedia-views-ui.git`.
