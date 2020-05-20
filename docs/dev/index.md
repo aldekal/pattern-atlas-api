@@ -3,12 +3,32 @@ This document provides an index to all development guidelines and background inf
 - [ADR](/adr) - Information on Architectural decisions can be found here
 
 ## Quick Develop
+### PatternPediaAuth
+1. Clone the repository `git clone https://github.com/PatternPedia/pattern-pedia-auth.git`.
+2. Navigate to repository directory `cd pattern-pedia-auth/`.
+2. Build the repository 
+    - `mvn package -DskipTests`(Windows) (skiping the tests for a faster build), Java 8 required.
+    - `./mvnw clean package -DskipTests`(Unix) (skiping the tests for a faster build), Java 8 required.
+
+#### Docker Installation
+3. Build the image `docker build -t patternpedia/auth .` ([Docker](https://docs.docker.com/get-docker/) required)
+
+##### Auth & DB
+4. Navigate to directory  `..\.docker\`
+5. Insert the following commands  `docker-compose -f docker-compose-with-db.yml up -d`
+
+##### Auth
+4. Navigate to directory  `..\.docker\`
+5. Insert the following commands  `docker-compose up -d`
+
+#### IntelliJ
+3. [Follow PatternPediaAPI from Step 5](#abcd)
 
 1. Clone the repository `git clone https://github.com/PatternPedia/pattern-pedia-views-backend.git`.
 2. Build the repository `mvn package -DskipTests` (skiping the tests for a faster build), Java 8 required.
 3. Clone the repository `git clone https://github.com/PatternPedia/pattern-pedia-views-ui.git`.
 4. Build the repository `mvn package -DskipTests` (skiping the tests for a faster build), npm is required. (plus yarn, optionally)
-5. Continue your IDE setup:
+5. <a name="abcd"></a>Continue your IDE setup:
     - [IntelliJ Ultimate](IntelliJ/)
 6. Set up database:
     - Open Terminal in IntelliJ
