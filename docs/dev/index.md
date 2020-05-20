@@ -22,14 +22,14 @@ This document provides an index to all development guidelines and background inf
 5. Insert the following commands  `docker-compose up -d`
 
 #### IntelliJ
-3. [Follow PatternPediaAPI from Step 5](#abcd)
+3. [Follow PatternPediaAPI from Step 5 pls](#step5)
 
 ### PatternPediaAPI
 1. Clone the repository `git clone https://github.com/PatternPedia/pattern-pedia-views-backend.git`.
 2. Build the repository `mvn package -DskipTests` (skiping the tests for a faster build), Java 8 required.
 3. Clone the repository `git clone https://github.com/PatternPedia/pattern-pedia-views-ui.git`.
 4. Build the repository `mvn package -DskipTests` (skiping the tests for a faster build), npm is required. (plus yarn, optionally)
-5. <a name="abcd"></a>Continue your IDE setup:
+5. <a name="step5"></a>Continue your IDE setup:
     - [IntelliJ Ultimate](IntelliJ/)
 6. Set up database:
     - Open Terminal in IntelliJ
