@@ -63,15 +63,6 @@ public class UserController {
 
     }
 
-    public void defaultUsers() {
-        List <UserRole> role = new ArrayList<>(Arrays.asList(UserRole.MEMBER));
-        UserEntity userMember = new UserEntity("Member User", "member@mail", passwordEncoder.encode("pass"), role);
-        this.userService.createUser(userMember);
-        role.add(UserRole.ADMIN);
-        UserEntity userAdmin = new UserEntity("Admin User", "admin@mail", passwordEncoder.encode("pass"), role);
-        this.userService.createUser(userAdmin);
-    }
-
     /**
      * UPDATE Methods
      */
