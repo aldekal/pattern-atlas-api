@@ -4,13 +4,13 @@ INSERT INTO public.pattern_language (id, name, uri, logo) VALUES ('82146836-1f69
 INSERT INTO public.pattern_language (id, name, uri, logo) VALUES ('54b5c9fa-e25b-4ab6-a98b-0e0738323ca9', 'QC Patterns', 'https://patternpedia.org/patternLanguages/qcPatterns', null);
 INSERT INTO public.pattern_schema (pattern_language_id) VALUES ('54b5c9fa-e25b-4ab6-a98b-0e0738323ca9');
 
-INSERT INTO public.pattern_section_schema (id, label, name, position, type, pattern_schema_pattern_language_id) VALUES (1, 'Intend', 'Intend', 0, 'any', '54b5c9fa-e25b-4ab6-a98b-0e0738323ca9');
-INSERT INTO public.pattern_section_schema (id, label, name, position, type, pattern_schema_pattern_language_id) VALUES (2, 'Driving Question', 'Driving Question', 1, 'any', '54b5c9fa-e25b-4ab6-a98b-0e0738323ca9');
-INSERT INTO public.pattern_section_schema (id, label, name, position, type, pattern_schema_pattern_language_id) VALUES (3, 'Icon', 'Icon', 2, 'any', '54b5c9fa-e25b-4ab6-a98b-0e0738323ca9');
-INSERT INTO public.pattern_section_schema (id, label, name, position, type, pattern_schema_pattern_language_id) VALUES (4, 'Context', 'Context', 3, 'any', '54b5c9fa-e25b-4ab6-a98b-0e0738323ca9');
-INSERT INTO public.pattern_section_schema (id, label, name, position, type, pattern_schema_pattern_language_id) VALUES (5, 'Solution', 'Solution', 4, 'any', '54b5c9fa-e25b-4ab6-a98b-0e0738323ca9');
-INSERT INTO public.pattern_section_schema (id, label, name, position, type, pattern_schema_pattern_language_id) VALUES (6, 'Known uses', 'Known uses', 5, 'any', '54b5c9fa-e25b-4ab6-a98b-0e0738323ca9');
-INSERT INTO public.pattern_section_schema (id, label, name, position, type, pattern_schema_pattern_language_id) VALUES (7, 'Next', 'Next', 6, 'any', '54b5c9fa-e25b-4ab6-a98b-0e0738323ca9');
+INSERT INTO public.pattern_section_schema (id, label, name, position, type, pattern_schema_pattern_language_id) VALUES ('54b5c9fa-e22b-4ab6-a98b-0e0738323ca9', 'Intend', 'Intend', 0, 'any', '54b5c9fa-e25b-4ab6-a98b-0e0738323ca9');
+INSERT INTO public.pattern_section_schema (id, label, name, position, type, pattern_schema_pattern_language_id) VALUES ('54b5c9fa-e53b-4ab6-a98b-0e0738323ca9', 'Driving Question', 'Driving Question', 1, 'any', '54b5c9fa-e25b-4ab6-a98b-0e0738323ca9');
+INSERT INTO public.pattern_section_schema (id, label, name, position, type, pattern_schema_pattern_language_id) VALUES ('54b5c9fa-e25b-4ac6-a98b-0e0738323ca9', 'Icon', 'Icon', 2, 'any', '54b5c9fa-e25b-4ab6-a98b-0e0738323ca9');
+INSERT INTO public.pattern_section_schema (id, label, name, position, type, pattern_schema_pattern_language_id) VALUES ('54b5c9fa-e25b-4ab6-a28b-0e0738323ca9', 'Context', 'Context', 3, 'any', '54b5c9fa-e25b-4ab6-a98b-0e0738323ca9');
+INSERT INTO public.pattern_section_schema (id, label, name, position, type, pattern_schema_pattern_language_id) VALUES ('54b5c9fa-e25b-4ab6-a98b-0e3738323ca9', 'Solution', 'Solution', 4, 'any', '54b5c9fa-e25b-4ab6-a98b-0e0738323ca9');
+INSERT INTO public.pattern_section_schema (id, label, name, position, type, pattern_schema_pattern_language_id) VALUES ('54b5c9fa-e25b-4ab6-a98b-0e0538323ca9', 'Known uses', 'Known uses', 5, 'any', '54b5c9fa-e25b-4ab6-a98b-0e0738323ca9');
+INSERT INTO public.pattern_section_schema (id, label, name, position, type, pattern_schema_pattern_language_id) VALUES ('54b5c9fa-e25b-4ab6-a98b-0e0538363ca9', 'Next', 'Next', 6, 'any', '54b5c9fa-e25b-4ab6-a98b-0e0738323ca9');
 
 INSERT INTO public.pattern (id, name, uri, content, rendered_content, pattern_language_id) VALUES ('82146836-1f69-4f8d-81c5-3d87a8db7665', 'TestPattern1', 'http://patternpedia.org/TestPattern1', '{"a": "b"}', '{"a": "b"}', '82146836-1f69-4f8d-81c5-3d87a8db7663');
 INSERT INTO public.pattern (id, name, uri, content, rendered_content, pattern_language_id) VALUES ('82146836-1f69-4f8d-81c5-3d87a8db7666', 'TestPattern2', 'http://patternpedia.org/TestPattern2', '{"c": "d"}', '{"a": "b"}', '82146836-1f69-4f8d-81c5-3d87a8db7663');

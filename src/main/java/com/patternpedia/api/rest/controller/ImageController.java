@@ -4,7 +4,6 @@ import com.patternpedia.api.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.UUID;
 
 
@@ -24,7 +23,7 @@ public class ImageController {
             produces = "image/svg+xml"
     )
     public @ResponseBody
-    byte[] renderLatexAsPng(@PathVariable String imageId) throws IOException {
+    byte[] renderLatexAsPng(@PathVariable String imageId){
         UUID uuid = UUID.fromString(imageId);
         return this.imageService.getImageById(uuid).getData();
     }

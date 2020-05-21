@@ -91,7 +91,7 @@ public class PatternRenderServiceImpl implements PatternRenderService {
     }
 
 
-    byte[] renderContentViaAPI(String content, List<String> packages, String output){
+    public byte[] renderContentViaAPI(String content, List<String> packages, String output){
         LatexContent latexContent = new LatexContent(content,packages,output);
         byte[] file = null;
         try{
@@ -110,7 +110,7 @@ public class PatternRenderServiceImpl implements PatternRenderService {
     }
 
 
-    String saveAndUploadFile(byte[] file, String output) {
+    public String saveAndUploadFile(byte[] file, String output) {
         Image image = new Image();
         image.setData(file);
         image.setFileName("latexRender" + Instant.now().getEpochSecond());
