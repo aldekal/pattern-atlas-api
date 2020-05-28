@@ -4,13 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patternpedia.api.entities.Image;
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.rest.model.LatexContent;
-import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -40,15 +38,15 @@ public class PatternRenderServiceImpl implements PatternRenderService {
         //get all quantikz occurences
         boolean quantikz = true;
         while (quantikz) {
-            Pair<Integer, Integer> occuranceStartEnd = getNextOccurance(jsonString, "\\\\begin{quantikz}", "\\end{quantikz}");
-            if (occuranceStartEnd.getKey() != -1 && occuranceStartEnd.getValue() != -1) {
-                String renderContent = jsonString.substring(occuranceStartEnd.getKey(), occuranceStartEnd.getValue() + 14)
+            Integer[] occuranceStartEnd = getNextOccurance(jsonString, "\\\\begin{quantikz}", "\\end{quantikz}");
+            if (occuranceStartEnd[0] != -1 && occuranceStartEnd[1] != -1) {
+                String renderContent = jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 14)
                 .replaceAll("\\\\n", " ").replaceAll("(\\\\t)(?!a)"," ").replaceAll("\\\\\\\\","\\\\");
                 List<String> settings = new ArrayList<>();
                 settings.add("\\usepackage{tikz} \n");
                 settings.add("\\usetikzlibrary{quantikz} \n");
                 byte []renderedFile = renderContentViaAPI(renderContent, settings, "svg");
-                jsonString = jsonString.replace(jsonString.substring(occuranceStartEnd.getKey(), occuranceStartEnd.getValue() + 14), " " + saveAndUploadFile(renderedFile, "svg") + " ");
+                jsonString = jsonString.replace(jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 14), " " + saveAndUploadFile(renderedFile, "svg") + " ");
             }else {
                 break;
             }
@@ -56,9 +54,9 @@ public class PatternRenderServiceImpl implements PatternRenderService {
 
         boolean qcircuit = true;
         while (qcircuit) {
-            Pair<Integer, Integer> occuranceStartEnd = getNextOccurance(jsonString, "\\\\Qcircuit", "end}");
-            if (occuranceStartEnd.getKey() != -1 && occuranceStartEnd.getValue() != -1) {
-                String renderContent = jsonString.substring(occuranceStartEnd.getKey(), occuranceStartEnd.getValue() + 4)
+            Integer[] occuranceStartEnd = getNextOccurance(jsonString, "\\\\Qcircuit", "end}");
+            if (occuranceStartEnd[0] != -1 && occuranceStartEnd[1] != -1) {
+                String renderContent = jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 4)
                         .replaceAll("\\\\n", " ").replaceAll("(\\\\t)(?!a)"," ").replaceAll("\\\\\\\\","\\\\");
                 renderContent.replace("end}", "}");
                 List<String> settings = new ArrayList<>();
@@ -67,7 +65,7 @@ public class PatternRenderServiceImpl implements PatternRenderService {
                 settings.add("\\usepackage{listings} \n");
                 settings.add("\\renewcommand{\\arraystretch}{1.5} \n");
                 byte []renderedFile = renderContentViaAPI(renderContent, settings, "svg");
-                jsonString = jsonString.replace(jsonString.substring(occuranceStartEnd.getKey(), occuranceStartEnd.getValue() + 4), " " + saveAndUploadFile(renderedFile, "svg") + " ");
+                jsonString = jsonString.replace(jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 4), " " + saveAndUploadFile(renderedFile, "svg") + " ");
             }else {
                 break;
             }
@@ -86,8 +84,8 @@ public class PatternRenderServiceImpl implements PatternRenderService {
 
     }
 
-    public Pair<Integer, Integer> getNextOccurance(String content, String begin, String end) {
-        return new Pair<>(content.indexOf(begin, 0), content.indexOf(end, 0));
+    public Integer[] getNextOccurance(String content, String begin, String end) {
+        return new Integer[]{content.indexOf(begin, 0), content.indexOf(end, 0)};
     }
 
 
