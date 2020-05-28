@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class PatternRelationDescriptorServiceImpl implements PatternRelationDescriptorService {
 
     private DirectedEdgeRepository directedEdgeRepository;
@@ -44,14 +43,12 @@ public class PatternRelationDescriptorServiceImpl implements PatternRelationDesc
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<DirectedEdge> findDirectedEdgeBySource(Pattern pattern) throws DirectedEdgeNotFoundException {
         return this.directedEdgeRepository.findBySource(pattern)
                 .orElseThrow(() -> new DirectedEdgeNotFoundException(String.format("No DirectedEdge found with Pattern %s as source", pattern.getId())));
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<DirectedEdge> findDirectedEdgeByTarget(Pattern pattern) throws DirectedEdgeNotFoundException {
         return this.directedEdgeRepository.findByTarget(pattern)
                 .orElseThrow(() -> new DirectedEdgeNotFoundException(String.format("No DirectedEdge found with Pattern %s as target", pattern.getId())));
@@ -100,7 +97,6 @@ public class PatternRelationDescriptorServiceImpl implements PatternRelationDesc
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<UndirectedEdge> findUndirectedEdgeByPattern(Pattern pattern) throws UndirectedEdgeNotFoundException {
         List<UndirectedEdge> undirectedEdges = new ArrayList<>();
         undirectedEdges.addAll(this.findUndirectedEdgeByP1(pattern));

@@ -17,10 +17,8 @@ public interface PatternRelationDescriptorService {
     @Transactional(readOnly = false)
     DirectedEdge getDirectedEdgeById(UUID id);
 
-    @Transactional(readOnly = false)
     List<DirectedEdge> findDirectedEdgeBySource(Pattern pattern);
 
-    @Transactional(readOnly = false)
     List<DirectedEdge> findDirectedEdgeByTarget(Pattern pattern);
 
     @Transactional
@@ -41,7 +39,6 @@ public interface PatternRelationDescriptorService {
     @Transactional(readOnly = true)
     UndirectedEdge getUndirectedEdgeById(UUID id);
 
-    @Transactional(readOnly = true)
     List<UndirectedEdge> findUndirectedEdgeByPattern(Pattern pattern);
 
     @Transactional

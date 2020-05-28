@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class PatternViewPatternId implements Serializable {
+
     protected UUID patternViewId;
     protected UUID patternId;
 }

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 
+import com.patternpedia.api.entities.candidate.Candidate;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,9 @@ public class PatternLanguage extends PatternGraph {
     @Column(nullable = true)
     private String creativeCommonsReference;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "patternLanguage")
+    private List<Candidate> candidates;
 
     @JsonIgnore
     @OneToMany(mappedBy = "patternLanguage")

@@ -9,7 +9,6 @@ import com.patternpedia.api.entities.PatternView;
 import com.patternpedia.api.entities.UndirectedEdge;
 import com.patternpedia.api.rest.model.AddDirectedEdgeToViewRequest;
 import com.patternpedia.api.rest.model.AddUndirectedEdgeToViewRequest;
-import com.patternpedia.api.rest.model.CreateUndirectedEdgeRequest;
 import com.patternpedia.api.rest.model.UpdateDirectedEdgeRequest;
 import com.patternpedia.api.rest.model.UpdateUndirectedEdgeRequest;
 import org.springframework.transaction.annotation.Transactional;
