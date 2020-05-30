@@ -70,8 +70,6 @@ public class PatternRelationDescriptorServiceImpl implements PatternRelationDesc
     @Override
     @Transactional
     public void deleteDirectedEdge(DirectedEdge directedEdge) {
-        directedEdge.setPatternViews(null);
-        this.updateDirectedEdge(directedEdge);
         this.directedEdgeRepository.delete(directedEdge);
     }
 
@@ -123,8 +121,6 @@ public class PatternRelationDescriptorServiceImpl implements PatternRelationDesc
     @Override
     @Transactional
     public void deleteUndirectedEdge(UndirectedEdge undirectedEdge) {
-        undirectedEdge.setPatternViews(null);
-        this.updateUndirectedEdge(undirectedEdge);
         this.undirectedEdgeReository.delete(undirectedEdge);
     }
 

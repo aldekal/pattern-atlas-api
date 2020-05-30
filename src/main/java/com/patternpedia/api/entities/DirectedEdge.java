@@ -39,6 +39,6 @@ public class DirectedEdge extends PatternRelationDescriptor {
 
     @JsonIgnore
     @ToString.Exclude
-    @OneToMany(mappedBy = "directedEdge")
+    @OneToMany(mappedBy = "directedEdge", cascade = CascadeType.REMOVE)
     private List<PatternViewDirectedEdge> patternViews;
 }
