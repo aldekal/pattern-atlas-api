@@ -8,7 +8,7 @@ import java.util.List;
 public interface PatternRenderService {
 
     @Transactional (readOnly = false)
-    Object renderContent (Pattern pattern);
+    Object renderContent (Pattern pattern, Pattern oldVersion);
 
     @Transactional (readOnly = false)
     Integer[] getNextOccurance(String content, String begin, String end);

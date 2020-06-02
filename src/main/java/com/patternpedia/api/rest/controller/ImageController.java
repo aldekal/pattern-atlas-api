@@ -1,5 +1,6 @@
 package com.patternpedia.api.rest.controller;
 
+import com.patternpedia.api.entities.Image;
 import com.patternpedia.api.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +24,26 @@ public class ImageController {
             produces = "image/svg+xml"
     )
     public @ResponseBody
-    byte[] renderLatexAsPng(@PathVariable String imageId){
+    byte[] getImageById(@PathVariable String imageId){
         UUID uuid = UUID.fromString(imageId);
         return this.imageService.getImageById(uuid).getData();
+    }
+
+    @PostMapping(
+            value = "/updateImage/{imageId}",
+            produces = "image/svg+xml"
+    )
+    public @ResponseBody
+    byte[] updateImage(@PathVariable String imageId, @RequestBody byte[] data){
+        UUID uuid = UUID.fromString(imageId);
+        System.out.println("image" + data);
+        System.out.println("id" + uuid);
+        Image image = new Image();
+        image.setId(uuid);
+        image.setData(data);
+        image.setFileName(imageId);
+        image.setFileType("image/svg+xml");
+        return this.imageService.updateImage(image).getData();
     }
 
 

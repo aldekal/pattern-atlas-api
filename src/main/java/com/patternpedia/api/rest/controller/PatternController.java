@@ -298,7 +298,7 @@ public class PatternController {
     @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> addPatternToPatternView(@PathVariable UUID patternViewId, @RequestBody Pattern pattern)  {
-        Object renderedContent = patternRenderService.renderContent(pattern);
+        Object renderedContent = patternRenderService.renderContent(pattern, null);
         if (renderedContent != null){
             pattern.setRenderedContent(renderedContent);
         } else {
@@ -330,7 +330,7 @@ public class PatternController {
         if (null == pattern.getUri()) {
             pattern.setUri(patternLanguage.getUri() + '/' + CaseUtils.toCamelCase(pattern.getName(), false));
         }
-        Object renderedContent = patternRenderService.renderContent(pattern);
+        Object renderedContent = patternRenderService.renderContent(pattern, null);
         if (renderedContent != null){
             pattern.setRenderedContent(renderedContent);
         } else {
@@ -355,15 +355,15 @@ public class PatternController {
         PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
         Pattern persistedVersion = this.patternService.getPatternById(patternId);
         // Remark: At the moment we do not support changing name, uri of a pattern
-        persistedVersion.setIconUrl(pattern.getIconUrl());
-        persistedVersion.setContent(pattern.getContent());
-        Object renderedContent = patternRenderService.renderContent(pattern);
+
+        Object renderedContent = patternRenderService.renderContent(pattern, persistedVersion);
         if (renderedContent != null){
             persistedVersion.setRenderedContent(renderedContent);
         } else {
             persistedVersion.setRenderedContent(pattern.getContent());
         }
-
+        persistedVersion.setIconUrl(pattern.getIconUrl());
+        persistedVersion.setContent(pattern.getContent());
 
         pattern = this.patternService.updatePattern(persistedVersion);
         return new EntityModel<>(pattern,

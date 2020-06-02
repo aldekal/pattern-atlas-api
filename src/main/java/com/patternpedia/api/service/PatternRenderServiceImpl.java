@@ -22,11 +22,15 @@ public class PatternRenderServiceImpl implements PatternRenderService {
     private ImageService imageService;
 
     @Override
-    public Object renderContent(Pattern pattern) {
+    public Object renderContent(Pattern pattern, Pattern oldVersion) {
         String jsonString = null;
+        String contentOld = "";
+        String renderedContentOld = "";
         ObjectMapper mapper = new ObjectMapper();
         try {
             jsonString = mapper.writeValueAsString(pattern.getContent());
+            contentOld = mapper.writeValueAsString(oldVersion.getContent());
+            renderedContentOld = mapper.writeValueAsString(oldVersion.getRenderedContent());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -36,24 +40,54 @@ public class PatternRenderServiceImpl implements PatternRenderService {
             return null;
 
         //get all quantikz occurences
-        boolean quantikz = true;
-        while (quantikz) {
+        ArrayList<String> oldContentOccurances = new ArrayList<>();
+        ArrayList<String> oldSVGOccurances = new ArrayList<>();
+        while(true){
+            Integer[] occuranceStartEndOld = getNextOccurance(contentOld, "\\\\begin{quantikz}", "\\end{quantikz}");
+            Integer[] svgOccurencesOld = getNextOccurance(renderedContentOld, "<SVG>", "</SVG>");
+            if (occuranceStartEndOld[0] != -1 && occuranceStartEndOld[1] != -1 && svgOccurencesOld[0] != -1 && svgOccurencesOld[1] != -1) {
+                oldContentOccurances.add(contentOld.substring(occuranceStartEndOld[0], occuranceStartEndOld[1] + 14)
+                        .replaceAll("\\\\n", " ").replaceAll("(\\\\t)(?!a)"," ")
+                        .replaceAll("\\\\\\\\","\\\\"));
+                oldSVGOccurances.add(renderedContentOld.substring(svgOccurencesOld[0], svgOccurencesOld[1] + 6));
+                contentOld = contentOld.replace(contentOld.substring(occuranceStartEndOld[0], occuranceStartEndOld[1] + 14), " ");
+                renderedContentOld = renderedContentOld.replace(renderedContentOld.substring(svgOccurencesOld[0], svgOccurencesOld[1] + 6), " ");
+            }
+            else {
+                break;
+            }
+        }
+        oldContentOccurances.forEach(s -> System.out.print("OLD CONTENT" + s));
+        oldSVGOccurances.forEach(s -> System.out.println("OLD SVG" +s));
+
+        while (true) {
             Integer[] occuranceStartEnd = getNextOccurance(jsonString, "\\\\begin{quantikz}", "\\end{quantikz}");
             if (occuranceStartEnd[0] != -1 && occuranceStartEnd[1] != -1) {
                 String renderContent = jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 14)
-                .replaceAll("\\\\n", " ").replaceAll("(\\\\t)(?!a)"," ").replaceAll("\\\\\\\\","\\\\");
-                List<String> settings = new ArrayList<>();
-                settings.add("\\usepackage{tikz} \n");
-                settings.add("\\usetikzlibrary{quantikz} \n");
-                byte []renderedFile = renderContentViaAPI(renderContent, settings, "svg");
-                jsonString = jsonString.replace(jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 14), " " + saveAndUploadFile(renderedFile, "svg") + " ");
+                        .replaceAll("\\\\n", " ").replaceAll("(\\\\t)(?!a)"," ")
+                        .replaceAll("\\\\\\\\","\\\\");
+                boolean occured = false;
+                for (int i = 0; i < oldContentOccurances.size(); i++){
+                    if(oldContentOccurances.get(i).equals(renderContent)){
+                        occured = true;
+                        jsonString = jsonString.replace(jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 14), " " + oldSVGOccurances.get(i) + " ");
+                        System.out.print("INSIDE OF EQUALS FOR " + i + "  " + jsonString);
+                    }
+                }
+                if(!occured){
+                    List<String> settings = new ArrayList<>();
+                    settings.add("\\usepackage{tikz} \n");
+                    settings.add("\\usetikzlibrary{quantikz} \n");
+                    byte []renderedFile = renderContentViaAPI(renderContent, settings, "svg");
+                    jsonString = jsonString.replace(jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 14), " " + saveAndUploadFile(renderedFile, "svg") + " ");
+                    System.out.println("OUTSIDE OF EQUALS" + jsonString);
+                }
             }else {
                 break;
             }
         }
 
-        boolean qcircuit = true;
-        while (qcircuit) {
+        while (true) {
             Integer[] occuranceStartEnd = getNextOccurance(jsonString, "\\\\Qcircuit", "end}");
             if (occuranceStartEnd[0] != -1 && occuranceStartEnd[1] != -1) {
                 String renderContent = jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 4)
