@@ -1,6 +1,7 @@
 package com.patternpedia.api.rest.controller;
 
 import com.patternpedia.api.entities.Image;
+import com.patternpedia.api.entities.DiscussionTopic;
 import com.patternpedia.api.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -36,8 +37,6 @@ public class ImageController {
     public @ResponseBody
     byte[] updateImage(@PathVariable String imageId, @RequestBody byte[] data){
         UUID uuid = UUID.fromString(imageId);
-        System.out.println("image" + data);
-        System.out.println("id" + uuid);
         Image image = new Image();
         image.setId(uuid);
         image.setData(data);
@@ -45,6 +44,4 @@ public class ImageController {
         image.setFileType("image/svg+xml");
         return this.imageService.updateImage(image).getData();
     }
-
-
 }
