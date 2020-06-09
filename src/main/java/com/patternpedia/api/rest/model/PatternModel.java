@@ -1,34 +1,33 @@
 package com.patternpedia.api.rest.model;
 
-import java.util.UUID;
-
-import com.patternpedia.api.entities.Pattern;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.PatternLanguage;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+
+import java.util.UUID;
 
 @NoArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class PatternModel {
 
-    private UUID id;
+    protected UUID id;
 
-    private String uri;
+    protected String uri;
 
-    private String name;
+    protected String name;
 
-    private String iconUrl;
+    protected String iconUrl;
 
-    private UUID patternLanguageId;
+    protected UUID patternLanguageId;
 
-    private String patternLanguageName;
+    protected String patternLanguageName;
 
     @JsonIgnore
-    private Pattern pattern;
+    protected Pattern pattern;
 
     private PatternModel(Pattern pattern) {
         this.pattern = pattern;

@@ -1,19 +1,10 @@
 package com.patternpedia.api.rest.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import com.patternpedia.api.entities.PatternView;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.patternpedia.api.rest.model.PatternLanguageGraphModel;
+import com.patternpedia.api.entities.PatternView;
+import com.patternpedia.api.rest.model.GraphModel;
 import com.patternpedia.api.service.PatternViewService;
-
 import org.apache.commons.text.CaseUtils;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -22,9 +13,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
@@ -78,7 +75,7 @@ public class PatternViewController {
     ResponseEntity<?> getPatterViewGraph(@PathVariable UUID patternViewId) {
         Object graph = this.patternViewService.getGraphOfPatternView(patternViewId);
 
-        PatternLanguageGraphModel model = new PatternLanguageGraphModel();
+        GraphModel model = new GraphModel();
         if (null == graph) {
             model.setGraph(this.objectMapper.createArrayNode());
         } else {

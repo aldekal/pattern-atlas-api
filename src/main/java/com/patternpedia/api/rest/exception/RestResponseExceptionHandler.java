@@ -19,7 +19,8 @@ public class RestResponseExceptionHandler
             PatternSchemaNotFoundException.class,
             PatternViewNotFoundException.class,
             DirectedEdgeNotFoundException.class,
-            UndirectedEdgeNotFoundException.class
+            UndirectedEdgeNotFoundException.class,
+            DesignModelNotFoundException.class
     })
     protected ResponseEntity<Object> handleEntityNotFoundExceptions(RuntimeException ex, WebRequest request) {
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND, request);

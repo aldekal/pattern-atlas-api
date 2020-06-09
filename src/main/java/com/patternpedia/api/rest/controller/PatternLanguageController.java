@@ -1,20 +1,11 @@
 package com.patternpedia.api.rest.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.PatternSchema;
-import com.patternpedia.api.rest.model.PatternLanguageGraphModel;
+import com.patternpedia.api.rest.model.GraphModel;
 import com.patternpedia.api.rest.model.PatternLanguageModel;
 import com.patternpedia.api.service.PatternLanguageService;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.text.CaseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -24,9 +15,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
@@ -148,7 +145,7 @@ public class PatternLanguageController {
     ResponseEntity<?> getPatternLanguageGraph(@PathVariable UUID patternLanguageId) {
         Object graph = this.patternLanguageService.getGraphOfPatternLanguage(patternLanguageId);
 
-        PatternLanguageGraphModel model = new PatternLanguageGraphModel();
+        GraphModel model = new GraphModel();
         if (null == graph) {
             model.setGraph(this.objectMapper.createArrayNode());
         } else {

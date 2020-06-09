@@ -5,6 +5,6 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Data
-public class PatternLanguageGraphModel {
+public class GraphModel {
     private Object graph;
 }
