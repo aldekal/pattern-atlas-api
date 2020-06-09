@@ -4,11 +4,13 @@ import com.patternpedia.api.repositories.DiscussionCommentRepository;
 import com.patternpedia.api.repositories.DiscussionTopicRepository;
 import com.patternpedia.api.entities.DiscussionComment;
 import com.patternpedia.api.entities.DiscussionTopic;
+import com.patternpedia.api.rest.model.DiscussionTopicModel;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -57,6 +59,35 @@ public class DiscussionServiceImpl implements  DiscussionService{
     @Override
     public void deleteCommentById(UUID id) {
         this.discussionCommentRepository.deleteById(id);
+    }
+
+    @Override
+    public List<DiscussionComment> getCommentsByTopicId(UUID topicId) {
+        return this.discussionCommentRepository.findDiscussionCommentByDiscussionTopic(this.getTopicById(topicId));
+    }
+
+    @Override
+    public List<DiscussionTopic> getTopicsByImageId(UUID imageId) {
+        return this.discussionTopicRepository.findDiscussionTopicsByImageId(imageId);
+    }
+
+    @Override
+    public List<DiscussionTopicModel> getTopicsAndCommentsByImageId(UUID imageId) {
+        List<DiscussionTopicModel> topicModelList = new ArrayList<>();
+        this.discussionTopicRepository.findDiscussionTopicsByImageId(imageId).forEach( topic -> {
+            DiscussionTopicModel topicModel = new DiscussionTopicModel(topic, this.discussionCommentRepository.findDiscussionCommentByDiscussionTopic(this.getTopicById(topic.getId())));
+            topicModelList.add(topicModel);
+        });
+        return topicModelList;
+    }
+
+    @Override
+    public List<DiscussionTopic> updateTopicsByImageId(UUID oldImageId, UUID newImageId) {
+        this.discussionTopicRepository.findDiscussionTopicsByImageId(oldImageId).forEach(topic -> {
+            topic.setImageId(newImageId);
+            this.discussionTopicRepository.save(topic);
+        });
+        return this.discussionTopicRepository.findDiscussionTopicsByImageId(newImageId);
     }
 
 

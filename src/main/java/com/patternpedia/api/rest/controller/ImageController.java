@@ -2,6 +2,8 @@ package com.patternpedia.api.rest.controller;
 
 import com.patternpedia.api.entities.Image;
 import com.patternpedia.api.entities.DiscussionTopic;
+import com.patternpedia.api.rest.model.ImageModel;
+import com.patternpedia.api.service.DiscussionService;
 import com.patternpedia.api.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,11 +16,14 @@ import java.util.UUID;
 public class ImageController {
 
     private ImageService imageService;
+    private DiscussionService discussionService;
 
     @Autowired
-    public ImageController(ImageService imageService) {
+    public ImageController(ImageService imageService, DiscussionService discussionService) {
         this.imageService = imageService;
+        this.discussionService = discussionService;
     }
+
 
     @GetMapping(
             value = "/getImageById/{imageId}",
@@ -43,5 +48,14 @@ public class ImageController {
         image.setFileName(imageId);
         image.setFileType("image/svg+xml");
         return this.imageService.updateImage(image).getData();
+    }
+
+    @GetMapping(
+            value = "/getImageAndCommentsById/{imageId}"
+    )
+    public @ResponseBody
+    ImageModel getImageAndCommentsById(@PathVariable String imageId){
+        UUID uuid = UUID.fromString(imageId);
+        return new ImageModel(this.imageService.getImageById(uuid).getData(), this.discussionService.getTopicsAndCommentsByImageId(uuid));
     }
 }

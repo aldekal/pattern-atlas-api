@@ -36,6 +36,12 @@ public class DiscussionTopic {
 
     private Double y;
 
+    private Double width;
+
+    private Double height;
+
+    private String fill;
+
     private UUID imageId;
 
     @JsonIgnore
