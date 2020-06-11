@@ -1,22 +1,21 @@
 package com.patternpedia.api.rest.controller;
 
-import com.patternpedia.api.entities.user.UserRole;
+import com.patternpedia.api.rest.model.user.*;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.patternpedia.api.entities.user.UserEntity;
 import com.patternpedia.api.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/users", produces = "application/hal+json")
@@ -42,14 +41,36 @@ public class UserController {
      * GET Methods
      */
     @GetMapping(value = "")
-    @PreAuthorize(value = "hasAuthority('ADMIN')")
-    List<UserEntity> all() {
-        return this.userService.getAllUsers();
+//    @PreAuthorize(value = "hasAuthority('ADMIN')")
+    CollectionModel<EntityModel<UserModel>> getAll() {
+        List<EntityModel<UserModel>> users = this.userService.getAllUsers()
+                .stream()
+                .map(user -> new EntityModel<>(new UserModel(user)))
+                .collect(Collectors.toList());
+        return new CollectionModel<>(users);
     }
 
     @GetMapping(value = "/{userId}")
-    UserEntity getUserById(@PathVariable UUID userId) {
-        return this.userService.getUserById(userId);
+    ResponseEntity<EntityModel<UserModel>> getUserById(@PathVariable UUID userId) {
+        return ResponseEntity.ok(new EntityModel<>(new UserModel(this.userService.getUserById(userId))));
+    }
+
+    @GetMapping(value = "/roles")
+    CollectionModel<EntityModel<RoleModel>>  getAllRoles() {
+        List<EntityModel<RoleModel>> roles = this.userService.getAllRoles()
+                .stream()
+                .map(role -> new EntityModel<>(new RoleModel(role)))
+                .collect(Collectors.toList());
+        return new CollectionModel<>(roles);
+    }
+
+    @GetMapping(value = "/roles/privileges")
+    CollectionModel<EntityModel<PrivilegeModel>>  getAllPrivileges() {
+        List<EntityModel<PrivilegeModel>> roles = this.userService.getAllPrivileges()
+                .stream()
+                .map(privilege -> new EntityModel<>(new PrivilegeModel(privilege)))
+                .collect(Collectors.toList());
+        return new CollectionModel<>(roles);
     }
 
     /**
@@ -57,10 +78,8 @@ public class UserController {
      */
     @PostMapping(value = "")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserEntity newUser(@RequestBody UserEntity user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return this.userService.createUser(user);
-
+    ResponseEntity<EntityModel<UserModel>> newUser(@RequestBody UserModelRequest userModelRequest) {
+        return ResponseEntity.ok(new EntityModel<>(new UserModel(this.userService.createUser(userModelRequest))));
     }
 
     /**
@@ -68,15 +87,22 @@ public class UserController {
      */
     @PutMapping(value = "/{userId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    UserEntity updateUser(@PathVariable UUID userId, @RequestBody UserEntity user) {
-        return this.userService.updateUser(user);
+    ResponseEntity<EntityModel<UserModel>> updateUser(@PathVariable UUID userId, @RequestBody UserModelRequest userModelRequest) {
+        return ResponseEntity.ok(new EntityModel<>(new UserModel(this.userService.updateUser(userId, userModelRequest))));
+    }
+
+    @PutMapping(value = "/roles/{roleId}/privileges/{privilegeId}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    ResponseEntity<EntityModel<RoleModel>> updateUserRole(@PathVariable UUID roleId, @PathVariable UUID privilegeId, @RequestBody RoleModelRequest roleModelRequest) {
+        return ResponseEntity.ok(new EntityModel<>(new RoleModel(this.userService.updateRole(roleId, privilegeId, roleModelRequest))));
     }
 
     /**
      * DELETE Methods
      */
     @DeleteMapping(value = "/{userId}")
-    void deleteUser(@PathVariable UUID userId) {
+    ResponseEntity<?> deleteUser(@PathVariable UUID userId) {
         this.userService.deleteUser(userId);
+        return ResponseEntity.noContent().build();
     }
 }

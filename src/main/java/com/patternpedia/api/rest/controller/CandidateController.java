@@ -1,18 +1,11 @@
 package com.patternpedia.api.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.patternpedia.api.entities.PatternLanguage;
-import com.patternpedia.api.entities.candidate.Candidate;
-import com.patternpedia.api.entities.candidate.CandidateComment;
-import com.patternpedia.api.entities.issue.Issue;
-import com.patternpedia.api.rest.model.CandidateModel;
-import com.patternpedia.api.rest.model.PatternLanguageModel;
-import com.patternpedia.api.rest.model.PatternModel;
+import com.patternpedia.api.rest.model.candidate.CandidateModel;
+import com.patternpedia.api.rest.model.candidate.CandidateModelRequest;
+import com.patternpedia.api.rest.model.shared.CommentModel;
 import com.patternpedia.api.service.CandidateService;
 import com.patternpedia.api.service.PatternLanguageService;
-import io.swagger.v3.core.util.Json;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.CollectionModel;
@@ -20,8 +13,10 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -51,59 +46,51 @@ public class CandidateController {
      */
     @GetMapping(value = "")
     CollectionModel<EntityModel<CandidateModel>> all() {
-
         List<EntityModel<CandidateModel>> candidates = this.candidateService.getAllCandidates()
                 .stream()
-                .map(candidate -> new EntityModel<>(CandidateModel.from(candidate)))
-//                        getPatternViewLinks(patternView)))
+                .map(candidate -> new EntityModel<>(new CandidateModel(candidate)))
                 .collect(Collectors.toList());
-
         return new CollectionModel<>(candidates);
     }
 
     @GetMapping(value = "/{candidateId}")
     @PreAuthorize(value = "#oauth2.hasScope('read')")
-    Candidate getCandidateById(@PathVariable UUID candidateId) {
-        return this.candidateService.getCandidateById(candidateId);
+    ResponseEntity<EntityModel<CandidateModel>> getCandidateById(@PathVariable UUID candidateId) {
+        return ResponseEntity.ok(new EntityModel<>(new CandidateModel(this.candidateService.getCandidateById(candidateId))));
     }
 
     @GetMapping(value = "/?uri={candidateUri}")
-    Candidate getCandidateByUri(@PathVariable String candidateUri) {
-        return this.candidateService.getCandidateByURI(candidateUri);
+    ResponseEntity<EntityModel<CandidateModel>> getCandidateByUri(@PathVariable String candidateUri) {
+        return ResponseEntity.ok(new EntityModel<>(new CandidateModel(this.candidateService.getCandidateByURI(candidateUri))));
     }
 
     /**
      * CREATE Methods
      */
     @PostMapping(value = "")
+    @PreAuthorize(value = "#oauth2.hasScope('write')")
     @ResponseStatus(HttpStatus.CREATED)
-    Candidate newCandidate(@RequestBody CandidateModel candidate) {
-        return this.candidateService.createCandidate(candidate);
+    ResponseEntity<EntityModel<CandidateModel>> newCandidate(@RequestBody CandidateModelRequest candidateModelRequest, @AuthenticationPrincipal Principal principal) {
+        return ResponseEntity.ok(new EntityModel<>(new CandidateModel(this.candidateService.createCandidate(candidateModelRequest, UUID.fromString(principal.getName())))));
     }
 
-    @PostMapping(value = "/{candidateId}/comments/{userId}")
+    @PostMapping(value = "/{candidateId}/comments")
     @ResponseStatus(HttpStatus.CREATED)
-    Candidate newCandidateComment(@PathVariable UUID candidateId, @PathVariable UUID userId, @RequestBody CandidateComment candidateComment) {
-        return this.candidateService.createComment(candidateId, userId, candidateComment);
+    ResponseEntity<EntityModel<CommentModel>> newCandidateComment(@PathVariable UUID candidateId, @AuthenticationPrincipal Principal principal, @RequestBody CommentModel commentModel) {
+        return ResponseEntity.ok(new EntityModel<>(new CommentModel(this.candidateService.createComment(candidateId, UUID.fromString(principal.getName()), commentModel))));
     }
 
     /**
      * UPDATE Methods
      */
     @PutMapping(value = "/{candidateId}")
-    Candidate putCandidate(@PathVariable UUID candidateId, @RequestBody Candidate candidate) {
-        logger.info(candidate.toString());
-        return this.candidateService.updateCandidate(candidate);
+    ResponseEntity<EntityModel<CandidateModel>> putCandidate(@PathVariable UUID candidateId, @AuthenticationPrincipal Principal principal, @RequestBody CandidateModelRequest candidateModelRequest) {
+        return ResponseEntity.ok(new EntityModel<>(new CandidateModel(this.candidateService.updateCandidate(candidateId, UUID.fromString(principal.getName()), candidateModelRequest))));
     }
 
-    @PutMapping(value = "/{candidateId}/users/{userId}/rating/{rating}")
-    Candidate putCandidateRating(@PathVariable UUID candidateId, @PathVariable UUID userId, @PathVariable String rating) {
-        return this.candidateService.userRating(candidateId, userId, rating);
-    }
-
-    @PutMapping(value = "/comments/{candidateCommentId}/users/{userId}/rating/{rating}")
-    Candidate putCandidateCommentRating(@PathVariable UUID candidateCommentId, @PathVariable UUID userId, @PathVariable String rating) {
-        return this.candidateService.commentUserRating(candidateCommentId, userId, rating);
+    @PutMapping(value = "/{candidateId}/comments/{candidateCommentId}")
+    ResponseEntity<EntityModel<CommentModel>> putCandidateCommentRating(@PathVariable UUID candidateId, @PathVariable UUID candidateCommentId, @AuthenticationPrincipal Principal principal, @RequestBody CommentModel commentModel) {
+        return ResponseEntity.ok(new EntityModel<>(new CommentModel(this.candidateService.updateComment(candidateId, candidateCommentId, UUID.fromString(principal.getName()), commentModel))));
     }
 
     /**
@@ -114,5 +101,11 @@ public class CandidateController {
     ResponseEntity<?> deleteCandidate(@PathVariable UUID candidateId) {
         this.candidateService.deleteCandidate(candidateId);
         return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping(value = "/{candidateId}/comments/{candidateCommentId}")
+//    @PreAuthorize(value = "#oauth2.hasScope('de')")
+    ResponseEntity<?> deleteComment(@PathVariable UUID candidateId, @PathVariable UUID candidateCommentId, @AuthenticationPrincipal Principal principal) {
+        return this.candidateService.deleteComment(candidateId, candidateCommentId, UUID.fromString(principal.getName()));
     }
 }

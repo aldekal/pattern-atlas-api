@@ -3,8 +3,9 @@ package com.patternpedia.api.entities.issue;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.patternpedia.api.entities.EntityWithURI;
-import com.patternpedia.api.entities.user.UserEntity;
-import com.patternpedia.api.entities.issue.rating.IssueRating;
+import com.patternpedia.api.entities.issue.author.IssueAuthor;
+import com.patternpedia.api.entities.issue.comment.IssueComment;
+import com.patternpedia.api.rest.model.issue.IssueModelRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -20,44 +21,36 @@ public class Issue extends EntityWithURI {
 
     private String description;
 
-    private int rating = 0;
-
     private String version = "0.1.0";
 
     @JsonIgnore
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<IssueRating> userRating = new HashSet<>();
+    private List<IssueAuthor> authors = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<IssueRating> userRating = new ArrayList<>();
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<IssueComment> comments = new ArrayList<>();
 
-
-    public void addComment(IssueComment comment, UserEntity user) {
-        comments.add(comment);
-        comment.setIssue(this);
-        comment.setUser(user);
+    public Issue (IssueModelRequest issueModelRequest) {
+        this.setUri(issueModelRequest.getUri());
+        this.setName(issueModelRequest.getName());
+        this.setDescription(issueModelRequest.getDescription());
+        this.setVersion(issueModelRequest.getVersion());
     }
 
-    public void updateComment(IssueComment updateComment) {
-        ListIterator<IssueComment> commentIterator = comments.listIterator();
-        while (commentIterator.hasNext()) {
-            IssueComment next = commentIterator.next();
-            if (next.getId().equals(updateComment.getId())) {
-                commentIterator.set(updateComment);
-                break;
-            }
-        }
-    }
-
-    public void removeComment(IssueComment comment) {
-        comments.remove(comment);
-        comment.setIssue(null);
-        comment.setUser(null);
+    public void updateIssue(IssueModelRequest issueModelRequest) {
+        this.setUri(issueModelRequest.getUri());
+        this.setName(issueModelRequest.getName());
+        this.setDescription(issueModelRequest.getDescription());
+        this.setVersion(issueModelRequest.getVersion());
     }
 
     public String toString() {
-        return this.getId().toString() + this.getDescription();
+        return this.getId().toString() + this.getDescription() + this.getComments().toString();
     }
 
 }

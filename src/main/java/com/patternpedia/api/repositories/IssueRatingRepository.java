@@ -1,20 +1,16 @@
 package com.patternpedia.api.repositories;
 
 import com.patternpedia.api.entities.issue.Issue;
-import com.patternpedia.api.entities.user.UserEntity;
-import com.patternpedia.api.entities.issue.rating.IssueRatingKey;
-import com.patternpedia.api.entities.issue.rating.IssueRating;
+import com.patternpedia.api.entities.issue.IssueRating;
+import com.patternpedia.api.entities.shared.CompositeKey;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-import java.util.List;
+import java.util.Collection;
 
 @RepositoryRestResource(exported = false)
-public interface IssueRatingRepository extends JpaRepository<IssueRating, IssueRatingKey> {
+public interface IssueRatingRepository extends JpaRepository<IssueRating, CompositeKey> {
 
-    List<IssueRating> findAllByIssue(Issue issue);
-
-    List<UserEntity> findAllByUser(UserEntity user);
-
-    IssueRating findByIssueAndUser(Issue issue, UserEntity user);
+    boolean existsByIdAndRating(CompositeKey compositeKey, int rating);
+    Collection<IssueRating> findAllByIssue(Issue issue);
 }

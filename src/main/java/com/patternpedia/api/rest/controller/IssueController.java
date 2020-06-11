@@ -1,18 +1,24 @@
 package com.patternpedia.api.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.patternpedia.api.entities.issue.IssueComment;
-import com.patternpedia.api.entities.issue.Issue;
+import com.patternpedia.api.rest.model.issue.IssueModelRequest;
+import com.patternpedia.api.rest.model.shared.CommentModel;
+import com.patternpedia.api.rest.model.issue.IssueModel;
 import com.patternpedia.api.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/issues", produces = "application/hal+json")
@@ -38,19 +44,23 @@ public class IssueController {
      * GET Methods
      */
     @GetMapping(value = "")
-    List<Issue> all() {
-        return this.issueService.getAllIssues();
+    CollectionModel<EntityModel<IssueModel>> getAll() {
+        List<EntityModel<IssueModel>> issues = this.issueService.getAllIssues()
+                .stream()
+                .map(issue -> new EntityModel<>(new IssueModel(issue)))
+                .collect(Collectors.toList());
+        return new CollectionModel<>(issues);
     }
 
     @GetMapping(value = "/{issueId}")
     @PreAuthorize(value = "#oauth2.hasScope('read')")
-    Issue getIssueById(@PathVariable UUID issueId) {
-        return this.issueService.getIssueById(issueId);
+    ResponseEntity<EntityModel<IssueModel>> getIssueById(@PathVariable UUID issueId) {
+        return ResponseEntity.ok(new EntityModel<>(new IssueModel(this.issueService.getIssueById(issueId))));
     }
 
     @GetMapping(value = "/?uri={issueUri}")
-    Issue getIssueByUri(@PathVariable String issueUri) {
-        return this.issueService.getIssueByURI(issueUri);
+    ResponseEntity<EntityModel<IssueModel>> getIssueByUri(@PathVariable String issueUri) {
+        return ResponseEntity.ok(new EntityModel<>(new IssueModel(this.issueService.getIssueByURI(issueUri))));
     }
 
     /**
@@ -59,34 +69,28 @@ public class IssueController {
     @PostMapping(value = "")
     @PreAuthorize(value = "#oauth2.hasScope('write')")
     @ResponseStatus(HttpStatus.CREATED)
-    Issue newIssue(@RequestBody Issue issue) {
-        return this.issueService.createIssue(issue);
+    ResponseEntity<EntityModel<IssueModel>> newIssue(@RequestBody IssueModelRequest issueModelRequest, @AuthenticationPrincipal Principal principal) {
+        return ResponseEntity.ok(new EntityModel<>(new IssueModel(this.issueService.createIssue(issueModelRequest, UUID.fromString(principal.getName())))));
     }
 
-    @PostMapping(value = "/{issueId}/comments/{userId}")
+    @PostMapping(value = "/{issueId}/comments")
 //    @PreAuthorize(value = "#oauth2.hasScope('write')")
     @ResponseStatus(HttpStatus.CREATED)
-    Issue newIssueComment(@PathVariable UUID issueId, @PathVariable UUID userId, @RequestBody IssueComment issueComment) {
-        return this.issueService.createComment(issueId, userId, issueComment);
+    ResponseEntity<EntityModel<CommentModel>> newIssueComment(@PathVariable UUID issueId, @AuthenticationPrincipal Principal principal, @RequestBody CommentModel commentModel) {
+        return ResponseEntity.ok(new EntityModel<>(new CommentModel(this.issueService.createComment(issueId, UUID.fromString(principal.getName()), commentModel))));
     }
 
     /**
      * UPDATE Methods
      */
     @PutMapping(value = "/{issueId}")
-    Issue putIssue(@PathVariable UUID issueId, @RequestBody Issue issue) {
-        logger.info(issue.toString());
-        return this.issueService.updateIssue(issue);
+    ResponseEntity<EntityModel<IssueModel>> putIssue(@PathVariable UUID issueId, @AuthenticationPrincipal Principal principal, @RequestBody IssueModelRequest issueModelRequest) {
+        return ResponseEntity.ok(new EntityModel<>(new IssueModel(this.issueService.updateIssue(issueId, UUID.fromString(principal.getName()), issueModelRequest))));
     }
 
-    @PutMapping(value = "/{issueId}/users/{userId}/rating/{rating}")
-    Issue putIssueRating(@PathVariable UUID issueId, @PathVariable UUID userId, @PathVariable String rating) {
-        return this.issueService.userRating(issueId, userId, rating);
-    }
-
-    @PutMapping(value = "/comments/{issueCommentId}/users/{userId}/rating/{rating}")
-    Issue putIssueCommentRating(@PathVariable UUID issueCommentId, @PathVariable UUID userId, @PathVariable String rating) {
-        return this.issueService.commentUserRating(issueCommentId, userId, rating);
+    @PutMapping(value = "/{issueId}/comments/{issueCommentId}")
+    ResponseEntity<EntityModel<CommentModel>> putIssueCommentRating(@PathVariable UUID issueId, @PathVariable UUID issueCommentId, @AuthenticationPrincipal Principal principal, @RequestBody CommentModel commentModel) {
+        return ResponseEntity.ok(new EntityModel<>(new CommentModel(this.issueService.updateComment(issueId, issueCommentId, UUID.fromString(principal.getName()), commentModel))));
     }
 
     /**
@@ -97,5 +101,11 @@ public class IssueController {
     ResponseEntity<?> deleteIssue(@PathVariable UUID issueId) {
         this.issueService.deleteIssue(issueId);
         return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping(value = "/{issueId}/comments/{issueCommentId}")
+//    @PreAuthorize(value = "#oauth2.hasScope('de')")
+    ResponseEntity<?> deleteComment(@PathVariable UUID issueId, @PathVariable UUID issueCommentId, @AuthenticationPrincipal Principal principal) {
+        return this.issueService.deleteComment(issueId, issueCommentId, UUID.fromString(principal.getName()));
     }
 }

@@ -1,50 +1,53 @@
 package com.patternpedia.api.service;
 
-import com.patternpedia.api.entities.issue.IssueComment;
+import com.patternpedia.api.entities.issue.comment.IssueComment;
 import com.patternpedia.api.entities.issue.Issue;
-import com.patternpedia.api.entities.issue.rating.IssueCommentRating;
+import com.patternpedia.api.entities.issue.author.IssueAuthor;
+import com.patternpedia.api.entities.issue.comment.IssueCommentRating;
+import com.patternpedia.api.entities.shared.AuthorConstant;
 import com.patternpedia.api.entities.user.UserEntity;
-import com.patternpedia.api.entities.issue.rating.IssueRating;
-import com.patternpedia.api.exception.*;
-import com.patternpedia.api.repositories.IssueCommentRatingRepository;
-import com.patternpedia.api.repositories.IssueCommentRepository;
-import com.patternpedia.api.repositories.IssueRepository;
-import com.patternpedia.api.repositories.IssueRatingRepository;
-import com.patternpedia.api.util.RatingHelper;
+import com.patternpedia.api.repositories.*;
+import com.patternpedia.api.rest.model.issue.IssueModelRequest;
+import com.patternpedia.api.rest.model.shared.AuthorModel;
+import com.patternpedia.api.rest.model.shared.CommentModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.UUID;
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
+import java.util.*;
 
 @Service
 @Transactional
 public class IssueServiceImpl implements IssueService {
 
     private IssueRepository issueRepository;
-    private IssueRatingRepository issueRatingRepository;
     private IssueCommentRepository issueCommentRepository;
     private IssueCommentRatingRepository issueCommentRatingRepository;
     private UserService userService;
-    private RatingHelper ratingHelper;
 
     Logger logger = LoggerFactory.getLogger(IssueServiceImpl.class);
 
     public IssueServiceImpl(
             IssueRepository issueRepository,
-            IssueRatingRepository issueRatingRepository,
             IssueCommentRepository issueCommentRepository,
             IssueCommentRatingRepository issueCommentRatingRepository,
             UserService userService
     ) {
         this.issueRepository = issueRepository;
-        this.issueRatingRepository = issueRatingRepository;
         this.issueCommentRepository = issueCommentRepository;
         this.issueCommentRatingRepository = issueCommentRatingRepository;
         this.userService = userService;
-        this.ratingHelper = new RatingHelper();
+    }
+
+    @Override
+    @Transactional
+    public Issue saveIssue(Issue issue) {
+        return this.issueRepository.save(issue);
     }
 
     /**
@@ -52,28 +55,18 @@ public class IssueServiceImpl implements IssueService {
      */
     @Override
     @Transactional
-    public Issue createIssue(Issue issue) {
-        if (null == issue) {
-            throw new NullIssueException();
-        }
+    public Issue createIssue(IssueModelRequest issueModelRequest, UUID userId) {
+        Issue issue = new Issue(issueModelRequest);
+        if (null == issue)
+            throw new RuntimeException("Issue to create is null");
+        if (this.issueRepository.existsByName(issueModelRequest.getName()))
+            throw new EntityExistsException(String.format("Issue name %s already exist!", issueModelRequest.getName()));
+        if (this.issueRepository.existsByUri(issueModelRequest.getUri()))
+            throw new EntityExistsException(String.format("Issue uri %s already exist!", issueModelRequest.getUri()));
 
         Issue newIssue = this.issueRepository.save(issue);
-        logger.info(String.format("Create Issue %s: ", newIssue.toString()));
-        return newIssue;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Issue getIssueById(UUID IssueId) {
-        return this.issueRepository.findById(IssueId)
-                .orElseThrow(() -> new IssueNotFoundException(IssueId));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Issue getIssueByURI(String uri) {
-        return this.issueRepository.findByUri(uri)
-                .orElseThrow(() -> new IssueNotFoundException(String.format("Issue with URI %s not found!", uri)));
+        newIssue.getAuthors().add(new IssueAuthor(newIssue, this.userService.getUserById(userId), AuthorConstant.OWNER));
+        return this.issueRepository.save(newIssue);
     }
 
     @Override
@@ -83,141 +76,93 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    @Transactional
-    public Issue updateIssue(Issue issue) {
-        if (null == issue) {
-            throw new NullIssueException();
-        }
-        if (!this.issueRepository.existsById(issue.getId())) {
-            throw new IssueNotFoundException(String.format("Issue %s not found", issue.getId()));
-        }
+    @Transactional(readOnly = true)
+    public Issue getIssueById(UUID issueId) {
+        return this.issueRepository.findById(issueId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Issue with ID %s not found!", issueId)));
+    }
 
-        logger.info(String.format("Update Issue: %s", issue.toString()));
+    @Override
+    @Transactional(readOnly = true)
+    public Issue getIssueByURI(String uri) {
+        return this.issueRepository.findByUri(uri)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Issue with URI %s not found!", uri)));
+    }
+
+    @Override
+    @Transactional
+    public Issue updateIssue(UUID issueId, UUID userId, IssueModelRequest issueModelRequest) {
+        if (issueModelRequest == null) {
+            throw new RuntimeException("Issue to update is null!");
+        }
+        Issue issue = this.getIssueById(issueId);
+
+        // UPDATE issue fields
+        if (this.issueRepository.existsByUri(issueModelRequest.getUri())) {
+            Issue issueUri = this.getIssueByURI(issueModelRequest.getUri());
+            // NOT uri & name change
+            if (!issueUri.getId().equals(issue.getId())) {
+                throw new EntityExistsException(String.format("Issue uri %s already exist!", issueModelRequest.getUri()));
+            }
+        }
+        issue.updateIssue(issueModelRequest);
         return this.issueRepository.save(issue);
     }
 
     @Override
     @Transactional
     public void deleteIssue(UUID IssueId) {
-        Issue issue = this.getIssueById(IssueId);
-        if (null == issue) {
-            throw new NullIssueException();
-        }
-
+        this.getIssueById(IssueId);
         this.issueRepository.deleteById(IssueId);
     }
 
     /**
-     * Voting Issue
-     *
-     * @param rating up, down
-     * @apiNote If user already up- or downvoted and does so again it neutralises vote.
+     * Comment
      */
     @Override
     @Transactional
-    public Issue userRating(UUID IssueId, UUID userId, String rating) {
-        Issue issue = this.getIssueById(IssueId);
-        UserEntity user = this.userService.getUserById(userId);
-
-        logger.info(String.format("User %s updates rating for Issue %s", user.getId(), issue.getId()));
-
-        IssueRating issueRating = new IssueRating(issue, user);
-
-        if (this.issueRatingRepository.existsById(issueRating.getId())) {
-            issueRating = this.issueRatingRepository.findByIssueAndUser(issue, user);
-            logger.info(String.format("Rating for user %s exists with rating %s", user.getId(), issueRating.getRating()));
-        } else {
-            logger.info(String.format("Rating for user %s does not exist", user.getId()));
-        }
-
-        int newRating = this.ratingHelper.updateRating(rating, issueRating.getRating(), user);
-        if (newRating == -2) {
-            return null;
-        } else {
-            issueRating.setRating(newRating);
-        }
-
-        issue.getUserRating().add(issueRating);
-        int updateRating = issue.getUserRating().stream().mapToInt(IssueRating::getRating).sum();
-        issue.setRating(updateRating);
-
-        return this.updateIssue(issue);
-    }
-
-    /**
-     * Comment Issue
-     */
-    @Override
-    @Transactional
-    public Issue createComment(UUID issueId, UUID userId, IssueComment issueComment) {
+    public IssueComment createComment(UUID issueId, UUID userId, CommentModel commentModel) {
         Issue issue = this.getIssueById(issueId);
         UserEntity user = this.userService.getUserById(userId);
 
-        IssueComment comment = new IssueComment(issueComment.getText());
-        issue.addComment(comment, user);
-
-        return this.updateIssue(issue);
-    }
-
-    @Override
-    @Transactional
-    public IssueComment updateComment(IssueComment issueComment) {
-        if (null == issueComment) {
-            throw new NullCommentException();
-        }
-        if (!this.issueCommentRepository.existsById(issueComment.getId())) {
-            throw new CommentNotFoundException(String.format("Comment %s for issue %s not found", issueComment.getId(), issueComment.getIssue().getId()));
-        }
-
-        logger.info(String.format("Update issue comment: %s", issueComment.toString()));
-        return this.issueCommentRepository.save(issueComment);
+        IssueComment comment = new IssueComment(commentModel.getText(), issue, user);
+        return this.issueCommentRepository.save(comment);
     }
 
     @Override
     @Transactional(readOnly = true)
     public IssueComment getCommentById(UUID commentId) {
         return this.issueCommentRepository.findById(commentId)
-                .orElseThrow(() -> new CommentNotFoundException(commentId));
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Issue comment with ID %s not found!", commentId)));
     }
 
-    /**
-     * Voting IssueComment
-     *
-     * @param rating up, down
-     * @apiNote If user already up- or downvoted and does so again it neutralises vote.
-     */
     @Override
     @Transactional
-    public Issue commentUserRating(UUID issueCommentId, UUID userId, String rating) {
-        IssueComment issueComment = this.getCommentById(issueCommentId);
-        UserEntity user = this.userService.getUserById(userId);
-
-        logger.info(String.format("User %s updates rating for Comment %s", user.getId(), issueComment.getId()));
-
-        IssueCommentRating issueCommentRating = new IssueCommentRating(issueComment, user);
-
-        if (this.issueCommentRatingRepository.existsById(issueCommentRating.getId())) {
-            issueCommentRating = this.issueCommentRatingRepository.findByIssueCommentAndUser(issueComment, user);
-            logger.info(String.format("Rating for user %s exists with rating %s", user.getId(), issueCommentRating.getRating()));
-        } else {
-            logger.info(String.format("Rating for user %s does not exist", user.getId()));
-        }
-
-        int newRating = this.ratingHelper.updateRating(rating, issueCommentRating.getRating(), user);
-        if (newRating == -2) {
-            return null;
-        } else {
-            issueCommentRating.setRating(newRating);
-        }
-
-        issueComment.getUserRating().add(issueCommentRating);
-        int updateRating = issueComment.getUserRating().stream().mapToInt(IssueCommentRating::getRating).sum();
-        issueComment.setRating((updateRating));
-        logger.info(String.format("New rating for comment is: %d", updateRating));
-        this.updateComment(issueComment);
-
-        return this.getIssueById(issueComment.getIssue().getId());
+    public IssueComment updateComment(UUID issueId, UUID commentId, UUID userId, CommentModel commentModel) {
+        if (commentModel == null)
+            throw new RuntimeException("Issue comment to update is null!");
+        IssueComment issueComment = this.authIssueComment(issueId, commentId, userId);
+        // UPDATE issue comment
+        issueComment.updateComment(commentModel.getText());
+        return this.issueCommentRepository.save(issueComment);
     }
 
+    @Override
+    @Transactional
+    public ResponseEntity<?> deleteComment(UUID issueId, UUID commentId, UUID userId) {
+        this.authIssueComment(issueId, commentId, userId);
+        this.issueCommentRepository.deleteById(commentId);
+        return ResponseEntity.noContent().build();
+    }
 
+    private IssueComment authIssueComment(UUID issueId, UUID commentId, UUID userId) {
+        IssueComment issueComment = this.getCommentById(commentId);
+        // CORRECT Issue
+        if (!issueComment.getIssue().equals(this.getIssueById(issueId)))
+            throw new EntityNotFoundException(String.format("Issue comment with id %s does not belong to issue with id %s", commentId, issueId));
+        // CORRECT user
+        if (!issueComment.getUser().equals(this.userService.getUserById(userId)))
+            throw new EntityNotFoundException(String.format("Issue comment with id %s does not belong to user with id %s", commentId, userId));
+        return issueComment;
+    }
 }

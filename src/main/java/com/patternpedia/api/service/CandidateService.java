@@ -1,37 +1,35 @@
 package com.patternpedia.api.service;
 
 import com.patternpedia.api.entities.candidate.Candidate;
-import com.patternpedia.api.entities.candidate.CandidateComment;
-import com.patternpedia.api.entities.issue.Issue;
-import com.patternpedia.api.entities.issue.IssueComment;
-import com.patternpedia.api.rest.model.CandidateModel;
+import com.patternpedia.api.entities.candidate.comment.CandidateComment;
+import com.patternpedia.api.rest.model.candidate.CandidateModelRequest;
+import com.patternpedia.api.rest.model.shared.CommentModel;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface CandidateService {
+    Candidate saveCandidate(Candidate candidate);
     /** CRUD  */
-    Candidate createCandidate(CandidateModel candidateModel);
+    Candidate createCandidate(CandidateModelRequest candidateModelRequest, UUID userId);
 
-    Candidate updateCandidate(Candidate candidate);
-
-    void deleteCandidate(UUID candidateId);
+    List<Candidate> getAllCandidates();
 
     Candidate getCandidateById(UUID candidateId);
 
     Candidate getCandidateByURI(String uri);
 
-    List<Candidate> getAllCandidates();
+    Candidate updateCandidate(UUID candidateId, UUID userId, CandidateModelRequest candidateModelRequest);
 
-    /** Voting */
-    Candidate userRating(UUID candidateId, UUID userId, String rating);
+    void deleteCandidate(UUID candidateId);
 
     /** Comment */
-    Candidate createComment(UUID candidateId, UUID userId, CandidateComment candidateComment);
+    CandidateComment createComment(UUID candidateId, UUID userId, CommentModel commentModel);
 
     CandidateComment getCommentById(UUID candidateCommentId);
 
-    CandidateComment updateComment(CandidateComment candidateComment);
+    CandidateComment updateComment(UUID candidateId, UUID commentId, UUID userId, CommentModel commentModel);
 
-    Candidate commentUserRating(UUID candidateCommentId, UUID userId, String rating);
+    ResponseEntity<?> deleteComment(UUID candidateId, UUID commentId, UUID userId);
 }

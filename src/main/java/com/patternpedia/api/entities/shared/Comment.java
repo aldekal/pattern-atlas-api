@@ -1,6 +1,5 @@
 package com.patternpedia.api.entities.shared;
 
-import com.patternpedia.api.entities.issue.IssueComment;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -20,8 +19,6 @@ public abstract class Comment {
     private UUID id;
 
     private String text;
-
-    private int rating = 0;
 
     public Comment(String text) {
         this.text = text;
@@ -43,6 +40,6 @@ public abstract class Comment {
 
     @Override
     public String toString() {
-        return "Comment: " + this.text + this.id.toString() + this.rating;
+        return "Comment: " + this.text + this.id.toString();
     }
 }

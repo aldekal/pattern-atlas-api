@@ -1,18 +1,25 @@
 package com.patternpedia.api.service;
 
-import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.candidate.Candidate;
-import com.patternpedia.api.entities.candidate.CandidateComment;
-import com.patternpedia.api.entities.issue.Issue;
-import com.patternpedia.api.exception.*;
+import com.patternpedia.api.entities.candidate.comment.CandidateComment;
+import com.patternpedia.api.entities.candidate.author.CandidateAuthor;
+import com.patternpedia.api.entities.candidate.comment.CandidateCommentRating;
+import com.patternpedia.api.entities.issue.comment.IssueComment;
+import com.patternpedia.api.entities.shared.AuthorConstant;
+import com.patternpedia.api.entities.user.UserEntity;
 import com.patternpedia.api.repositories.*;
-import com.patternpedia.api.rest.model.CandidateModel;
+import com.patternpedia.api.rest.model.candidate.CandidateModelRequest;
+import com.patternpedia.api.rest.model.shared.CommentModel;
 import com.patternpedia.api.util.RatingHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,7 +30,6 @@ public class CandidateServiceImpl implements CandidateService {
     private CandidateRepository candidateRepository;
     private CandidateRatingRepository candidateRatingRepository;
     private CandidateCommentRepository candidateCommentRepository;
-    private CandidateCommentRatingRepository candidateCommentRatingRepository;
     private PatternLanguageService patternLanguageService;
     private UserService userService;
     private RatingHelper ratingHelper;
@@ -34,56 +40,49 @@ public class CandidateServiceImpl implements CandidateService {
             CandidateRepository candidateRepository,
             CandidateRatingRepository candidateRatingRepository,
             CandidateCommentRepository candidateCommentRepository,
-            CandidateCommentRatingRepository candidateCommentRatingRepository,
             PatternLanguageService patternLanguageService,
             UserService userService
     ) {
         this.candidateRepository = candidateRepository;
         this.candidateRatingRepository = candidateRatingRepository;
         this.candidateCommentRepository = candidateCommentRepository;
-        this.candidateCommentRatingRepository = candidateCommentRatingRepository;
         this.patternLanguageService = patternLanguageService;
         this.userService = userService;
         this.ratingHelper = new RatingHelper();
     }
 
+    @Override
+    @Transactional
+    public Candidate saveCandidate(Candidate candidate) {
+        return this.candidateRepository.save(candidate);
+    }
 
     /**
      * CRUD Candidate
      */
     @Override
     @Transactional
-    public Candidate createCandidate(CandidateModel candidateModel) {
-        Candidate candidate = new Candidate(candidateModel);
+    public Candidate createCandidate(CandidateModelRequest candidateModelRequest, UUID userId) {
+        Candidate candidate = new Candidate(candidateModelRequest);
+        if (null == candidate)
+            throw new RuntimeException("Candidate to create is null");
+        if (this.candidateRepository.existsByName(candidate.getName()))
+            throw new EntityExistsException(String.format("Candidate name %s already exist!", candidateModelRequest.getName()));
+        if (this.candidateRepository.existsByUri(candidateModelRequest.getUri()))
+            throw new EntityExistsException(String.format("Candidate uri %s already exist!", candidateModelRequest.getUri()));
 
-        if (null == candidate) {
-            throw new NullCandidateException();
-        }
 
-        if (candidateModel.getPatternLanguageId() != null) {
-            PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(candidateModel.getPatternLanguageId());
-            candidate.setPatternLanguage(patternLanguage);
-        } else {
-            candidate.setPatternLanguage(null);
-        }
+//            throw new ResourceNotFoundException(String.format("Pattern Language %s does not exist", candidateModelRequest.getPatternLanguageId()));
 
+        // ADD authors
         Candidate newCandidate = this.candidateRepository.save(candidate);
-        logger.info(String.format("Create Candidate %s: ", newCandidate.toString()));
-        return newCandidate;
-    }
+        newCandidate.getAuthors().add(new CandidateAuthor(newCandidate, this.userService.getUserById(userId), AuthorConstant.OWNER));
 
-    @Override
-    @Transactional
-    public Candidate getCandidateById(UUID candidateId) {
-        return this.candidateRepository.findById(candidateId)
-                .orElseThrow(() -> new CandidateNotFoundException(candidateId));
-    }
+        // ADD pattern language
+        if (candidateModelRequest.getPatternLanguageId() != null && this.patternLanguageService.getPatternLanguageById(candidateModelRequest.getPatternLanguageId()) != null)
+            newCandidate.setPatternLanguage(this.patternLanguageService.getPatternLanguageById(candidateModelRequest.getPatternLanguageId()));
 
-    @Override
-    @Transactional
-    public Candidate getCandidateByURI(String uri) {
-        return this.candidateRepository.findByUri(uri)
-                .orElseThrow(() -> new CandidateNotFoundException(String.format("Pattern with URI %s not found!", uri)));
+        return this.candidateRepository.save(newCandidate);
     }
 
     @Override
@@ -94,52 +93,100 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     @Transactional
-    public Candidate updateCandidate(Candidate candidate) {
-        if (null == candidate) {
-            throw new NullCandidateException();
-        }
-        if (!this.candidateRepository.existsById(candidate.getId())) {
-            throw new CandidateNotFoundException(candidate.getId());
-        }
+    public Candidate getCandidateById(UUID candidateId) {
+        return this.candidateRepository.findById(candidateId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Candidate with ID %s not found!", candidateId)));
+    }
 
-        logger.info(String.format("Update Issue: %s", candidate.toString()));
+    @Override
+    @Transactional
+    public Candidate getCandidateByURI(String uri) {
+        return this.candidateRepository.findByUri(uri)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Candidate with URI %s not found!", uri)));
+    }
+
+    @Override
+    @Transactional
+    public Candidate updateCandidate(UUID candidateId, UUID userId, CandidateModelRequest candidateModelRequest) {
+        if (candidateModelRequest == null) {
+            throw new RuntimeException("Candidate to update is null!");
+        }
+        Candidate candidate = this.getCandidateById(candidateId);
+
+        // UPDATE issue fields
+        if (this.candidateRepository.existsByUri(candidateModelRequest.getUri())) {
+            Candidate candidateByURI = this.getCandidateByURI(candidateModelRequest.getUri());
+            // NOT uri & name change
+            if (!candidateByURI.getId().equals(candidate.getId())) {
+                throw new EntityExistsException(String.format("Candidate uri %s already exist!", candidateModelRequest.getUri()));
+            }
+        }
+        // ADD pattern language
+        if (candidateModelRequest.getPatternLanguageId() != null && this.patternLanguageService.getPatternLanguageById(candidateModelRequest.getPatternLanguageId()) != null)
+            candidate.setPatternLanguage(this.patternLanguageService.getPatternLanguageById(candidateModelRequest.getPatternLanguageId()));
+
+        // UPDATE issue fields
+        candidate.updateCandidate(candidateModelRequest);
+
         return this.candidateRepository.save(candidate);
     }
 
     @Override
     @Transactional
     public void deleteCandidate(UUID candidateId) {
-        Candidate candidate = this.getCandidateById(candidateId);
-        if (null == candidate) {
-            throw new NullCandidateException();
-        }
-
+        this.getCandidateById(candidateId);
         this.candidateRepository.deleteById(candidateId);
     }
 
-    /** */
+    /**
+     * Comment
+     */
     @Override
-    public Candidate userRating(UUID candidateId, UUID userId, String rating) {
-        return null;
+    @Transactional
+    public CandidateComment createComment(UUID candidateId, UUID userId, CommentModel commentModel) {
+        Candidate candidate = this.getCandidateById(candidateId);
+        UserEntity user = this.userService.getUserById(userId);
+
+        CandidateComment comment = new CandidateComment(commentModel.getText(), candidate, user);
+        return this.candidateCommentRepository.save(comment);
     }
 
     @Override
-    public Candidate createComment(UUID candidateId, UUID userId, CandidateComment candidateComment) {
-        return null;
-    }
-
-    @Override
+    @Transactional(readOnly = true)
     public CandidateComment getCommentById(UUID candidateCommentId) {
-        return null;
+        return this.candidateCommentRepository.findById(candidateCommentId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Candidate comment with ID %s not found!", candidateCommentId)));
     }
 
     @Override
-    public CandidateComment updateComment(CandidateComment candidateComment) {
-        return null;
+    @Transactional
+    public CandidateComment updateComment(UUID candidateId, UUID commentId, UUID userId, CommentModel commentModel) {
+        if (commentModel == null)
+            throw new RuntimeException("Candidate comment to update is null!");
+        // Used to check if candidate actually exists
+        CandidateComment candidateComment = this.authCandidateComment(candidateId, commentId, userId);
+
+        // UPDATE issue comment
+        candidateComment.updateComment(commentModel.getText());
+        return this.candidateCommentRepository.save(candidateComment);
     }
 
     @Override
-    public Candidate commentUserRating(UUID candidateCommentId, UUID userId, String rating) {
-        return null;
+    @Transactional
+    public ResponseEntity<?> deleteComment(UUID issueId, UUID commentId, UUID userId) {
+        this.authCandidateComment(issueId, commentId, userId);
+        this.candidateCommentRepository.deleteById(commentId);
+        return ResponseEntity.noContent().build();
+    }
+
+    private CandidateComment authCandidateComment(UUID candidateId, UUID commentId, UUID userId) {
+        CandidateComment candidateComment = this.getCommentById(commentId);
+        // CORRECT Issue
+        if (!candidateComment.getCandidate().equals(this.getCandidateById(candidateId)))
+            throw new EntityNotFoundException(String.format("Candidate comment with id %s does not belong to candidate with id %s", commentId, candidateId));
+        // CORRECT user
+        if (!candidateComment.getUser().equals(this.userService.getUserById(userId)))
+            throw new EntityNotFoundException(String.format("Candidate comment with id %s does not belong to user with id %s", commentId, userId));
+        return candidateComment;
     }
 }
