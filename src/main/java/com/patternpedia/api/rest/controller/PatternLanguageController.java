@@ -12,6 +12,8 @@ import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.PatternSchema;
 import com.patternpedia.api.rest.model.PatternLanguageGraphModel;
 import com.patternpedia.api.rest.model.PatternLanguageModel;
+import com.patternpedia.api.rest.model.shared.PatternLanguageSchemaModel;
+import com.patternpedia.api.rest.model.shared.PatternSchemaModel;
 import com.patternpedia.api.service.PatternLanguageService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -124,6 +126,16 @@ public class PatternLanguageController {
     ResponseEntity<?> deletePatternLanguage(@PathVariable UUID patternLanguageId) {
         this.patternLanguageService.deletePatternLanguage(patternLanguageId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping(value = "/patternSchemas")
+    CollectionModel<EntityModel<PatternLanguageSchemaModel>> getAllPatternLanguagesWithSchema() {
+        List<EntityModel<PatternLanguageSchemaModel>> patternLanguages = this.patternLanguageService.getPatternLanguages()
+                .stream()
+                .map(patternLanguage -> new EntityModel<>(new PatternLanguageSchemaModel(patternLanguage)))
+                .collect(Collectors.toList());
+
+        return new CollectionModel<>(patternLanguages);
     }
 
     @GetMapping(value = "/{patternLanguageId}/patternSchema")

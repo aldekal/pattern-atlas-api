@@ -27,7 +27,7 @@ public class CandidateModel {
     private String iconUrl;
     private UUID patternLanguageId;
     private String patternLanguageName;
-    private String content;
+    private Object content;
     private String version;
     // RESPONSE
     // RESPONSE

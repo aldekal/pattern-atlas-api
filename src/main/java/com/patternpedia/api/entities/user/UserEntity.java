@@ -41,6 +41,8 @@ public class UserEntity implements Serializable{
     @Column(nullable = false, unique = true)
     private String email;
 
+    @NaturalId(mutable = true)
+    @Column(nullable = false, unique = true)
     private String name;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

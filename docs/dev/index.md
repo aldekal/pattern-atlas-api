@@ -3,7 +3,6 @@ This document provides an index to all development guidelines and background inf
 - [ADR](/adr) - Information on Architectural decisions can be found here
 
 ## Quick Develop
-<!---
 ### PatternPediaAuth
 1. Clone the repository `git clone https://github.com/PatternPedia/pattern-pedia-auth.git`.
 2. Navigate to repository directory `cd pattern-pedia-auth/`.
@@ -22,8 +21,7 @@ This document provides an index to all development guidelines and background inf
 5. Insert the following commands  `docker-compose up -d`
 
 #### IntelliJ
-3. [Follow PatternPediaAPI from Step 5 pls](#step5) 
-
+3. [Follow PatternPediaAPI from Step 5 pls](#step5)
 
 #### Default User
 During development default users are
@@ -31,7 +29,6 @@ During development default users are
 - Member: name: `member@mail` password: `pass` 
 
 ### PatternPediaAPI 
---->
 1. Clone the repository `git clone https://github.com/PatternPedia/pattern-pedia-views-backend.git`.
 2. Build the repository `mvn package -DskipTests` (skiping the tests for a faster build), Java 8 required.
 3. Clone the repository `git clone https://github.com/PatternPedia/pattern-pedia-views-ui.git`.

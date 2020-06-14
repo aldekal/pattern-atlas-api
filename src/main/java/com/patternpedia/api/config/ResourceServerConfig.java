@@ -36,7 +36,7 @@ class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 //                .antMatchers(HttpMethod.GET, "/**").permitAll()
 //                .antMatchers(HttpMethod.POST, "/**").access("#oauth2.hasScope('write')")
 //                .antMatchers(HttpMethod.PUT, "/**").access("#oauth2.hasScope('write')")
-//                .antMatchers(HttpMethod.DELETE, "/**").hasAuthority("ADMIN")
+//                .antMatchers(HttpMethod.DELETE, "/**").access("#oauth2.hasScope('delete')")
 //                .anyRequest().authenticated()
                 //END::Comment for local development with authorization
                 // START::Uncomment for local development without authorization

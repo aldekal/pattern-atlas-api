@@ -11,8 +11,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.*;
 
 @Entity
@@ -28,10 +30,10 @@ public class Candidate extends EntityWithURI {
     @ManyToOne
     private PatternLanguage patternLanguage;
 
-//    @Type(type = "jsonb")
-//    @Column(columnDefinition = "jsonb")
-//    @NotNull
-    private String content;
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "jsonb")
+    @NotNull
+    private Object content;
 
     private String version = "0.1.0";
 

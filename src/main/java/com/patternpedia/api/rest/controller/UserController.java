@@ -41,7 +41,7 @@ public class UserController {
      * GET Methods
      */
     @GetMapping(value = "")
-//    @PreAuthorize(value = "hasAuthority('ADMIN')")
+    @PreAuthorize(value = "hasAuthority('READ_USER_ALL')")
     CollectionModel<EntityModel<UserModel>> getAll() {
         List<EntityModel<UserModel>> users = this.userService.getAllUsers()
                 .stream()
