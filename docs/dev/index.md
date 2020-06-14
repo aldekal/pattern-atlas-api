@@ -23,6 +23,9 @@ This document provides an index to all development guidelines and background inf
 #### IntelliJ
 3. [Follow PatternPediaAPI from Step 5 pls](#step5)
 
+#### Turn On/Off
+Comment the marked lines in the following file to turn on/off [Security Config file](https://github.com/PatternPedia/pattern-pedia-views-backend/blob/ba-meyer-master/src/main/java/com/patternpedia/api/config/ResourceServerConfig.java). An easier way will be added in future realease.
+
 #### Default User
 During development default users are
 - Admin: name: `admin@mail` password: `pass` 
