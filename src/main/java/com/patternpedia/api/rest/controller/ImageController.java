@@ -26,7 +26,7 @@ public class ImageController {
 
 
     @GetMapping(
-            value = "/getImageById/{imageId}",
+            value = "/get-image-by-id/{imageId}",
             produces = "image/svg+xml"
     )
     public @ResponseBody
@@ -36,7 +36,7 @@ public class ImageController {
     }
 
     @PostMapping(
-            value = "/updateImage/{imageId}",
+            value = "/update-image/{imageId}",
             produces = "image/svg+xml"
     )
     public @ResponseBody
@@ -51,7 +51,7 @@ public class ImageController {
     }
 
     @GetMapping(
-            value = "/getImageAndCommentsById/{imageId}"
+            value = "/get-image-and-comments-by-id/{imageId}"
     )
     public @ResponseBody
     ImageModel getImageAndCommentsById(@PathVariable String imageId){

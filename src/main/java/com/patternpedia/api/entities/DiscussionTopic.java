@@ -23,25 +23,15 @@ public class DiscussionTopic {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private UUID id;
-
     private String title;
-
     private String description;
-
     private Status status;
-
     private Date date;
-
     private Double x;
-
     private Double y;
-
     private Double width;
-
     private Double height;
-
     private String fill;
-
     private UUID imageId;
 
     @JsonIgnore

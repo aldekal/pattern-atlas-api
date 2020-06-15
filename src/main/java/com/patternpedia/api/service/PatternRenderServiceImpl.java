@@ -44,19 +44,30 @@ public class PatternRenderServiceImpl implements PatternRenderService {
         if (jsonString == null)
             return null;
 
-        //get all quantikz occurences
+
+        //get old quantikz and qcircuit occurences
         ArrayList<String> oldContentOccurances = new ArrayList<>();
         ArrayList<String> oldSVGOccurances = new ArrayList<>();
         while(true){
-            Integer[] occuranceStartEndOld = getNextOccurance(contentOld, "\\\\begin{quantikz}", "\\end{quantikz}");
-            System.out.println("\\end{quantikz}".length());
+            Integer[] occuranceStartEndOldQuantikz = getNextOccurance(contentOld, "\\\\begin{quantikz}", "\\end{quantikz}");
+            Integer[] occuranceStartEndOldQcircuit = getNextOccurance(contentOld, "\\\\Qcircuit", "end}");
             Integer[] svgOccurencesOld = getNextOccurance(renderedContentOld, "<SVG>", "</SVG>");
-            if (occuranceStartEndOld[0] != -1 && occuranceStartEndOld[1] != -1 && svgOccurencesOld[0] != -1 && svgOccurencesOld[1] != -1) {
-                oldContentOccurances.add(contentOld.substring(occuranceStartEndOld[0], occuranceStartEndOld[1] + 14)
-                        .replaceAll("\\\\n", " ").replaceAll("(\\\\t)(?!a)"," ")
-                        .replaceAll("\\\\\\\\","\\\\"));
+            if (((occuranceStartEndOldQcircuit[0] != -1 && occuranceStartEndOldQcircuit[1] != -1) ||
+                    (occuranceStartEndOldQuantikz[0] != -1 && occuranceStartEndOldQuantikz[1] != -1)) && svgOccurencesOld[0] != -1 && svgOccurencesOld[1] != -1) {
+                if(occuranceStartEndOldQuantikz[0] != -1 && ((occuranceStartEndOldQuantikz[0] < occuranceStartEndOldQcircuit[0]) || occuranceStartEndOldQcircuit[0] == -1 )){
+                    System.out.println("HAS OLD QUANTIKZ CONTENT");
+                    oldContentOccurances.add(contentOld.substring(occuranceStartEndOldQuantikz[0], occuranceStartEndOldQuantikz[1] + 14)
+                            .replaceAll("\\\\n", " ").replaceAll("(\\\\t)(?!a)"," ")
+                            .replaceAll("\\\\\\\\","\\\\"));
+                    contentOld = contentOld.replace(contentOld.substring(occuranceStartEndOldQuantikz[0], occuranceStartEndOldQuantikz[1] + 14), " ");
+                } else if(occuranceStartEndOldQcircuit[0] != -1 && ((occuranceStartEndOldQcircuit[0] < occuranceStartEndOldQuantikz[0]) || occuranceStartEndOldQuantikz[0] == -1 )){
+                    System.out.println("HAS OLD QCircuit CONTENT");
+                    oldContentOccurances.add(contentOld.substring(occuranceStartEndOldQcircuit[0], occuranceStartEndOldQcircuit[1] + 4)
+                            .replaceAll("\\\\n", " ").replaceAll("(\\\\t)(?!a)"," ")
+                            .replaceAll("\\\\\\\\","\\\\"));
+                    contentOld = contentOld.replace(contentOld.substring(occuranceStartEndOldQcircuit[0], occuranceStartEndOldQcircuit[1] + 14), " ");}
+
                 oldSVGOccurances.add(renderedContentOld.substring(svgOccurencesOld[0], svgOccurencesOld[1] + 6));
-                contentOld = contentOld.replace(contentOld.substring(occuranceStartEndOld[0], occuranceStartEndOld[1] + 14), " ");
                 renderedContentOld = renderedContentOld.replace(renderedContentOld.substring(svgOccurencesOld[0], svgOccurencesOld[1] + 6), " ");
             }
             else {
@@ -65,10 +76,9 @@ public class PatternRenderServiceImpl implements PatternRenderService {
         }
         oldContentOccurances.forEach(s -> System.out.println("OLD CONTENT" + s));
         oldSVGOccurances.forEach(s -> System.out.println("OLD SVG" +s));
-        int count = 0;
+        int countQuantikz = 0;
         JaccardSimilarity jaccardSimilarity =  new JaccardSimilarity();
         while (true) {
-
             Integer[] occuranceStartEnd = getNextOccurance(jsonString, "\\\\begin{quantikz}", "\\end{quantikz}");
             if (occuranceStartEnd[0] != -1 && occuranceStartEnd[1] != -1) {
                 String renderContent = jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 14)
@@ -91,33 +101,58 @@ public class PatternRenderServiceImpl implements PatternRenderService {
                     byte []renderedFile = renderContentViaAPI(renderContent, settings, "svg");
                     String id = saveAndUploadFile(renderedFile, "svg");
                     jsonString = jsonString.replace(jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 14), " " + id + " ");
-                    if(count < oldContentOccurances.size()){
-                        if(jaccardSimilarity.apply(oldContentOccurances.get(count), renderContent) > 0.9) {
+                    if(countQuantikz < oldContentOccurances.size()){
+                        System.out.println("Jaccard: " + jaccardSimilarity.apply(oldContentOccurances.get(countQuantikz), renderContent));
+                        if(jaccardSimilarity.apply(oldContentOccurances.get(countQuantikz), renderContent) > 0.8) {
                           System.out.println(id);
-                          this.discussionService.updateTopicsByImageId(UUID.fromString(oldSVGOccurances.get(count).substring(5, oldSVGOccurances.get(count).length() - 6)), UUID.fromString(id.substring(5, id.length() - 6)));
+                          this.discussionService.updateTopicsByImageId(UUID.fromString(oldSVGOccurances.get(countQuantikz).substring(5, oldSVGOccurances.get(countQuantikz).length() - 6)), UUID.fromString(id.substring(5, id.length() - 6)));
                         }
                     }
                     System.out.println("OUTSIDE OF EQUALS" + jsonString);
                 }
-                count++ ;
+                countQuantikz++ ;
             }else {
                 break;
             }
         }
 
+
+        int countQcircuit = 0;
         while (true) {
             Integer[] occuranceStartEnd = getNextOccurance(jsonString, "\\\\Qcircuit", "end}");
             if (occuranceStartEnd[0] != -1 && occuranceStartEnd[1] != -1) {
                 String renderContent = jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 4)
-                        .replaceAll("\\\\n", " ").replaceAll("(\\\\t)(?!a)"," ").replaceAll("\\\\\\\\","\\\\");
-                renderContent.replace("end}", "}");
-                List<String> settings = new ArrayList<>();
-                settings.add("\\usepackage[braket, qm]{qcircuit} \n");
-                settings.add("\\usepackage{amsmath}  \n");
-                settings.add("\\usepackage{listings} \n");
-                settings.add("\\renewcommand{\\arraystretch}{1.5} \n");
-                byte []renderedFile = renderContentViaAPI(renderContent, settings, "svg");
-                jsonString = jsonString.replace(jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 4), " " + saveAndUploadFile(renderedFile, "svg") + " ");
+                        .replaceAll("\\\\n", " ").replaceAll("(\\\\t)(?!a)"," ")
+                        .replaceAll("\\\\\\\\","\\\\");
+                boolean occured = false;
+
+                for (int i = 0; i < oldContentOccurances.size(); i++){
+                    if(oldContentOccurances.get(i).equals(renderContent)){
+                        occured = true;
+                        jsonString = jsonString.replace(jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 4), " " + oldSVGOccurances.get(i) + " ");
+                        System.out.print("INSIDE OF EQUALS FOR " + i + "  " + jsonString);
+                    }
+                }
+
+                if(!occured){
+                    List<String> settings = new ArrayList<>();
+                    settings.add("\\usepackage[braket, qm]{qcircuit} \n");
+                    settings.add("\\usepackage{amsmath}  \n");
+                    settings.add("\\usepackage{listings} \n");
+                    settings.add("\\renewcommand{\\arraystretch}{1.5} \n");
+                    byte []renderedFile = renderContentViaAPI(renderContent, settings, "svg");
+                    String id = saveAndUploadFile(renderedFile, "svg");
+                    jsonString = jsonString.replace(jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 4), " " + id + " ");
+                    if(countQcircuit < oldContentOccurances.size()){
+                        System.out.println("Jaccard: " + jaccardSimilarity.apply(oldContentOccurances.get(countQcircuit), renderContent));
+                        if(jaccardSimilarity.apply(oldContentOccurances.get(countQcircuit), renderContent) > 0.8) {
+                            System.out.println(id);
+                            this.discussionService.updateTopicsByImageId(UUID.fromString(oldSVGOccurances.get(countQcircuit).substring(5, oldSVGOccurances.get(countQcircuit).length() - 6)), UUID.fromString(id.substring(5, id.length() - 6)));
+                        }
+                    }
+                    System.out.println("OUTSIDE OF EQUALS" + jsonString);
+                }
+                countQcircuit++ ;
             }else {
                 break;
             }
@@ -130,8 +165,6 @@ public class PatternRenderServiceImpl implements PatternRenderService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (map == null)
-            return null;
         return map;
 
     }
