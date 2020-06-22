@@ -14,9 +14,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class DesignModelPatternId implements Serializable {
+public class DesignModelPatternEdgeId implements Serializable {
 
-    protected UUID designModelId;
-    protected UUID patternId;
-    protected UUID patternInstanceId;
+    protected UUID patternInstanceId1;
+
+    protected UUID patternInstanceId2;
 }

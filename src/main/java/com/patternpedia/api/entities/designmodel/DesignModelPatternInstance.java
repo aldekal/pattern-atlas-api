@@ -6,10 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.hateoas.server.core.Relation;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
+import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
@@ -19,17 +16,15 @@ import java.util.UUID;
 @Relation(value = "pattern", collectionRelation = "patterns")
 public class DesignModelPatternInstance {
 
-    @EmbeddedId
-    @EqualsAndHashCode.Exclude
-    private DesignModelPatternId id;
+    @Id
+    @GeneratedValue(generator = "pg-uuid")
+    protected UUID patternInstanceId;
 
     @ManyToOne
-    @MapsId("designModelId")
     @EqualsAndHashCode.Include
     private DesignModel designModel;
 
     @ManyToOne
-    @MapsId("patternId")
     @EqualsAndHashCode.Include
     private Pattern pattern;
 
@@ -39,6 +34,5 @@ public class DesignModelPatternInstance {
     public DesignModelPatternInstance(DesignModel designModel, Pattern pattern) {
         this.designModel = designModel;
         this.pattern = pattern;
-        this.id = new DesignModelPatternId(designModel.getId(), pattern.getId(), UUID.randomUUID());
     }
 }

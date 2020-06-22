@@ -11,4 +11,6 @@ public interface DesignModelRepository extends JpaRepository<DesignModel, UUID> 
     Optional<DesignModel> findByUri(String uri);
 
     boolean existsByUri(String uri);
+
+    boolean existsById(UUID designModelId);
 }

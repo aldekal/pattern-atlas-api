@@ -1,6 +1,9 @@
 package com.patternpedia.api.service;
 
+import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.designmodel.DesignModel;
+import com.patternpedia.api.entities.designmodel.DesignModelPatternEdge;
+import com.patternpedia.api.entities.designmodel.DesignModelPatternInstance;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,7 +22,20 @@ public interface DesignModelService {
 //
 //    void deleteDesignModel(UUID designModelId);
 
-    void addPatternToDesignModel(UUID designModelId, UUID patternId);
+    void addPatternInstance(UUID designModelId, UUID patternId);
+
+    DesignModelPatternInstance getPatternInstance(UUID designModelId, UUID patternInstanceId);
+
+    void updatePatternInstance(UUID designModelId, UUID patternInstanceId, Pattern pattern);
+
+    void updatePatternInstancePosition(UUID designModelId, UUID patternInstanceId, Double x, Double y);
+
+//    void addEdge(UUID designModelId, DesignModelEdge edge);
+
+    List<DesignModelPatternEdge> getEdges(UUID designModelId);
+
+    void addEdge(UUID designModelId, UUID patternInstanceId1, UUID patternInstanceId2, Boolean directed, String type, String description);
+
 
 //    List<Pattern> getPatternsOfDesignModel(UUID designModelId);
 //

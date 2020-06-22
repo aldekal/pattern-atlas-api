@@ -26,7 +26,7 @@ public class DesignModel extends EntityWithURI {
 
     @JsonIgnore
     @OneToMany(mappedBy = "designModel", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DesignModelDirectedEdge> directedEdges;
+    private List<DesignModelPatternEdge> directedEdges;
 
     @JsonIgnore
     @OneToMany(mappedBy = "designModel", cascade = CascadeType.ALL, orphanRemoval = true)

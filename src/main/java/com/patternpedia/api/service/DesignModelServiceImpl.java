@@ -1,14 +1,16 @@
 package com.patternpedia.api.service;
 
 import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.entities.designmodel.DesignModel;
-import com.patternpedia.api.entities.designmodel.DesignModelPatternInstance;
+import com.patternpedia.api.entities.designmodel.*;
 import com.patternpedia.api.exception.DesignModelNotFoundException;
+import com.patternpedia.api.exception.DesignModelPatternInstanceNotFoundException;
 import com.patternpedia.api.exception.NullDesignModelException;
 import com.patternpedia.api.repositories.*;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,6 +22,7 @@ public class DesignModelServiceImpl implements DesignModelService {
     //    private PatternRelationDescriptorService patternRelationDescriptorService;
     private DesignModelRepository designModelRepository;
     private DesignModelPatternInstanceRepository designModelPatternInstanceRepository;
+    private DesignModelPatternEdgeRepository designModelPatternEdgeRepository;
 //    private PatternViewDirectedEdgeRepository patternViewDirectedEdgeRepository;
 //    private PatternViewUndirectedEdgeRepository patternViewUndirectedEdgeRepository;
 //    private DirectedEdgeRepository directedEdgeRepository;
@@ -29,6 +32,7 @@ public class DesignModelServiceImpl implements DesignModelService {
                                   PatternRelationDescriptorService patternRelationDescriptorService,
                                   DesignModelRepository designModelRepository,
                                   DesignModelPatternInstanceRepository designModelPatternInstanceRepository,
+                                  DesignModelPatternEdgeRepository designModelPatternEdgeRepository,
                                   PatternViewDirectedEdgeRepository patternViewDirectedEdgeRepository,
                                   PatternViewUndirectedEdgeRepository patternViewUndirectedEdgeRepository,
                                   DirectedEdgeRepository directedEdgeRepository,
@@ -37,6 +41,7 @@ public class DesignModelServiceImpl implements DesignModelService {
 //        this.patternRelationDescriptorService = patternRelationDescriptorService;
         this.designModelRepository = designModelRepository;
         this.designModelPatternInstanceRepository = designModelPatternInstanceRepository;
+        this.designModelPatternEdgeRepository = designModelPatternEdgeRepository;
 //        this.patternViewDirectedEdgeRepository = patternViewDirectedEdgeRepository;
 //        this.patternViewUndirectedEdgeRepository = patternViewUndirectedEdgeRepository;
 //        this.directedEdgeRepository = directedEdgeRepository;
@@ -58,7 +63,11 @@ public class DesignModelServiceImpl implements DesignModelService {
     @Override
     @Transactional(readOnly = true)
     public List<DesignModel> getAllDesignModels() {
-        return this.designModelRepository.findAll();
+        try {
+            return this.designModelRepository.findAll();
+        } catch (InvalidDataAccessResourceUsageException e) {
+            return Collections.emptyList();
+        }
     }
 
 
@@ -68,7 +77,18 @@ public class DesignModelServiceImpl implements DesignModelService {
         DesignModel designModel = this.designModelRepository.findById(designModelId)
                 .orElseThrow(() -> new DesignModelNotFoundException(designModelId));
 
-          return designModel;
+        return designModel;
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public DesignModelPatternInstance getPatternInstance(UUID designModelId, UUID patternInstanceId) {
+        DesignModelPatternInstance patternInstance = this.designModelPatternInstanceRepository
+                .findTopByDesignModel_IdAndPatternInstanceId(designModelId, patternInstanceId)
+                .orElseThrow(() -> new DesignModelPatternInstanceNotFoundException(designModelId, patternInstanceId));
+
+        return patternInstance;
     }
 
 
@@ -131,12 +151,36 @@ public class DesignModelServiceImpl implements DesignModelService {
 
     @Override
     @Transactional
-    public void addPatternToDesignModel(UUID patternViewId, UUID patternId) {
+    public void addPatternInstance(UUID patternViewId, UUID patternId) {
         DesignModel designModel = this.getDesignModel(patternViewId);
         Pattern pattern = this.patternService.getPatternById(patternId);
 
         DesignModelPatternInstance designModelPattern = new DesignModelPatternInstance(designModel, pattern);
         this.designModelPatternInstanceRepository.save(designModelPattern);
+    }
+
+
+    @Override
+    @Transactional
+    public void updatePatternInstance(UUID designModelId, UUID patternInstanceId, Pattern pattern) {
+//        List<DesignModelPatternInstance> patternList = this.designModelPatternInstanceRepository.findTopByDesignModel_IdAndPatternInstanceId(patternInstanceId);
+    }
+
+
+    @Override
+    @Transactional
+    public void updatePatternInstancePosition(UUID designModelId, UUID patternInstanceId, Double x, Double y) {
+        DesignModelPatternInstance patternInstance = this.designModelPatternInstanceRepository
+                .findTopByDesignModel_IdAndPatternInstanceId(designModelId, patternInstanceId)
+                .orElseThrow(() -> new DesignModelPatternInstanceNotFoundException(designModelId, patternInstanceId));
+
+        DesignModelPatternGraphData graphData = new DesignModelPatternGraphData();
+        graphData.setX(x);
+        graphData.setY(y);
+
+        patternInstance.setGraphData(graphData);
+
+        this.designModelPatternInstanceRepository.save(patternInstance);
     }
 
 
@@ -168,18 +212,48 @@ public class DesignModelServiceImpl implements DesignModelService {
 //        }
 //    }
 //
-//    // DirectedEdge Handling
-//
-//    @Override
-//    @Transactional
-//    public void addDirectedEdgeToPatternView(UUID patternViewId, UUID directedEdgeId) {
-//        PatternView patternView = this.getPatternViewById(patternViewId);
-//        DirectedEdge directedEdge = this.patternRelationDescriptorService.getDirectedEdgeById(directedEdgeId);
-//
-//        PatternViewDirectedEdge patternViewDirectedEdge = new PatternViewDirectedEdge(patternView, directedEdge);
-//        this.patternViewDirectedEdgeRepository.save(patternViewDirectedEdge);
-//    }
-//
+
+
+    // DirectedEdge Handling
+    @Override
+    @Transactional(readOnly = true)
+    public List<DesignModelPatternEdge> getEdges(UUID designModelId) {
+        List<DesignModelPatternEdge> edgeList = this.designModelPatternEdgeRepository.findAllByDesignModelId(designModelId).orElse(Collections.emptyList());
+
+        if (edgeList.isEmpty() && !this.designModelRepository.existsById(designModelId)) {
+            throw new DesignModelNotFoundException(designModelId);
+        }
+
+        return edgeList;
+    }
+
+
+    @Override
+    @Transactional
+    public void addEdge(UUID designModelId, UUID patternInstanceId1, UUID patternInstanceId2, Boolean directed, String type, String description) {
+        DesignModel designModel = this.designModelRepository.findById(designModelId)
+                .orElseThrow(() -> new DesignModelNotFoundException(designModelId));
+
+        DesignModelPatternInstance patternInstance1 = this.designModelPatternInstanceRepository
+                .findTopByDesignModel_IdAndPatternInstanceId(designModelId, patternInstanceId1)
+                .orElseThrow(() -> new DesignModelPatternInstanceNotFoundException(designModelId, patternInstanceId1));
+
+        DesignModelPatternInstance patternInstance2 = this.designModelPatternInstanceRepository
+                .findTopByDesignModel_IdAndPatternInstanceId(designModelId, patternInstanceId2)
+                .orElseThrow(() -> new DesignModelPatternInstanceNotFoundException(designModelId, patternInstanceId2));
+
+        DesignModelPatternEdge designModelEdge = new DesignModelPatternEdge();
+        designModelEdge.setDesignModel(designModel);
+        designModelEdge.setPatternInstance1(patternInstance1);
+        designModelEdge.setPatternInstance2(patternInstance2);
+        designModelEdge.setIsDirectedEdge(directed);
+        designModelEdge.setType(type);
+        designModelEdge.setDescription(description);
+
+        this.designModelPatternEdgeRepository.save(designModelEdge);
+    }
+
+
 //    @Override
 //    @Transactional
 //    public DirectedEdge createDirectedEdgeAndAddToPatternView(UUID patternViewId, AddDirectedEdgeToViewRequest request) {

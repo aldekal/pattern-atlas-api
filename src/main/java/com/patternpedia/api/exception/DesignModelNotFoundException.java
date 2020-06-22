@@ -16,6 +16,6 @@ public class DesignModelNotFoundException extends ResourceNotFoundException {
     }
 
     public DesignModelNotFoundException(DesignModel designModel) {
-        super(String.format("PatternView \"%s\" not found!", designModel.getId()));
+        super(String.format("DesignModel \"%s\" not found!", designModel.getId()));
     }
 }

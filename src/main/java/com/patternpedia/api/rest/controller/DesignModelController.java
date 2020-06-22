@@ -4,8 +4,11 @@ import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.designmodel.DesignModel;
+import com.patternpedia.api.entities.designmodel.DesignModelPatternEdge;
 import com.patternpedia.api.entities.designmodel.DesignModelPatternInstance;
-import com.patternpedia.api.rest.model.GraphPatternModel;
+import com.patternpedia.api.rest.model.EdgeDTO;
+import com.patternpedia.api.rest.model.PatternInstanceDTO;
+import com.patternpedia.api.rest.model.PositionDTO;
 import com.patternpedia.api.service.DesignModelService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.text.CaseUtils;
@@ -28,7 +31,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 @RestController
 @CommonsLog
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@RequestMapping(value = "/designModels", produces = "application/hal+json")
+@RequestMapping(value = "/design-models", produces = "application/hal+json")
 public class DesignModelController {
 
     private DesignModelService designModelService;
@@ -250,11 +253,11 @@ public class DesignModelController {
 
 
     @GetMapping("/{designModelId}/patterns")
-    CollectionModel<EntityModel<GraphPatternModel>> getDesignModelPatternInstances(@PathVariable UUID designModelId) {
+    CollectionModel<EntityModel<PatternInstanceDTO>> getDesignModelPatternInstances(@PathVariable UUID designModelId) {
         List<DesignModelPatternInstance> patternInstances = this.designModelService.getDesignModel(designModelId).getPatterns();
 
-        List<EntityModel<GraphPatternModel>> patterns = patternInstances.stream()
-                .map(GraphPatternModel::from)
+        List<EntityModel<PatternInstanceDTO>> patterns = patternInstances.stream()
+                .map(PatternInstanceDTO::from)
                 .map(patternModel -> new EntityModel<>(patternModel))// TODO, getPatternLinksForDesignModelRoute(patternModel, designModelId)))
                 .collect(Collectors.toList());
         return new CollectionModel<>(patterns, getDesignModelPatternInstanceCollectionLinks(designModelId));
@@ -265,18 +268,51 @@ public class DesignModelController {
     @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> addDesignModelPatternInstance(@PathVariable UUID designModelId, @RequestBody Pattern pattern) {
-        this.designModelService.addPatternToDesignModel(designModelId, pattern.getId());
+        this.designModelService.addPatternInstance(designModelId, pattern.getId());
         return ResponseEntity.created(linkTo(methodOn(PatternController.class) // TODO fix controller
                 .getPatternOfPatternViewById(designModelId, pattern.getId())).toUri()).build();
     }
 
 
+    @PutMapping("/{designModelId}/patterns/{patternInstanceId}/position")
+    public ResponseEntity<?> putDesignModelPatternInstancePosition(@PathVariable UUID designModelId, @PathVariable UUID patternInstanceId, @RequestBody PositionDTO position) {
+        this.designModelService.updatePatternInstancePosition(designModelId, patternInstanceId, position.getX(), position.getY());
+        return ResponseEntity.created(linkTo(methodOn(PatternController.class) // TODO fix controller
+                .getPatternOfPatternViewById(designModelId, patternInstanceId)).toUri()).build();
+    }
+
+
     @DeleteMapping("/{designModelId}/patterns")
-    @CrossOrigin(exposedHeaders = "Location")
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> deleteDesignModelPatternInstance(@PathVariable UUID designModelId, @RequestBody Pattern pattern) {
-        this.designModelService.addPatternToDesignModel(designModelId, pattern.getId());
+        this.designModelService.addPatternInstance(designModelId, pattern.getId());
         return ResponseEntity.created(linkTo(methodOn(PatternController.class) // TODO fix controller
                 .getPatternOfPatternViewById(designModelId, pattern.getId())).toUri()).build();
+    }
+
+
+    @PostMapping("/{designModelId}/edges")
+    @CrossOrigin(exposedHeaders = "Location")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<?> addDesignModelEdge(@PathVariable UUID designModelId, @RequestBody EdgeDTO edgeDTO) {
+
+        this.designModelService.addEdge(designModelId, edgeDTO.getFirstPatternId(), edgeDTO.getSecondPatternId(),
+                edgeDTO.isDirectedEdge(), edgeDTO.getType(), edgeDTO.getDescription());
+
+        return ResponseEntity.created(linkTo(methodOn(DesignModelController.class)
+                .addDesignModelEdge(designModelId, null)).toUri()).build();
+    }
+
+
+    @GetMapping("/{designModelId}/edges")
+    public ResponseEntity<?> getDesignModelEdge(@PathVariable UUID designModelId) {
+
+        List<DesignModelPatternEdge> designModelPatternEdges = this.designModelService.getEdges(designModelId);
+
+        return ResponseEntity.ok(designModelPatternEdges);
+//        return new CollectionModel<DesignModelPatternEdge>(
+//                designModelPatternEdges,
+//                (Iterable<Link>) ResponseEntity.created(linkTo(methodOn(DesignModelController.class)
+//                        .addDesignModelEdge(designModelId, null)).toUri()).build()
+//        );
     }
 }

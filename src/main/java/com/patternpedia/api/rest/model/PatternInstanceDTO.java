@@ -8,22 +8,30 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.hateoas.server.core.Relation;
 
+import java.util.UUID;
+
 
 @NoArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Relation(value = "pattern", collectionRelation = "patterns")
-public class GraphPatternModel extends PatternModel {
+public class PatternInstanceDTO extends PatternModel {
 
     protected DesignModelPatternGraphData graphData;
 
+    protected UUID patternLanguageId;
 
-    public static GraphPatternModel from(DesignModelPatternInstance dmpi) {
-        GraphPatternModel gpm = new GraphPatternModel();
+    protected double x;
+
+    protected double y;
+
+
+    public static PatternInstanceDTO from(DesignModelPatternInstance dmpi) {
+        PatternInstanceDTO gpm = new PatternInstanceDTO();
 
 
         gpm.setName(dmpi.getPattern().getName());
-        gpm.setId(dmpi.getId().getPatternInstanceId());
+        gpm.setId(dmpi.getPatternInstanceId());
         gpm.setPattern(dmpi.getPattern());
         gpm.setUri(dmpi.getPattern().getUri());
         gpm.setIconUrl(dmpi.getPattern().getIconUrl());
