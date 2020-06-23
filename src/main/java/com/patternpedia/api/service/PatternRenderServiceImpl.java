@@ -65,7 +65,7 @@ public class PatternRenderServiceImpl implements PatternRenderService {
                     oldContentOccurances.add(contentOld.substring(occuranceStartEndOldQcircuit[0], occuranceStartEndOldQcircuit[1] + 4)
                             .replaceAll("\\\\n", " ").replaceAll("(\\\\t)(?!a)"," ")
                             .replaceAll("\\\\\\\\","\\\\"));
-                    contentOld = contentOld.replace(contentOld.substring(occuranceStartEndOldQcircuit[0], occuranceStartEndOldQcircuit[1] + 14), " ");}
+                    contentOld = contentOld.replace(contentOld.substring(occuranceStartEndOldQcircuit[0], occuranceStartEndOldQcircuit[1] + 4), " ");}
 
                 oldSVGOccurances.add(renderedContentOld.substring(svgOccurencesOld[0], svgOccurencesOld[1] + 6));
                 renderedContentOld = renderedContentOld.replace(renderedContentOld.substring(svgOccurencesOld[0], svgOccurencesOld[1] + 6), " ");
