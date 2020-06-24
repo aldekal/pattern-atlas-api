@@ -14,4 +14,6 @@ public interface DesignModelPatternInstanceRepository extends JpaRepository<Desi
     Optional<List<DesignModelPatternInstance>> findAllByDesignModelId(UUID patternViewId);
 
     Optional<DesignModelPatternInstance> findTopByDesignModel_IdAndPatternInstanceId(UUID designModelId, UUID patternInstanceId);
+
+    void deleteAllByDesignModel_IdAndPatternInstanceId(UUID designModelId, UUID patternInstanceId);
 }

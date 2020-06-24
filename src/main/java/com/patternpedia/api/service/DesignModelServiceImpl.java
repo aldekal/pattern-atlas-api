@@ -162,6 +162,16 @@ public class DesignModelServiceImpl implements DesignModelService {
 
     @Override
     @Transactional
+    public void deletePatternInstance(UUID designModelId, UUID patternInstanceId) {
+        this.designModelPatternEdgeRepository.deleteAllByDesignModel_IdAndPatternInstance1_PatternInstanceIdOrPatternInstance2_PatternInstanceId(
+                designModelId, patternInstanceId, patternInstanceId
+        );
+        this.designModelPatternInstanceRepository.deleteAllByDesignModel_IdAndPatternInstanceId(designModelId, patternInstanceId);
+    }
+
+
+    @Override
+    @Transactional
     public void updatePatternInstance(UUID designModelId, UUID patternInstanceId, Pattern pattern) {
 //        List<DesignModelPatternInstance> patternList = this.designModelPatternInstanceRepository.findTopByDesignModel_IdAndPatternInstanceId(patternInstanceId);
     }

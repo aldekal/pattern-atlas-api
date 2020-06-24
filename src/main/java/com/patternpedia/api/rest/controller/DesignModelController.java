@@ -66,8 +66,7 @@ public class DesignModelController {
         );
         links.add(linkTo(methodOn(DesignModelController.class).getDesignModels()).withRel("designModels"));
         links.add(linkTo(methodOn(DesignModelController.class).getDesignModelPatternInstances(designModel.getId())).withRel("patterns"));
-//        links.add(linkTo(methodOn(PatternRelationDescriptorController.class).getDirectedEdgesOfView(patternView.getId())).withRel("directedEdges"));
-//        links.add(linkTo(methodOn(PatternRelationDescriptorController.class).getUndirectedEdgesOfView(patternView.getId())).withRel("undirectedEdges"));
+        links.add(linkTo(methodOn(DesignModelController.class).getDesignModelPatternEdges(designModel.getId())).withRel("edges"));
 
         return links;
     }
@@ -197,6 +196,7 @@ public class DesignModelController {
                 .andAffordance(afford(methodOn(DesignModelController.class).addDesignModelPatternInstance(designModelId, null))));
         links.add(linkTo(methodOn(DesignModelController.class).getDesignModel(designModelId)).withRel("designModel"));
         links.add(linkTo(methodOn(DesignModelController.class).getDesignModelPatternInstances(designModelId)).withRel("patterns"));
+        links.add(linkTo(methodOn(DesignModelController.class).getDesignModelPatternEdges(designModelId)).withRel("edges"));
         return links;
     }
 
@@ -282,11 +282,10 @@ public class DesignModelController {
     }
 
 
-    @DeleteMapping("/{designModelId}/patterns")
-    public ResponseEntity<?> deleteDesignModelPatternInstance(@PathVariable UUID designModelId, @RequestBody Pattern pattern) {
-        this.designModelService.addPatternInstance(designModelId, pattern.getId());
-        return ResponseEntity.created(linkTo(methodOn(PatternController.class) // TODO fix controller
-                .getPatternOfPatternViewById(designModelId, pattern.getId())).toUri()).build();
+    @DeleteMapping("/{designModelId}/patterns/{patternInstanceId}")
+    public ResponseEntity<?> deleteDesignModelPatternInstance(@PathVariable UUID designModelId, @PathVariable UUID patternInstanceId) {
+        this.designModelService.deletePatternInstance(designModelId, patternInstanceId);
+        return ResponseEntity.ok().build();
     }
 
 
@@ -304,11 +303,15 @@ public class DesignModelController {
 
 
     @GetMapping("/{designModelId}/edges")
-    public ResponseEntity<?> getDesignModelEdge(@PathVariable UUID designModelId) {
+    public ResponseEntity<?> getDesignModelPatternEdges(@PathVariable UUID designModelId) {
 
         List<DesignModelPatternEdge> designModelPatternEdges = this.designModelService.getEdges(designModelId);
 
-        return ResponseEntity.ok(designModelPatternEdges);
+        List<EdgeDTO> edgeDTOs = designModelPatternEdges.parallelStream()
+                .map(EdgeDTO::from)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(edgeDTOs);
 //        return new CollectionModel<DesignModelPatternEdge>(
 //                designModelPatternEdges,
 //                (Iterable<Link>) ResponseEntity.created(linkTo(methodOn(DesignModelController.class)

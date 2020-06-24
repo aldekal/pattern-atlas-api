@@ -15,4 +15,6 @@ public interface DesignModelPatternEdgeRepository extends JpaRepository<DesignMo
     Optional<List<DesignModelPatternEdge>> findAllByDesignModelId(UUID patternViewId);
 
     Optional<DesignModelPatternEdge> findTopByDesignModelIdAndEdgeId(UUID designModelId, DesignModelPatternEdgeId designModelPatternEdgeId);
+
+    void deleteAllByDesignModel_IdAndPatternInstance1_PatternInstanceIdOrPatternInstance2_PatternInstanceId(UUID designModelId, UUID patternInstanceId1, UUID patternInstanceId2);
 }

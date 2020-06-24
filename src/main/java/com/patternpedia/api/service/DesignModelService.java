@@ -24,6 +24,8 @@ public interface DesignModelService {
 
     void addPatternInstance(UUID designModelId, UUID patternId);
 
+    void deletePatternInstance(UUID designModelId, UUID patternInstanceId);
+
     DesignModelPatternInstance getPatternInstance(UUID designModelId, UUID patternInstanceId);
 
     void updatePatternInstance(UUID designModelId, UUID patternInstanceId, Pattern pattern);
