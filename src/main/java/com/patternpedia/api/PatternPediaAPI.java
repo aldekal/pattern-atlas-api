@@ -1,7 +1,5 @@
 package com.patternpedia.api;
 
-import com.patternpedia.api.entities.issue.Issue;
-//import com.patternpedia.api.rest.controller.UserController;
 import com.patternpedia.api.rest.controller.UserController;
 import com.patternpedia.api.service.IssueService;
 import com.vladmihalcea.hibernate.type.util.Configuration;
@@ -12,11 +10,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 
 @EnableTransactionManagement
-@EnableWebMvc
 @Slf4j
 @RestController
 @SpringBootApplication
