@@ -9,6 +9,7 @@ import com.patternpedia.api.entities.shared.AuthorConstant;
 import com.patternpedia.api.entities.user.UserEntity;
 import com.patternpedia.api.repositories.*;
 import com.patternpedia.api.rest.model.candidate.CandidateModelRequest;
+import com.patternpedia.api.rest.model.shared.AuthorModel;
 import com.patternpedia.api.rest.model.shared.CommentModel;
 import com.patternpedia.api.util.RatingHelper;
 import org.slf4j.Logger;
@@ -76,7 +77,14 @@ public class CandidateServiceImpl implements CandidateService {
 
         // ADD authors
         Candidate newCandidate = this.candidateRepository.save(candidate);
-        newCandidate.getAuthors().add(new CandidateAuthor(newCandidate, this.userService.getUserById(userId), AuthorConstant.OWNER));
+        if (candidateModelRequest.getAuthors() != null) {
+            for (AuthorModel authorModel : candidateModelRequest.getAuthors()) {
+                newCandidate.getAuthors().add(new CandidateAuthor(newCandidate, this.userService.getUserById(authorModel.getUserId()), authorModel.getAuthorRole()));
+            }
+        } else {
+            newCandidate.getAuthors().add(new CandidateAuthor(newCandidate, this.userService.getUserById(userId), AuthorConstant.OWNER));
+        }
+
 
         // ADD pattern language
         if (candidateModelRequest.getPatternLanguageId() != null && this.patternLanguageService.getPatternLanguageById(candidateModelRequest.getPatternLanguageId()) != null)
