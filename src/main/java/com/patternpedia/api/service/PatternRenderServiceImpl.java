@@ -179,7 +179,7 @@ public class PatternRenderServiceImpl implements PatternRenderService {
         byte[] file = null;
         try{
             RestTemplate restTemplate = new RestTemplate();
-            final String baseUrl = "http://localhost:"+8081+"/renderLatex/";
+            final String baseUrl = "http://localhost:"+8082+"/renderLatex/";
             URI uri = new URI(baseUrl);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
