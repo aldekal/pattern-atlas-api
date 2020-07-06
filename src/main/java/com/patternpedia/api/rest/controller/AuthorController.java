@@ -38,7 +38,6 @@ public class AuthorController {
      * GET Methods
      */
     @GetMapping(value = "")
-//    @PreAuthorize(value = "hasAuthority('ADMIN')")
     CollectionModel<EntityModel<AuthorModel>> getAll() {
         List<EntityModel<AuthorModel>> authors = this.userService.getAllUsers()
                 .stream()
@@ -48,7 +47,6 @@ public class AuthorController {
     }
 
     @GetMapping(value = "/roles")
-//    @PreAuthorize(value = "hasAuthority('ADMIN')")
     String[] getAllRoles() {
         return new String[]{AuthorConstant.MEMBER, AuthorConstant.MAINTAINER, AuthorConstant.OWNER};
     }

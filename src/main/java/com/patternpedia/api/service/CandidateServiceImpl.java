@@ -72,9 +72,6 @@ public class CandidateServiceImpl implements CandidateService {
         if (this.candidateRepository.existsByUri(candidateModelRequest.getUri()))
             throw new EntityExistsException(String.format("Candidate uri %s already exist!", candidateModelRequest.getUri()));
 
-
-//            throw new ResourceNotFoundException(String.format("Pattern Language %s does not exist", candidateModelRequest.getPatternLanguageId()));
-
         // ADD authors
         Candidate newCandidate = this.candidateRepository.save(candidate);
         if (candidateModelRequest.getAuthors() != null) {

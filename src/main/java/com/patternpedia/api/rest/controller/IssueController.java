@@ -74,7 +74,6 @@ public class IssueController {
     }
 
     @PostMapping(value = "/{issueId}/comments")
-//    @PreAuthorize(value = "#oauth2.hasScope('write')")
     @ResponseStatus(HttpStatus.CREATED)
     ResponseEntity<EntityModel<CommentModel>> newIssueComment(@PathVariable UUID issueId, @AuthenticationPrincipal Principal principal, @RequestBody CommentModel commentModel) {
         return ResponseEntity.ok(new EntityModel<>(new CommentModel(this.issueService.createComment(issueId, UUID.fromString(principal.getName()), commentModel))));
@@ -97,14 +96,12 @@ public class IssueController {
      * DELETE Methods
      */
     @DeleteMapping(value = "/{issueId}")
-//    @PreAuthorize(value = "#oauth2.hasScope('de')")
     ResponseEntity<?> deleteIssue(@PathVariable UUID issueId) {
         this.issueService.deleteIssue(issueId);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping(value = "/{issueId}/comments/{issueCommentId}")
-//    @PreAuthorize(value = "#oauth2.hasScope('de')")
     ResponseEntity<?> deleteComment(@PathVariable UUID issueId, @PathVariable UUID issueCommentId, @AuthenticationPrincipal Principal principal) {
         return this.issueService.deleteComment(issueId, issueCommentId, UUID.fromString(principal.getName()));
     }

@@ -24,7 +24,6 @@ import java.util.*;
 @Entity
 @Data
 @NoArgsConstructor
-//@NamedQuery(name = "UserEntity.findAll", query="select u from UserEntity u order by u.role.name")
 public class UserEntity implements Serializable{
 
     /** User fields*/

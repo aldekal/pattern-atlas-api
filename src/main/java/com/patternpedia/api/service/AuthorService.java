@@ -19,6 +19,4 @@ public interface AuthorService {
 
     CandidateAuthor saveCandidateAuthor(UUID userId, UUID candidateId, AuthorModelRequest authorModelRequest);
     void deleteCandidateAuthor(UUID userId, UUID candidateId);
-
-//    Candidate updateCandidateAuthor(UUID candidateId, AuthorModelRequest authorModelRequest);
 }
