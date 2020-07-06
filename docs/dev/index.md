@@ -4,6 +4,11 @@ This document provides an index to all development guidelines and background inf
 
 ## Quick Develop
 ### PatternPediaAuth
+PatternPediaAuth is a Spring Boot Authentication Server and it's main purpose is to give PatternPediaAPI user management capabilities.
+This is achieved through using the OAuth 2.0 Authentication Code Flow, additionally new users can create accounts.
+It runs on Port 8081
+
+### Development
 1. Clone the repository `git clone https://github.com/PatternPedia/pattern-pedia-auth.git`.
 2. Navigate to repository directory `cd pattern-pedia-auth/`.
 2. Build the repository 
@@ -23,8 +28,10 @@ This document provides an index to all development guidelines and background inf
 #### IntelliJ
 3. [Follow PatternPediaAPI from Step 5 pls](#step5)
 
-#### Turn On/Off
-Comment the marked lines in the following file to turn on/off [Security Config file](https://github.com/PatternPedia/pattern-pedia-views-backend/blob/ba-meyer-master/src/main/java/com/patternpedia/api/config/ResourceServerConfig.java). An easier way will be added in future realease.
+#### Turn authentication on/off for PatternPediaAPI
+If you don't need the capabilities of the PatternPediaAuth server during development. You can follow the instructions in the following file 
+[Security Config file](https://github.com/PatternPedia/pattern-pedia-views-backend/blob/ba-meyer-master/src/main/java/com/patternpedia/api/config/ResourceServerConfig.java)
+to turn those off or on. An easier way will be added in future realease.
 
 #### Default User
 During development default users are
