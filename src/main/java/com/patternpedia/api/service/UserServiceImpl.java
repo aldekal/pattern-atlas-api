@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("User to update is null!");
         // DEFAULT password
         if (userModelRequest.getPassword() == null)
-            userModelRequest.setPassword("pass");
+            throw new RuntimeException("Password is null");
 
         UserEntity user = new UserEntity(userModelRequest,  passwordEncoder.encode(userModelRequest.getPassword()));
         if (this.roleRepository.findByName(userModelRequest.getRole()) != null) {
