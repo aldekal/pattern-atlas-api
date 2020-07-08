@@ -231,7 +231,6 @@ public class PatternRelationDescriptorController {
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/directedEdges/{directedEdgeId}")
     public EntityModel<DirectedEdgeModel> getDirectedEdgeOfPatternLanguageById(@PathVariable UUID patternLanguageId, @PathVariable UUID directedEdgeId) {
         DirectedEdge directedEdge = this.patternLanguageService.getDirectedEdgeOfPatternLanguageById(patternLanguageId, directedEdgeId);
-
         return new EntityModel<>(DirectedEdgeModel.from(directedEdge), getDirectedEdgeLinksForPatternLanguageRoute(directedEdge));
     }
 
@@ -243,7 +242,7 @@ public class PatternRelationDescriptorController {
     }
 
     @DeleteMapping(value = "/patternLanguages/{patternLanguageId}/directedEdges/{directedEdgeId}")
-    public ResponseEntity<?> removeDirectedEdgeFromPatternLanguage(@PathVariable UUID patternLanguageId, UUID directedEdgeId) {
+    public ResponseEntity<?> removeDirectedEdgeFromPatternLanguage(@PathVariable UUID patternLanguageId, @PathVariable UUID directedEdgeId) {
         this.patternLanguageService.removeDirectedEdgeFromPatternLanguage(patternLanguageId, directedEdgeId);
         return ResponseEntity.noContent().build();
     }
@@ -285,7 +284,7 @@ public class PatternRelationDescriptorController {
     }
 
     @DeleteMapping(value = "/patternLanguages/{patternLanguageId}/undirectedEdges/{undirectedEdgeId}")
-    public ResponseEntity<?> removeUndirectedEdgeFromPatternLanguage(@PathVariable UUID patternLanguageId, UUID undirectedEdgeId) {
+    public ResponseEntity<?> removeUndirectedEdgeFromPatternLanguage(@PathVariable UUID patternLanguageId, @PathVariable UUID undirectedEdgeId) {
         this.patternLanguageService.removeUndirectedEdgeFromPatternLanguage(patternLanguageId, undirectedEdgeId);
         return ResponseEntity.noContent().build();
     }
@@ -329,7 +328,6 @@ public class PatternRelationDescriptorController {
     public EntityModel<DirectedEdgeModel> putDirectedEdgeToPatternView(@PathVariable UUID patternViewId, @PathVariable UUID directedEdgeId, @RequestBody UpdateDirectedEdgeRequest request) {
         request.setDirectedEdgeId(directedEdgeId);
         DirectedEdge directedEdge = this.patternViewService.updateDirectedEdgeOfPatternView(patternViewId, request);
-
         return new EntityModel<>(DirectedEdgeModel.from(directedEdge), getDirectedEdgeLinksForViewRoute(directedEdge, patternViewId));
     }
 
