@@ -34,8 +34,13 @@ public class PatternRenderServiceImpl implements PatternRenderService {
         ObjectMapper mapper = new ObjectMapper();
         try {
             jsonString = mapper.writeValueAsString(pattern.getContent());
-            contentOld = mapper.writeValueAsString(oldVersion.getContent());
-            renderedContentOld = mapper.writeValueAsString(oldVersion.getRenderedContent());
+            if(oldVersion == null){
+                contentOld = "null";
+                renderedContentOld = "null";
+            } else {
+                contentOld = mapper.writeValueAsString(oldVersion.getContent());
+                renderedContentOld = mapper.writeValueAsString(oldVersion.getRenderedContent());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
