@@ -60,13 +60,13 @@ public class PatternRenderServiceImpl implements PatternRenderService {
             if (((occuranceStartEndOldQcircuit[0] != -1 && occuranceStartEndOldQcircuit[1] != -1) ||
                     (occuranceStartEndOldQuantikz[0] != -1 && occuranceStartEndOldQuantikz[1] != -1)) && svgOccurencesOld[0] != -1 && svgOccurencesOld[1] != -1) {
                 if(occuranceStartEndOldQuantikz[0] != -1 && ((occuranceStartEndOldQuantikz[0] < occuranceStartEndOldQcircuit[0]) || occuranceStartEndOldQcircuit[0] == -1 )){
-                    System.out.println("HAS OLD QUANTIKZ CONTENT");
+                    //HAS OLD QUANTIKZ CONTENT
                     oldContentOccurances.add(contentOld.substring(occuranceStartEndOldQuantikz[0], occuranceStartEndOldQuantikz[1] + 14)
                             .replaceAll("\\\\n", " ").replaceAll("(\\\\t)(?!a)"," ")
                             .replaceAll("\\\\\\\\","\\\\"));
                     contentOld = contentOld.replace(contentOld.substring(occuranceStartEndOldQuantikz[0], occuranceStartEndOldQuantikz[1] + 14), " ");
                 } else if(occuranceStartEndOldQcircuit[0] != -1 && ((occuranceStartEndOldQcircuit[0] < occuranceStartEndOldQuantikz[0]) || occuranceStartEndOldQuantikz[0] == -1 )){
-                    System.out.println("HAS OLD QCircuit CONTENT");
+                    //HAS OLD QCircuit CONTENT
                     oldContentOccurances.add(contentOld.substring(occuranceStartEndOldQcircuit[0], occuranceStartEndOldQcircuit[1] + 4)
                             .replaceAll("\\\\n", " ").replaceAll("(\\\\t)(?!a)"," ")
                             .replaceAll("\\\\\\\\","\\\\"));
@@ -79,8 +79,7 @@ public class PatternRenderServiceImpl implements PatternRenderService {
                 break;
             }
         }
-        oldContentOccurances.forEach(s -> System.out.println("OLD CONTENT" + s));
-        oldSVGOccurances.forEach(s -> System.out.println("OLD SVG" +s));
+
         int countQuantikz = 0;
         JaccardSimilarity jaccardSimilarity =  new JaccardSimilarity();
         while (true) {
@@ -107,13 +106,10 @@ public class PatternRenderServiceImpl implements PatternRenderService {
                     String id = saveAndUploadFile(renderedFile, "svg");
                     jsonString = jsonString.replace(jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 14), " " + id + " ");
                     if(countQuantikz < oldContentOccurances.size()){
-                        System.out.println("Jaccard: " + jaccardSimilarity.apply(oldContentOccurances.get(countQuantikz), renderContent));
                         if(jaccardSimilarity.apply(oldContentOccurances.get(countQuantikz), renderContent) > 0.8) {
-                          System.out.println(id);
                           this.discussionService.updateTopicsByImageId(UUID.fromString(oldSVGOccurances.get(countQuantikz).substring(5, oldSVGOccurances.get(countQuantikz).length() - 6)), UUID.fromString(id.substring(5, id.length() - 6)));
                         }
                     }
-                    System.out.println("OUTSIDE OF EQUALS" + jsonString);
                 }
                 countQuantikz++ ;
             }else {
@@ -135,7 +131,6 @@ public class PatternRenderServiceImpl implements PatternRenderService {
                     if(oldContentOccurances.get(i).equals(renderContent)){
                         occured = true;
                         jsonString = jsonString.replace(jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 4), " " + oldSVGOccurances.get(i) + " ");
-                        System.out.print("INSIDE OF EQUALS FOR " + i + "  " + jsonString);
                     }
                 }
 
@@ -149,13 +144,10 @@ public class PatternRenderServiceImpl implements PatternRenderService {
                     String id = saveAndUploadFile(renderedFile, "svg");
                     jsonString = jsonString.replace(jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 4), " " + id + " ");
                     if(countQcircuit < oldContentOccurances.size()){
-                        System.out.println("Jaccard: " + jaccardSimilarity.apply(oldContentOccurances.get(countQcircuit), renderContent));
                         if(jaccardSimilarity.apply(oldContentOccurances.get(countQcircuit), renderContent) > 0.8) {
-                            System.out.println(id);
                             this.discussionService.updateTopicsByImageId(UUID.fromString(oldSVGOccurances.get(countQcircuit).substring(5, oldSVGOccurances.get(countQcircuit).length() - 6)), UUID.fromString(id.substring(5, id.length() - 6)));
                         }
                     }
-                    System.out.println("OUTSIDE OF EQUALS" + jsonString);
                 }
                 countQcircuit++ ;
             }else {

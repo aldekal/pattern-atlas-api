@@ -30,9 +30,8 @@ public class ImageController {
             produces = "image/svg+xml"
     )
     public @ResponseBody
-    byte[] getImageById(@PathVariable String imageId){
-        UUID uuid = UUID.fromString(imageId);
-        return this.imageService.getImageById(uuid).getData();
+    byte[] getImageById(@PathVariable UUID imageId){
+        return this.imageService.getImageById(imageId).getData();
     }
 
     @PostMapping(
@@ -40,12 +39,11 @@ public class ImageController {
             produces = "image/svg+xml"
     )
     public @ResponseBody
-    byte[] updateImage(@PathVariable String imageId, @RequestBody byte[] data){
-        UUID uuid = UUID.fromString(imageId);
+    byte[] updateImage(@PathVariable UUID imageId, @RequestBody byte[] data){
         Image image = new Image();
-        image.setId(uuid);
+        image.setId(imageId);
         image.setData(data);
-        image.setFileName(imageId);
+        image.setFileName(imageId.toString());
         image.setFileType("image/svg+xml");
         return this.imageService.updateImage(image).getData();
     }
@@ -54,8 +52,7 @@ public class ImageController {
             value = "/get-image-and-comments-by-id/{imageId}"
     )
     public @ResponseBody
-    ImageModel getImageAndCommentsById(@PathVariable String imageId){
-        UUID uuid = UUID.fromString(imageId);
-        return new ImageModel(this.imageService.getImageById(uuid).getData(), this.discussionService.getTopicsAndCommentsByImageId(uuid));
+    ImageModel getImageAndCommentsById(@PathVariable UUID imageId){
+        return new ImageModel(this.imageService.getImageById(imageId).getData(), this.discussionService.getTopicsAndCommentsByImageId(imageId));
     }
 }
