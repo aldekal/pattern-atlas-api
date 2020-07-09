@@ -1,7 +1,6 @@
 package com.patternpedia.api.repositories;
 
 import com.patternpedia.api.entities.designmodel.ConcreteSolution;
-import com.patternpedia.api.entities.designmodel.DesignModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.net.URI;
@@ -14,8 +13,9 @@ public interface ConcreteSolutionRepository extends JpaRepository<ConcreteSoluti
 
     List<ConcreteSolution> findAllByPatternUri(String uri);
 
+    Optional<ConcreteSolution> findTopByPatternUriAndAggregatorType(String uri, String technology);
+
     Optional<ConcreteSolution> findTopById(UUID uuid);
 
     boolean existsByPatternUri(URI uri);
 }
-
