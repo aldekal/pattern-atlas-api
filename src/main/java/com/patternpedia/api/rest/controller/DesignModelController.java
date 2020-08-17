@@ -3,12 +3,15 @@ package com.patternpedia.api.rest.controller;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patternpedia.api.entities.Pattern;
+import com.patternpedia.api.entities.designmodel.ConcreteSolution;
 import com.patternpedia.api.entities.designmodel.DesignModel;
 import com.patternpedia.api.entities.designmodel.DesignModelPatternEdge;
 import com.patternpedia.api.entities.designmodel.DesignModelPatternInstance;
 import com.patternpedia.api.rest.model.EdgeDTO;
+import com.patternpedia.api.rest.model.FileDTO;
 import com.patternpedia.api.rest.model.PatternInstanceDTO;
 import com.patternpedia.api.rest.model.PositionDTO;
+import com.patternpedia.api.service.ConcreteSolutionService;
 import com.patternpedia.api.service.DesignModelService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.text.CaseUtils;
@@ -19,10 +22,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.net.URI;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
@@ -35,11 +36,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 public class DesignModelController {
 
     private DesignModelService designModelService;
+    private ConcreteSolutionService concreteSolutionService;
     private ObjectCodec objectMapper;
 
 
-    public DesignModelController(DesignModelService designModelService, ObjectMapper objectMapper) {
+    public DesignModelController(DesignModelService designModelService, ConcreteSolutionService concreteSolutionService, ObjectMapper objectMapper) {
         this.designModelService = designModelService;
+        this.concreteSolutionService = concreteSolutionService;
         this.objectMapper = objectMapper;
     }
 
@@ -317,5 +320,41 @@ public class DesignModelController {
 //                (Iterable<Link>) ResponseEntity.created(linkTo(methodOn(DesignModelController.class)
 //                        .addDesignModelEdge(designModelId, null)).toUri()).build()
 //        );
+    }
+
+
+    @DeleteMapping("/{designModelId}/edges/{sourceId}/{targetId}")
+    public ResponseEntity<?> getDesignModelPatternEdges(@PathVariable UUID designModelId, @PathVariable UUID sourceId, @PathVariable UUID targetId) {
+
+        this.designModelService.deleteEdge(designModelId, sourceId, targetId);
+
+        return ResponseEntity.ok().build();
+    }
+
+
+    @GetMapping("/{designModelId}/concrete-solutions")
+    public Set<ConcreteSolution> checkConcreteSolutions(@PathVariable UUID designModelId) {
+        List<DesignModelPatternInstance> patternInstanceList = this.designModelService.getDesignModel(designModelId).getPatterns();
+        Set<String> patternUris = patternInstanceList.stream().map(patternInstance -> patternInstance.getPattern().getUri()).collect(Collectors.toSet());
+        Set<ConcreteSolution> concreteSolutionSet = new HashSet<>();
+
+        for (String uri : patternUris) {
+            this.concreteSolutionService.getConcreteSolutions(URI.create(uri)).forEach(concreteSolution -> concreteSolutionSet.add(concreteSolution));
+        }
+
+        return concreteSolutionSet;
+    }
+
+
+    @PostMapping("/{designModelId}/aggregate")
+    public List<FileDTO> aggregateConcreteSolutions(@PathVariable UUID designModelId, @RequestBody Map<UUID, UUID> patternConcreteSolutionMap) {
+
+        log.info(patternConcreteSolutionMap.toString());
+
+        DesignModel designModel = this.designModelService.getDesignModel(designModelId);
+        List<DesignModelPatternInstance> patternInstanceList = designModel.getPatterns();
+        List<DesignModelPatternEdge> directedEdgeList = designModel.getDirectedEdges();
+
+        return this.concreteSolutionService.aggregate(patternInstanceList, directedEdgeList, patternConcreteSolutionMap);
     }
 }

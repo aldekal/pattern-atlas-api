@@ -7,6 +7,7 @@ import com.patternpedia.api.rest.model.FileDTO;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -20,5 +21,5 @@ public interface ConcreteSolutionService {
 
 //    ConcreteSolution getConcreteSolution(URI patternUri, String technology);
 
-    FileDTO aggregate(List<DesignModelPatternInstance> patternInstances, List<DesignModelPatternEdge> edges, String technology);
+    List<FileDTO> aggregate(List<DesignModelPatternInstance> patternInstances, List<DesignModelPatternEdge> edges, Map<UUID, UUID> concreteSolutionMapping);
 }

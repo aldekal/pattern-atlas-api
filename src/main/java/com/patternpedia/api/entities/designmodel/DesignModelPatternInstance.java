@@ -30,6 +30,9 @@ public class DesignModelPatternInstance {
 
     private DesignModelPatternGraphData graphData;
 
+    @Transient
+    private ConcreteSolution concreteSolution;
+
 
     public DesignModelPatternInstance(DesignModel designModel, Pattern pattern) {
         this.designModel = designModel;

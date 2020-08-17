@@ -264,6 +264,15 @@ public class DesignModelServiceImpl implements DesignModelService {
     }
 
 
+    @Override
+    @Transactional
+    public void deleteEdge(UUID designModelId, UUID patternInstanceId1, UUID patternInstanceId2) {
+        this.designModelPatternEdgeRepository.deleteAllByDesignModel_IdAndPatternInstance1_PatternInstanceIdAndPatternInstance2_PatternInstanceId(
+                designModelId, patternInstanceId1, patternInstanceId2
+        );
+    }
+
+
 //    @Override
 //    @Transactional
 //    public DirectedEdge createDirectedEdgeAndAddToPatternView(UUID patternViewId, AddDirectedEdgeToViewRequest request) {

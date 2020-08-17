@@ -24,16 +24,14 @@ public class ConcreteSolution {
     @Column(nullable = false)
     private String patternUri;
 
-//    @OneToMany
-//    private List<ConcreteSolutionOption> options;
+    private String name;
 
     @ElementCollection
-    private List<String> requirements;
-
-    @ElementCollection
-    private List<String> capabilities;
+    private List<String> properties;
 
     private String templateRef;
 
     private String aggregatorType;
+
+    private Integer priority;
 }

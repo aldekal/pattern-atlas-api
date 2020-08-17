@@ -38,6 +38,8 @@ public interface DesignModelService {
 
     void addEdge(UUID designModelId, UUID patternInstanceId1, UUID patternInstanceId2, Boolean directed, String type, String description);
 
+    void deleteEdge(UUID designModelId, UUID patternInstanceId1, UUID patternInstanceId2);
+
 
 //    List<Pattern> getPatternsOfDesignModel(UUID designModelId);
 //
