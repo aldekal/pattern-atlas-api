@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patternpedia.api.entities.issue.IssueComment;
 import com.patternpedia.api.entities.issue.Issue;
 import com.patternpedia.api.service.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -37,17 +39,20 @@ public class IssueController {
     /**
      * GET Methods
      */
+    @Operation(operationId = "getAllIssues", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all issues")
     @GetMapping(value = "")
     List<Issue> all() {
         return this.issueService.getAllIssues();
     }
 
+    @Operation(operationId = "getIssueById", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve issue by id")
     @GetMapping(value = "/{issueId}")
     @PreAuthorize(value = "#oauth2.hasScope('read')")
     Issue getIssueById(@PathVariable UUID issueId) {
         return this.issueService.getIssueById(issueId);
     }
 
+    @Operation(operationId = "getIssueByURI", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve issue by URI")
     @GetMapping(value = "/?uri={issueUri}")
     Issue getIssueByUri(@PathVariable String issueUri) {
         return this.issueService.getIssueByURI(issueUri);
@@ -56,6 +61,7 @@ public class IssueController {
     /**
      * CREATE Methods
      */
+    @Operation(operationId = "createIssue", responses = {@ApiResponse(responseCode = "201")}, description = "Create an issue")
     @PostMapping(value = "")
     @PreAuthorize(value = "#oauth2.hasScope('write')")
     @ResponseStatus(HttpStatus.CREATED)
@@ -63,6 +69,7 @@ public class IssueController {
         return this.issueService.createIssue(issue);
     }
 
+    @Operation(operationId = "createIssueComment", responses = {@ApiResponse(responseCode = "201")}, description = "Create an issue comment")
     @PostMapping(value = "/{issueId}/comments/{userId}")
 //    @PreAuthorize(value = "#oauth2.hasScope('write')")
     @ResponseStatus(HttpStatus.CREATED)
@@ -73,17 +80,20 @@ public class IssueController {
     /**
      * UPDATE Methods
      */
+    @Operation(operationId = "updateIssue", responses = {@ApiResponse(responseCode = "200")}, description = "Update an issue")
     @PutMapping(value = "/{issueId}")
     Issue putIssue(@PathVariable UUID issueId, @RequestBody Issue issue) {
         logger.info(issue.toString());
         return this.issueService.updateIssue(issue);
     }
 
+    @Operation(operationId = "updateIssueRating", responses = {@ApiResponse(responseCode = "200")}, description = "Update an issue rating")
     @PutMapping(value = "/{issueId}/users/{userId}/rating/{rating}")
     Issue putIssueRating(@PathVariable UUID issueId, @PathVariable UUID userId, @PathVariable String rating) {
         return this.issueService.userRating(issueId, userId, rating);
     }
 
+    @Operation(operationId = "updateIssueCommentRating", responses = {@ApiResponse(responseCode = "200")}, description = "Update an issue comment rating")
     @PutMapping(value = "/comments/{issueCommentId}/users/{userId}/rating/{rating}")
     Issue putIssueCommentRating(@PathVariable UUID issueCommentId, @PathVariable UUID userId, @PathVariable String rating) {
         return this.issueService.commentUserRating(issueCommentId, userId, rating);
@@ -92,6 +102,7 @@ public class IssueController {
     /**
      * DELETE Methods
      */
+    @Operation(operationId = "deleteIssue", responses = {@ApiResponse(responseCode = "200")}, description = "Delete an issue")
     @DeleteMapping(value = "/{issueId}")
 //    @PreAuthorize(value = "#oauth2.hasScope('de')")
     ResponseEntity<?> deleteIssue(@PathVariable UUID issueId) {

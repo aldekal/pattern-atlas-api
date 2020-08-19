@@ -11,6 +11,8 @@ import com.patternpedia.api.rest.model.PatternModel;
 import com.patternpedia.api.service.CandidateService;
 import com.patternpedia.api.service.PatternLanguageService;
 import io.swagger.v3.core.util.Json;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
@@ -49,9 +51,9 @@ public class CandidateController {
     /**
      * GET Methods
      */
+    @Operation(operationId = "getAllCandiates", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all candidates")
     @GetMapping(value = "")
     CollectionModel<EntityModel<CandidateModel>> all() {
-
         List<EntityModel<CandidateModel>> candidates = this.candidateService.getAllCandidates()
                 .stream()
                 .map(candidate -> new EntityModel<>(CandidateModel.from(candidate)))
@@ -61,12 +63,14 @@ public class CandidateController {
         return new CollectionModel<>(candidates);
     }
 
+    @Operation(operationId = "getCandidateById", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Retrieve a single candidate by id")
     @GetMapping(value = "/{candidateId}")
     @PreAuthorize(value = "#oauth2.hasScope('read')")
     Candidate getCandidateById(@PathVariable UUID candidateId) {
         return this.candidateService.getCandidateById(candidateId);
     }
 
+    @Operation(operationId = "getCandidateByURI", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Retrieve a single candidate by URI")
     @GetMapping(value = "/?uri={candidateUri}")
     Candidate getCandidateByUri(@PathVariable String candidateUri) {
         return this.candidateService.getCandidateByURI(candidateUri);
@@ -75,12 +79,14 @@ public class CandidateController {
     /**
      * CREATE Methods
      */
+    @Operation(operationId = "createCandidate", responses = {@ApiResponse(responseCode = "201")}, description = "Create a candidate")
     @PostMapping(value = "")
     @ResponseStatus(HttpStatus.CREATED)
     Candidate newCandidate(@RequestBody CandidateModel candidate) {
         return this.candidateService.createCandidate(candidate);
     }
 
+    @Operation(operationId = "createCandidateComment", responses = {@ApiResponse(responseCode = "201")}, description = "Create a candidate comment")
     @PostMapping(value = "/{candidateId}/comments/{userId}")
     @ResponseStatus(HttpStatus.CREATED)
     Candidate newCandidateComment(@PathVariable UUID candidateId, @PathVariable UUID userId, @RequestBody CandidateComment candidateComment) {
@@ -90,17 +96,20 @@ public class CandidateController {
     /**
      * UPDATE Methods
      */
+    @Operation(operationId = "updateCandidate", responses = {@ApiResponse(responseCode = "200")}, description = "Update a candidate")
     @PutMapping(value = "/{candidateId}")
     Candidate putCandidate(@PathVariable UUID candidateId, @RequestBody Candidate candidate) {
         logger.info(candidate.toString());
         return this.candidateService.updateCandidate(candidate);
     }
 
+    @Operation(operationId = "updateCandidateRating", responses = {@ApiResponse(responseCode = "200")}, description = "Update rating of a candidate")
     @PutMapping(value = "/{candidateId}/users/{userId}/rating/{rating}")
     Candidate putCandidateRating(@PathVariable UUID candidateId, @PathVariable UUID userId, @PathVariable String rating) {
         return this.candidateService.userRating(candidateId, userId, rating);
     }
 
+    @Operation(operationId = "updateCandidateCommentRating", responses = {@ApiResponse(responseCode = "200")}, description = "Update rating of a candidate comment")
     @PutMapping(value = "/comments/{candidateCommentId}/users/{userId}/rating/{rating}")
     Candidate putCandidateCommentRating(@PathVariable UUID candidateCommentId, @PathVariable UUID userId, @PathVariable String rating) {
         return this.candidateService.commentUserRating(candidateCommentId, userId, rating);
@@ -109,6 +118,7 @@ public class CandidateController {
     /**
      * DELETE Methods
      */
+    @Operation(operationId = "deleteCandidateById", responses = {@ApiResponse(responseCode = "204")}, description = "Delete candidate by id")
     @DeleteMapping(value = "/{candidateId}")
 //    @PreAuthorize(value = "#oauth2.hasScope('de')")
     ResponseEntity<?> deleteCandidate(@PathVariable UUID candidateId) {

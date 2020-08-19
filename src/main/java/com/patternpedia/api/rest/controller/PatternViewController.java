@@ -14,6 +14,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patternpedia.api.rest.model.PatternLanguageGraphModel;
 import com.patternpedia.api.service.PatternViewService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.commons.text.CaseUtils;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -74,6 +76,7 @@ public class PatternViewController {
         return links;
     }
 
+    @Operation(operationId = "getPatterViewGraph", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Retrieve pattern view graph")
     @GetMapping(value = "/{patternViewId}/graph")
     ResponseEntity<?> getPatterViewGraph(@PathVariable UUID patternViewId) {
         Object graph = this.patternViewService.getGraphOfPatternView(patternViewId);
@@ -92,6 +95,7 @@ public class PatternViewController {
         return ResponseEntity.ok(entityModel);
     }
 
+    @Operation(operationId = "getAllPatternViews", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all pattern views")
     @GetMapping
     public CollectionModel<EntityModel<PatternView>> getAllPatternViews() {
 
@@ -104,6 +108,7 @@ public class PatternViewController {
         return new CollectionModel<>(patternViews, getPatternViewCollectionLinks());
     }
 
+    @Operation(operationId = "createPatternView", responses = {@ApiResponse(responseCode = "201")}, description = "Create a pattern view")
     @PostMapping
     @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
@@ -118,6 +123,7 @@ public class PatternViewController {
                 .getPatternViewById(createdPatternView.getId())).toUri()).build();
     }
 
+    @Operation(operationId = "getPatternViewById", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Retrieve pattern view by id")
     @GetMapping(value = "/{patternViewId}")
     public EntityModel<PatternView> getPatternViewById(@PathVariable UUID patternViewId) {
         PatternView patternView = this.patternViewService.getPatternViewById(patternViewId);
@@ -125,6 +131,7 @@ public class PatternViewController {
         return new EntityModel<>(patternView, getPatternViewLinks(patternView));
     }
 
+    @Operation(operationId = "getPatternViewByURI", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Retrieve pattern view by URI")
     @GetMapping(value = "/findByUri")
     public EntityModel<PatternView> findPatternViewByUri(@RequestParam String encodedUri) throws UnsupportedEncodingException {
         String uri = URLDecoder.decode(encodedUri, StandardCharsets.UTF_8.toString());
@@ -133,6 +140,7 @@ public class PatternViewController {
         return new EntityModel<>(patternView, getPatternViewLinks(patternView));
     }
 
+    @Operation(operationId = "updatePatternView", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Update pattern view by id")
     @PutMapping(value = "/{patternViewId}")
     public ResponseEntity<?> putPatternView(@PathVariable UUID patternViewId, @RequestBody PatternView patternView) {
         patternView = this.patternViewService.updatePatternView(patternView);
@@ -140,12 +148,14 @@ public class PatternViewController {
         return ResponseEntity.ok(patternView);
     }
 
+    @Operation(operationId = "getPatternViewById", responses = {@ApiResponse(responseCode = "204"), @ApiResponse(responseCode = "404")}, description = "Delete pattern view by id")
     @DeleteMapping(value = "/{patternViewId}")
     public ResponseEntity<?> deletePatternView(@PathVariable UUID patternViewId) {
         this.patternViewService.deletePatternView(patternViewId);
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(operationId = "createPatternViewGraph", responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404")}, description = "Create pattern view graph")
     @PostMapping(value = "/{patternViewId}/graph")
     ResponseEntity<?> postPatternViewGraph(@PathVariable UUID patternViewId, @RequestBody Object graph) {
         this.patternViewService.updateGraphOfPatternView(patternViewId, graph);
@@ -153,12 +163,14 @@ public class PatternViewController {
                 .build();
     }
 
+    @Operation(operationId = "updatePatternViewGraph", responses = {@ApiResponse(responseCode = "204"), @ApiResponse(responseCode = "404")}, description = "Update pattern view graph")
     @PutMapping(value = "/{patternViewId}/graph")
     ResponseEntity<?> putPatternViewGraph(@PathVariable UUID patternViewId, @RequestBody Object graph) {
         this.patternViewService.updateGraphOfPatternView(patternViewId, graph);
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(operationId = "deletePatternViewGraph", responses = {@ApiResponse(responseCode = "204"), @ApiResponse(responseCode = "404")}, description = "Delete pattern view graph")
     @DeleteMapping(value = "/{patternViewId}/graph")
     ResponseEntity<?> deletePatternViewGraph(@PathVariable UUID patternViewId) {
         this.patternViewService.deletePatternView(patternViewId);

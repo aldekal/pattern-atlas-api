@@ -17,6 +17,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.validation.Valid;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.commons.text.CaseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -239,6 +241,7 @@ public class PatternController {
         return links;
     }
 
+    @Operation(operationId = "getPatternsOfPatternLanguage", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve patterns by pattern language id")
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/patterns")
     CollectionModel<EntityModel<PatternModel>> getPatternsOfPatternLanguage(@PathVariable UUID patternLanguageId) {
         List<EntityModel<PatternModel>> patterns = this.patternLanguageService.getPatternsOfPatternLanguage(patternLanguageId).stream()
@@ -284,6 +287,7 @@ public class PatternController {
         return links;
     }
 
+    @Operation(operationId = "getPatternsOfPatternView", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve patterns by pattern view id")
     @GetMapping(value = "/patternViews/{patternViewId}/patterns")
     CollectionModel<EntityModel<PatternModel>> getPatternsOfPatternView(@PathVariable UUID patternViewId) {
         List<EntityModel<PatternModel>> patterns = this.patternViewService.getPatternsOfPatternView(patternViewId).stream()
@@ -293,6 +297,7 @@ public class PatternController {
         return new CollectionModel<>(patterns, getPatternViewPatternCollectionLinks(patternViewId));
     }
 
+    @Operation(operationId = "addPatternToPatternView", responses = {@ApiResponse(responseCode = "201")}, description = "add pattern to pattern view")
     @PostMapping(value = "/patternViews/{patternViewId}/patterns")
     @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
@@ -302,6 +307,7 @@ public class PatternController {
                 .getPatternOfPatternViewById(patternViewId, pattern.getId())).toUri()).build();
     }
 
+    @Operation(operationId = "getPatternOfPatternViewById", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve single pattern by pattern view id")
     @CrossOrigin(exposedHeaders = "Location")
     @GetMapping(value = "/patternViews/{patternViewId}/patterns/{patternId}")
     EntityModel<Pattern> getPatternOfPatternViewById(@PathVariable UUID patternViewId, @PathVariable UUID patternId) {
@@ -310,12 +316,14 @@ public class PatternController {
         return new EntityModel<>(pattern, getPatternLinksForPatternViewRoute(pattern, patternViewId));
     }
 
+    @Operation(operationId = "removePatternFromView", responses = {@ApiResponse(responseCode = "204")}, description = "Delete pattern from pattern view")
     @DeleteMapping(value = "/patternViews/{patternViewId}/patterns/{patternId}")
     ResponseEntity<?> removePatternFromView(@PathVariable UUID patternViewId, @PathVariable UUID patternId) {
         this.patternViewService.removePatternFromPatternView(patternViewId, patternId);
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(operationId = "addPatternToPatternLanguage", responses = {@ApiResponse(responseCode = "201")}, description = "Delete pattern from pattern view")
     @PostMapping(value = "/patternLanguages/{patternLanguageId}/patterns")
     @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
@@ -331,6 +339,7 @@ public class PatternController {
                 .getPatternOfPatternLanguageById(patternLanguageId, pattern.getId())).toUri()).build();
     }
 
+    @Operation(operationId = "getPatternOfPatternLanguageById", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve single pattern by pattern language id")
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/patterns/{patternId}")
     EntityModel<Pattern> getPatternOfPatternLanguageById(@PathVariable UUID patternLanguageId, @PathVariable UUID patternId) {
         Pattern pattern = this.patternLanguageService.getPatternOfPatternLanguageById(patternLanguageId, patternId);
@@ -339,6 +348,7 @@ public class PatternController {
         return new EntityModel<>(pattern, patternLinks);
     }
 
+    @Operation(operationId = "updatePatternByPatternLanguageId", responses = {@ApiResponse(responseCode = "200")}, description = "Update pattern by pattern language id")
     @PutMapping(value = "/patternLanguages/{patternLanguageId}/patterns/{patternId}")
     EntityModel<Pattern> updatePatternViaPut(@PathVariable UUID patternLanguageId, @PathVariable UUID patternId, @Valid @RequestBody Pattern pattern) {
         PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
@@ -354,12 +364,14 @@ public class PatternController {
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
     }
 
+    @Operation(operationId = "deletePatternOfPatternLanguage", responses = {@ApiResponse(responseCode = "204")}, description = "Delete pattern of pattern language")
     @DeleteMapping(value = "/patternLanguages/{patternLanguageId}/patterns/{patternId}")
     ResponseEntity<?> deletePatternOfPatternLanguage(@PathVariable UUID patternLanguageId, @PathVariable UUID patternId) {
         this.patternLanguageService.deletePatternOfPatternLanguage(patternLanguageId, patternId);
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(operationId = "getPatternContent", responses = {@ApiResponse(responseCode = "200")}, description = "Get content of pattern")
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/patterns/{patternId}/content")
     EntityModel<Object> getPatternContentOfPattern(@PathVariable UUID patternLanguageId, @PathVariable UUID patternId) {
 

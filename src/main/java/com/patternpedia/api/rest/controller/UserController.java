@@ -1,6 +1,8 @@
 package com.patternpedia.api.rest.controller;
 
 import com.patternpedia.api.entities.user.UserRole;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,6 +43,7 @@ public class UserController {
     /**
      * GET Methods
      */
+    @Operation(operationId = "getAllUsers", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all users")
     @GetMapping(value = "")
     @PreAuthorize(value = "hasAuthority('ADMIN')")
     List<UserEntity> all() {
@@ -55,12 +58,12 @@ public class UserController {
     /**
      * CREATE Methods
      */
+    @Operation(operationId = "createUser", responses = {@ApiResponse(responseCode = "200")}, description = "Create a user")
     @PostMapping(value = "")
     @ResponseStatus(HttpStatus.CREATED)
     public UserEntity newUser(@RequestBody UserEntity user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return this.userService.createUser(user);
-
     }
 
     public void defaultUsers() {
@@ -75,6 +78,7 @@ public class UserController {
     /**
      * UPDATE Methods
      */
+    @Operation(operationId = "updateUser", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Update a user")
     @PutMapping(value = "/{userId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     UserEntity updateUser(@PathVariable UUID userId, @RequestBody UserEntity user) {
@@ -84,6 +88,7 @@ public class UserController {
     /**
      * DELETE Methods
      */
+    @Operation(operationId = "deleteUser", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Delete a user")
     @DeleteMapping(value = "/{userId}")
     void deleteUser(@PathVariable UUID userId) {
         this.userService.deleteUser(userId);
