@@ -12,6 +12,7 @@ import com.patternpedia.api.service.CandidateService;
 import com.patternpedia.api.service.PatternLanguageService;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -63,14 +64,14 @@ public class CandidateController {
         return new CollectionModel<>(candidates);
     }
 
-    @Operation(operationId = "getCandidateById", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Retrieve a single candidate by id")
+    @Operation(operationId = "getCandidateById", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Retrieve a single candidate by id")
     @GetMapping(value = "/{candidateId}")
     @PreAuthorize(value = "#oauth2.hasScope('read')")
     Candidate getCandidateById(@PathVariable UUID candidateId) {
         return this.candidateService.getCandidateById(candidateId);
     }
 
-    @Operation(operationId = "getCandidateByURI", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Retrieve a single candidate by URI")
+    @Operation(operationId = "getCandidateByURI", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Retrieve a single candidate by URI")
     @GetMapping(value = "/?uri={candidateUri}")
     Candidate getCandidateByUri(@PathVariable String candidateUri) {
         return this.candidateService.getCandidateByURI(candidateUri);
