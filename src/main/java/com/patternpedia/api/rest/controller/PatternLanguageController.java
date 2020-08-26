@@ -16,6 +16,7 @@ import com.patternpedia.api.service.PatternLanguageService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.commons.text.CaseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,7 +90,7 @@ public class PatternLanguageController {
         return new CollectionModel<>(patternLanguages, getPatternLanguageCollectionLinks());
     }
 
-    @Operation(operationId = "getPatternLanguageByURI", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Retrieve pattern language by URI")
+    @Operation(operationId = "getPatternLanguageByURI", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Retrieve pattern language by URI")
     @GetMapping(value = "/findByUri")
     EntityModel<PatternLanguage> findPatternLanguageByUri(@RequestParam String encodedUri) throws UnsupportedEncodingException {
         String uri = URLDecoder.decode(encodedUri, StandardCharsets.UTF_8.toString());
@@ -98,7 +99,7 @@ public class PatternLanguageController {
         return new EntityModel<>(patternLanguage, getPatternLanguageLinks(patternLanguage.getId()));
     }
 
-    @Operation(operationId = "getPatternLanguageByID", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Retrieve pattern language by ID")
+    @Operation(operationId = "getPatternLanguageByID", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Retrieve pattern language by ID")
     @GetMapping(value = "/{patternLanguageId}")
     EntityModel<PatternLanguage> getPatternLanguageById(@PathVariable UUID patternLanguageId) {
         PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);

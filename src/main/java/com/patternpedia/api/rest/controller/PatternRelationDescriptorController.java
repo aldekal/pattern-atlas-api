@@ -19,6 +19,7 @@ import com.patternpedia.api.service.PatternLanguageService;
 import com.patternpedia.api.service.PatternViewService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -209,7 +210,7 @@ public class PatternRelationDescriptorController {
 
     // Edges of Pattern Languages
 
-    @Operation(operationId = "addDirectedEdgeToPatternLanguage", responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404")}, description = "Adds directed edge to pattern language")
+    @Operation(operationId = "addDirectedEdgeToPatternLanguage", responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Adds directed edge to pattern language")
     @PostMapping(value = "/patternLanguages/{patternLanguageId}/directedEdges")
     @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
@@ -221,7 +222,7 @@ public class PatternRelationDescriptorController {
                 .body(directedEdge);
     }
 
-    @Operation(operationId = "getDirectedEdgesOfPatternLanguage", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Get directed edges of pattern language")
+    @Operation(operationId = "getDirectedEdgesOfPatternLanguage", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Get directed edges of pattern language")
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/directedEdges")
     public CollectionModel<EntityModel<DirectedEdgeModel>> getDirectedEdgesOfPatternLanguage(@PathVariable UUID patternLanguageId) {
         List<EntityModel<DirectedEdgeModel>> directedEdges = this.patternLanguageService.getDirectedEdgesOfPatternLanguage(patternLanguageId)
@@ -232,14 +233,14 @@ public class PatternRelationDescriptorController {
         return new CollectionModel<>(directedEdges, getDirectedEdgeCollectionResourceLinksForPatternLanguageRoute(patternLanguageId));
     }
 
-    @Operation(operationId = "getDirectedEdgeOfPatternLanguageById", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Get directed edge of pattern language")
+    @Operation(operationId = "getDirectedEdgeOfPatternLanguageById", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Get directed edge of pattern language")
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/directedEdges/{directedEdgeId}")
     public EntityModel<DirectedEdgeModel> getDirectedEdgeOfPatternLanguageById(@PathVariable UUID patternLanguageId, @PathVariable UUID directedEdgeId) {
         DirectedEdge directedEdge = this.patternLanguageService.getDirectedEdgeOfPatternLanguageById(patternLanguageId, directedEdgeId);
         return new EntityModel<>(DirectedEdgeModel.from(directedEdge), getDirectedEdgeLinksForPatternLanguageRoute(directedEdge));
     }
 
-    @Operation(operationId = "updateDirectedEdgeOfPatternLanguage", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Update directed edge of pattern language")
+    @Operation(operationId = "updateDirectedEdgeOfPatternLanguage", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Update directed edge of pattern language")
     @PutMapping(value = "/patternLanguages/{patternLanguageId}/directedEdges/{directedEdgeId}")
     public EntityModel<DirectedEdgeModel> putDirectedEdgeToPatternLanguage(@PathVariable UUID patternLanguageId, @PathVariable UUID directedEdgeId, @RequestBody DirectedEdge directedEdge) {
         directedEdge = this.patternLanguageService.updateDirectedEdgeOfPatternLanguage(patternLanguageId, directedEdge);
@@ -247,14 +248,14 @@ public class PatternRelationDescriptorController {
         return new EntityModel<>(DirectedEdgeModel.from(directedEdge), getDirectedEdgeLinksForPatternLanguageRoute(directedEdge));
     }
 
-    @Operation(operationId = "removeDirectedEdgeFromPatternLanguage", responses = {@ApiResponse(responseCode = "204"), @ApiResponse(responseCode = "404")}, description = "Remove directed edge of pattern language")
+    @Operation(operationId = "removeDirectedEdgeFromPatternLanguage", responses = {@ApiResponse(responseCode = "204"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Remove directed edge of pattern language")
     @DeleteMapping(value = "/patternLanguages/{patternLanguageId}/directedEdges/{directedEdgeId}")
     public ResponseEntity<?> removeDirectedEdgeFromPatternLanguage(@PathVariable UUID patternLanguageId, @PathVariable UUID directedEdgeId) {
         this.patternLanguageService.removeDirectedEdgeFromPatternLanguage(patternLanguageId, directedEdgeId);
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(operationId = "addUndirectedEdgeToPatternLanguage", responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404")}, description = "Add undirected edge to pattern language")
+    @Operation(operationId = "addUndirectedEdgeToPatternLanguage", responses = {@ApiResponse(responseCode = "201"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Add undirected edge to pattern language")
     @PostMapping(value = "/patternLanguages/{patternLanguageId}/undirectedEdges")
     @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
@@ -266,7 +267,7 @@ public class PatternRelationDescriptorController {
                 .body(undirectedEdge);
     }
 
-    @Operation(operationId = "getUndirectedEdgesOfPatternLanguage", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Get undirected edge of pattern language")
+    @Operation(operationId = "getUndirectedEdgesOfPatternLanguage", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Get undirected edge of pattern language")
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/undirectedEdges")
     public CollectionModel<EntityModel<UndirectedEdgeModel>> getUndirectedEdgesOfPatternLanguage(@PathVariable UUID patternLanguageId) {
         List<EntityModel<UndirectedEdgeModel>> undirectedEdges = this.patternLanguageService.getUndirectedEdgesOfPatternLanguage(patternLanguageId)
@@ -278,7 +279,7 @@ public class PatternRelationDescriptorController {
         return new CollectionModel<>(undirectedEdges, getUndirectedEdgeCollectionResourceLinksForPatternLanguageRoute(patternLanguageId));
     }
 
-    @Operation(operationId = "getUndirectedEdgeOfPatternLanguageById", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Get undirected edge of pattern language by id")
+    @Operation(operationId = "getUndirectedEdgeOfPatternLanguageById", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Get undirected edge of pattern language by id")
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/undirectedEdges/{undirectedEdgeId}")
     public EntityModel<UndirectedEdgeModel> getUndirectedEdgeOfPatternLanguageById(@PathVariable UUID patternLanguageId, @PathVariable UUID undirectedEdgeId) {
         UndirectedEdge undirectedEdge = this.patternLanguageService.getUndirectedEdgeOfPatternLanguageById(patternLanguageId, undirectedEdgeId);
@@ -294,7 +295,7 @@ public class PatternRelationDescriptorController {
         return new EntityModel<>(UndirectedEdgeModel.from(undirectedEdge), getUndirectedEdgeLinksForPatternLanguageRoute(undirectedEdge));
     }
 
-    @Operation(operationId = "removeUndirectedEdgeFromPatternLanguage", responses = {@ApiResponse(responseCode = "204"), @ApiResponse(responseCode = "404")}, description = "Remove undirected edge of pattern language by id")
+    @Operation(operationId = "removeUndirectedEdgeFromPatternLanguage", responses = {@ApiResponse(responseCode = "204"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Remove undirected edge of pattern language by id")
     @DeleteMapping(value = "/patternLanguages/{patternLanguageId}/undirectedEdges/{undirectedEdgeId}")
     public ResponseEntity<?> removeUndirectedEdgeFromPatternLanguage(@PathVariable UUID patternLanguageId, @PathVariable UUID undirectedEdgeId) {
         this.patternLanguageService.removeUndirectedEdgeFromPatternLanguage(patternLanguageId, undirectedEdgeId);
@@ -303,7 +304,7 @@ public class PatternRelationDescriptorController {
 
     // Edges of Views
 
-    @Operation(operationId = "addDirectedEdgeToView", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Adds directed edge to view")
+    @Operation(operationId = "addDirectedEdgeToView", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Adds directed edge to view")
     @PostMapping(value = "/patternViews/{patternViewId}/directedEdges")
     @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
@@ -319,7 +320,7 @@ public class PatternRelationDescriptorController {
         }
     }
 
-    @Operation(operationId = "getDirectedEdgesOfView", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Retrieve directed edges of view")
+    @Operation(operationId = "getDirectedEdgesOfView", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Retrieve directed edges of view")
     @GetMapping(value = "/patternViews/{patternViewId}/directedEdges")
     public CollectionModel<EntityModel<DirectedEdgeModel>> getDirectedEdgesOfView(@PathVariable UUID patternViewId) {
         List<EntityModel<DirectedEdgeModel>> directedEdgeResources = this.patternViewService.getDirectedEdgesByPatternViewId(patternViewId)
@@ -331,7 +332,7 @@ public class PatternRelationDescriptorController {
         return new CollectionModel<>(directedEdgeResources, getDirectedEdgeCollectionResourceLinksForViewRoute(patternViewId));
     }
 
-    @Operation(operationId = "getDirectedEdgeOfPatternViewById", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Retrieve directed edge of pattern view by id")
+    @Operation(operationId = "getDirectedEdgeOfPatternViewById", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Retrieve directed edge of pattern view by id")
     @GetMapping(value = "/patternViews/{patternViewId}/directedEdges/{directedEdgeId}")
     public EntityModel<DirectedEdgeModel> getDirectedEdgeOfPatternViewById(@PathVariable UUID patternViewId, @PathVariable UUID directedEdgeId) {
         DirectedEdge directedEdge = this.patternViewService.getDirectedEdgeOfPatternViewById(patternViewId, directedEdgeId);
@@ -339,7 +340,7 @@ public class PatternRelationDescriptorController {
         return new EntityModel<>(DirectedEdgeModel.from(directedEdge), getDirectedEdgeLinksForViewRoute(directedEdge, patternViewId));
     }
 
-    @Operation(operationId = "updateDirectedEdgeOfPatternViewById", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Update directed edge of pattern view by id")
+    @Operation(operationId = "updateDirectedEdgeOfPatternViewById", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Update directed edge of pattern view by id")
     @PutMapping(value = "/patternViews/{patternViewId}/directedEdges/{directedEdgeId}")
     public EntityModel<DirectedEdgeModel> putDirectedEdgeToPatternView(@PathVariable UUID patternViewId, @PathVariable UUID directedEdgeId, @RequestBody UpdateDirectedEdgeRequest request) {
         request.setDirectedEdgeId(directedEdgeId);
@@ -347,7 +348,7 @@ public class PatternRelationDescriptorController {
         return new EntityModel<>(DirectedEdgeModel.from(directedEdge), getDirectedEdgeLinksForViewRoute(directedEdge, patternViewId));
     }
 
-    @Operation(operationId = "removeDirectedEdgeFromPatternView", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Remove directed edge of pattern view by id")
+    @Operation(operationId = "removeDirectedEdgeFromPatternView", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Remove directed edge of pattern view by id")
     @DeleteMapping(value = "/patternViews/{patternViewId}/directedEdges/{directedEdgeId}")
     public ResponseEntity<?> removeDirectedEdgeFromPatternView(@PathVariable UUID patternViewId, @PathVariable UUID directedEdgeId) {
         this.patternViewService.removeDirectedEdgeFromPatternView(patternViewId, directedEdgeId);
@@ -355,7 +356,7 @@ public class PatternRelationDescriptorController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(operationId = "addUndirectedEdgeToView", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Add undirected edge to pattern view")
+    @Operation(operationId = "addUndirectedEdgeToView", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Add undirected edge to pattern view")
     @PostMapping(value = "/patternViews/{patternViewId}/undirectedEdges")
     @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
@@ -372,7 +373,7 @@ public class PatternRelationDescriptorController {
         }
     }
 
-    @Operation(operationId = "getUndirectedEdgesOfView", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Retrieve undirected edges of pattern view")
+    @Operation(operationId = "getUndirectedEdgesOfView", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Retrieve undirected edges of pattern view")
     @GetMapping(value = "/patternViews/{patternViewId}/undirectedEdges")
     public CollectionModel<EntityModel<UndirectedEdgeModel>> getUndirectedEdgesOfView(@PathVariable UUID patternViewId) {
         List<EntityModel<UndirectedEdgeModel>> undirectedEdgeResources = this.patternViewService.getUndirectedEdgesByPatternViewId(patternViewId)
@@ -384,7 +385,7 @@ public class PatternRelationDescriptorController {
         return new CollectionModel<>(undirectedEdgeResources, getUndirectedEdgeCollectionResourceLinksForViewRoute(patternViewId));
     }
 
-    @Operation(operationId = "getUndirectedEdgeOfPatternViewById", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Retrieve undirected edge of pattern view by id")
+    @Operation(operationId = "getUndirectedEdgeOfPatternViewById", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Retrieve undirected edge of pattern view by id")
     @GetMapping(value = "/patternViews/{patternViewId}/undirectedEdges/{undirectedEdgeId}")
     public EntityModel<UndirectedEdgeModel> getUndirectedEdgeOfPatternViewById(@PathVariable UUID patternViewId, @PathVariable UUID undirectedEdgeId) {
         UndirectedEdge undirectedEdge = this.patternViewService.getUndirectedEdgeOfPatternViewById(patternViewId, undirectedEdgeId);
@@ -392,7 +393,7 @@ public class PatternRelationDescriptorController {
         return new EntityModel<>(UndirectedEdgeModel.from(undirectedEdge), getUndirectedEdgeLinksForViewRoute(patternViewId, undirectedEdge));
     }
 
-    @Operation(operationId = "updateUndirectedEdgeOfPatternView", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Update undirected edge of pattern view by id")
+    @Operation(operationId = "updateUndirectedEdgeOfPatternView", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Update undirected edge of pattern view by id")
     @PutMapping(value = "/patternViews/{patternViewId}/undirectedEdges/{undirectedEdgeId}")
     public EntityModel<UndirectedEdgeModel> putUndirectedEdgeToPatternView(@PathVariable UUID patternViewId, @PathVariable UUID undirectedEdgeId, @RequestBody UpdateUndirectedEdgeRequest request) {
         request.setUndirectedEdgeId(undirectedEdgeId);
@@ -401,7 +402,7 @@ public class PatternRelationDescriptorController {
         return new EntityModel<>(UndirectedEdgeModel.from(undirectedEdge), getUndirectedEdgeLinksForViewRoute(patternViewId, undirectedEdge));
     }
 
-    @Operation(operationId = "removeUndirectedEdgeFromPatternView", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Remove undirected edge of pattern view by id")
+    @Operation(operationId = "removeUndirectedEdgeFromPatternView", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Remove undirected edge of pattern view by id")
     @DeleteMapping(value = "/patternViews/{patternViewId}/undirectedEdges/{undirectedEdgeId}")
     public ResponseEntity<?> removeUndirectedEdgeFromPatternView(@PathVariable UUID patternViewId, @PathVariable UUID undirectedEdgeId) {
         this.patternViewService.removeUndirectedEdgeFromPatternView(patternViewId, undirectedEdgeId);

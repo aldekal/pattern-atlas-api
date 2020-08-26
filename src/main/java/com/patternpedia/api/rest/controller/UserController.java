@@ -2,6 +2,7 @@ package com.patternpedia.api.rest.controller;
 
 import com.patternpedia.api.entities.user.UserRole;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -78,7 +79,7 @@ public class UserController {
     /**
      * UPDATE Methods
      */
-    @Operation(operationId = "updateUser", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Update a user")
+    @Operation(operationId = "updateUser", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Update a user")
     @PutMapping(value = "/{userId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     UserEntity updateUser(@PathVariable UUID userId, @RequestBody UserEntity user) {
@@ -88,7 +89,7 @@ public class UserController {
     /**
      * DELETE Methods
      */
-    @Operation(operationId = "deleteUser", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Delete a user")
+    @Operation(operationId = "deleteUser", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Delete a user")
     @DeleteMapping(value = "/{userId}")
     void deleteUser(@PathVariable UUID userId) {
         this.userService.deleteUser(userId);
