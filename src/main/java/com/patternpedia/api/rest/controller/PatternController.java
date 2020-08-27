@@ -1,5 +1,8 @@
 package com.patternpedia.api.rest.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -241,6 +244,16 @@ public class PatternController {
         return links;
     }
 
+    @Operation(operationId = "getPatternByURI", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve patterns by pattern uri")
+    @GetMapping (value = "/patterns/search/findByUri")
+    EntityModel<Pattern> getPatternByUri(@RequestParam String encodedUri) throws UnsupportedEncodingException {
+        String uri = URLDecoder.decode(encodedUri, StandardCharsets.UTF_8.toString());
+        Pattern pattern = this.patternService.getPatternByUri(uri);
+        return new EntityModel<>(pattern, getPatternLinks(pattern));
+    }
+
+
+
     @Operation(operationId = "getPatternsOfPatternLanguage", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve patterns by pattern language id")
     @GetMapping(value = "/patternLanguages/{patternLanguageId}/patterns")
     CollectionModel<EntityModel<PatternModel>> getPatternsOfPatternLanguage(@PathVariable UUID patternLanguageId) {
@@ -287,7 +300,7 @@ public class PatternController {
         return links;
     }
 
-    @Operation(operationId = "getPatternsOfPatternView", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve patterns by pattern view id")
+    @Operation(operationId = "getPatternsOfPatternView", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404") }, description = "Retrieve patterns by pattern view id")
     @GetMapping(value = "/patternViews/{patternViewId}/patterns")
     CollectionModel<EntityModel<PatternModel>> getPatternsOfPatternView(@PathVariable UUID patternViewId) {
         List<EntityModel<PatternModel>> patterns = this.patternViewService.getPatternsOfPatternView(patternViewId).stream()
