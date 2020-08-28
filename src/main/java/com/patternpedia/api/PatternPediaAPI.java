@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @SpringBootApplication
-@OpenAPIDefinition(info = @Info(title = "pattern-atlas-api", version = "1.0", contact = @Contact(url = "https://github.com/PatternAtlas/pattern-atlas-api", name = "GitHub Repository")))
+@OpenAPIDefinition(info = @Info(title = "pattern-atlas-api", version = "1.0", contact = @Contact(url = "https://github.com/PatternAtlas/pattern-atlas-api", name = "Pattern Atlas API")))
 public class PatternPediaAPI implements CommandLineRunner {
 
     @Autowired

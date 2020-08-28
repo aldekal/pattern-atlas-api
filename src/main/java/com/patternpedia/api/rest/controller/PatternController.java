@@ -244,7 +244,7 @@ public class PatternController {
         return links;
     }
 
-    @Operation(operationId = "getPatternByURI", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve patterns by pattern uri")
+    @Operation(operationId = "getPatternByURI", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404")}, description = "Retrieve patterns by pattern uri")
     @GetMapping (value = "/patterns/search/findByUri")
     EntityModel<Pattern> getPatternByUri(@RequestParam String encodedUri) throws UnsupportedEncodingException {
         String uri = URLDecoder.decode(encodedUri, StandardCharsets.UTF_8.toString());
