@@ -1,65 +1,69 @@
 package com.patternpedia.api.util.aggregator;
 
+import com.patternpedia.api.entities.designmodel.AggregationData;
 import com.patternpedia.api.entities.designmodel.ConcreteSolution;
-import com.patternpedia.api.entities.designmodel.DesignModelPatternEdge;
 import com.patternpedia.api.entities.designmodel.DesignModelPatternInstance;
+import com.patternpedia.api.rest.model.FileDTO;
 import lombok.extern.apachecommons.CommonsLog;
 
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.function.BiFunction;
 
 
 @CommonsLog
+@AggregatorMetadata(sourceTypes = {"ActiveMQ-XML"}, targetTypes = {"ActiveMQ-XML", "ActiveMQ-Java", "AWS-CloudFormation-JSON", "MessageEndpoint"})
 public class ActiveMQXMLAggregator extends ActiveMQAggregator {
 
-    private static final String TECHNOLOGY = "ActiveMQ-XML";
+    private static final String FILENAME = "camel.xml";
+    private static final String MIME_TYPE = "text/xml";
+    private static final String WRAPPER_TEMPLATE = "file:///home/marcel/Dokumente/Studium Softwaretechnik/Vorlesungen/14. Semester/Masterthesis/Pattern Atlas/concrete-solutions/eip-activemq-xml/camel.st";
 
 
     @Override
-    public String aggregate(List<DesignModelPatternInstance> patternInstances, List<DesignModelPatternEdge> edges, Map<String, Object> query) {
-
-        Set<String> patternUriSet = patternInstances.stream().map(i -> i.getPattern().getUri()).collect(Collectors.toSet());
-        Map<String, ConcreteSolution> patternToConcreteSolutionMapping = new HashMap<>();
-        patternUriSet.forEach(uri -> {
-            try {
-//                patternToConcreteSolutionMapping.put(
-//                        uri, this.concreteSolutionRepository.findTopByPatternUriAndAggregatorType(uri, TECHNOLOGY).get()
-//                );
-            } catch (NoSuchElementException e) {
-                log.info("No concrete solution found for " + uri);
-            }
-        });
-
-        Map<UUID, String> patternInstanceImplementations = new HashMap<>();
-        patternInstances.forEach(instance -> {
-            ConcreteSolution concreteSolution = patternToConcreteSolutionMapping.get(instance.getPattern().getUri());
-
-            if (concreteSolution != null) {
-                patternInstanceImplementations.put(instance.getPatternInstanceId(), readFile(concreteSolution.getTemplateRef()));
-            }
-        });
+    public void aggregate(AggregationData aggregationData) {
 
         StringBuilder camelContext = new StringBuilder();
 
-        patternInstanceImplementations.keySet().forEach(uuid -> {
-            List<DesignModelPatternEdge> incomingEdges = edges.stream().filter(edge -> uuid.equals(edge.getEdgeId().getPatternInstanceId2())).collect(Collectors.toList());
-            List<DesignModelPatternEdge> outgoingEdges = edges.stream().filter(edge -> uuid.equals(edge.getEdgeId().getPatternInstanceId1())).collect(Collectors.toList());
+        DesignModelPatternInstance sourcePattern = aggregationData.getSource();
+        ConcreteSolution concreteSolution = sourcePattern.getConcreteSolution();
+        String patternInstanceId = sourcePattern.getPatternInstanceId().toString();
+        String targetInstanceId = aggregationData.getTarget().getPatternInstanceId().toString();
 
-            Map<String, Object> dataContainer = new HashMap<>();
-            dataContainer.put("input", getQueueList(incomingEdges));
-            dataContainer.put("output", getQueueList(outgoingEdges));
+        camelContext.append(aggregationData.getTemplateContext().getOrDefault(patternInstanceId + "-template", ""));
 
-            camelContext.append(renderTemplate(patternInstanceImplementations.get(uuid), dataContainer));
-            camelContext.append("\n");
-        });
+        String concreteSolutionTemplate = readFile(concreteSolution.getTemplateRef());
 
-        Map<String, String> technologyWrapper = new HashMap<>();
-        technologyWrapper.put("ActiveMQ-XML", "file:///home/marcel/Dokumente/Studium Softwaretechnik/Vorlesungen/14. Semester/Masterthesis/Pattern Atlas/concrete-solutions/eip-activemq-xml/camel.st");
-        technologyWrapper.put("ActiveMQ-Java", "file:///home/marcel/Dokumente/Studium Softwaretechnik/Vorlesungen/14. Semester/Masterthesis/Pattern Atlas/concrete-solutions/eip-activemq-java/camel.st");
+        String idComment = "<!-- " + getIdentifier(sourcePattern) + " -->";
+        if (!camelContext.toString().contains(idComment)) {
+            camelContext.insert(0, idComment + "\n" + extendVariables(concreteSolutionTemplate, patternInstanceId) + "\n");
+        }
 
-        String mainTemplate = readFile(technologyWrapper.get(TECHNOLOGY));
-        String camelXML = renderTemplate(mainTemplate, Collections.singletonMap("camelContext", camelContext.toString()));
+        aggregationData.getTemplateContext().put(targetInstanceId + "-template", camelContext.toString());
 
-        return camelXML;
+        if (aggregationData.getEdge() != null) {
+            addInputOutputChannelContext(aggregationData);
+
+            if ("ActiveMQ-XML".equals(aggregationData.getTarget().getConcreteSolution().getAggregatorType())) {
+                return;
+            }
+        }
+
+
+        // Render template and wrap into camel context
+        String renderedCamelContext = renderTemplate(camelContext.toString(), aggregationData.getTemplateContext());
+
+        if (aggregationData.getTarget() != null && "AWS-CloudFormation-JSON".equals(aggregationData.getTarget().getConcreteSolution().getAggregatorType())) {
+            String id = aggregationData.getTarget().getPatternInstanceId().toString();
+            aggregationData.getTemplateContext().put(id + "-configuration", renderedCamelContext);
+            return;
+        }
+
+        String wrapperTemplate = readFile(WRAPPER_TEMPLATE);
+        String camelConfig = renderTemplate(wrapperTemplate, Collections.singletonMap("camelContext", renderedCamelContext));
+
+        aggregationData.getTemplateContext().put(targetInstanceId + "-template", camelConfig);
+
+        FileDTO aggregationResult = new FileDTO(FILENAME, MIME_TYPE, camelConfig);
+        aggregationData.setResult(aggregationResult);
     }
 }
