@@ -1,7 +1,6 @@
 package com.patternpedia.api.util.aggregator;
 
 import com.patternpedia.api.entities.designmodel.AggregationData;
-import com.patternpedia.api.entities.designmodel.DesignModelPatternEdge;
 import com.patternpedia.api.entities.designmodel.DesignModelPatternInstance;
 import lombok.extern.apachecommons.CommonsLog;
 import org.stringtemplate.v4.ST;
@@ -9,7 +8,6 @@ import org.stringtemplate.v4.ST;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -49,7 +47,7 @@ public abstract class AggregatorImpl implements Aggregator {
 
 
     protected static String extendVariables(String template, String id) {
-        return template.replaceAll("\\$(.*?)(input|output|configuration)(.*?)\\$", "\\$$1" + id + "-$2$3\\$");
+        return template.replaceAll("\\$(.*?)(input|output|configuration)(.*?)(\\$|:\\{)", "\\$$1" + id + "-$2$3$4");
     }
 
 

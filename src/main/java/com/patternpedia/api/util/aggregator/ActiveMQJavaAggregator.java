@@ -2,15 +2,13 @@ package com.patternpedia.api.util.aggregator;
 
 import com.patternpedia.api.entities.designmodel.AggregationData;
 import com.patternpedia.api.entities.designmodel.ConcreteSolution;
-import com.patternpedia.api.entities.designmodel.DesignModelPatternEdge;
 import com.patternpedia.api.entities.designmodel.DesignModelPatternInstance;
 import com.patternpedia.api.rest.model.FileDTO;
 
-import java.util.*;
-import java.util.function.BiFunction;
+import java.util.Collections;
 
 
-@AggregatorMetadata(sourceTypes = {"ActiveMQ-Java"}, targetTypes = {"ActiveMQ-Java", "ActiveMQ-XML"})
+@AggregatorMetadata(sourceTypes = {"ActiveMQ-Java"}, targetTypes = {"", "ActiveMQ-Java", "ActiveMQ-XML"})
 public class ActiveMQJavaAggregator extends ActiveMQAggregator {
 
     private static final String FILENAME = "PatternAtlasRouteBuilder.java";

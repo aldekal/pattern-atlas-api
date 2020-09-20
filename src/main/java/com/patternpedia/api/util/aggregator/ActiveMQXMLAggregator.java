@@ -6,12 +6,11 @@ import com.patternpedia.api.entities.designmodel.DesignModelPatternInstance;
 import com.patternpedia.api.rest.model.FileDTO;
 import lombok.extern.apachecommons.CommonsLog;
 
-import java.util.*;
-import java.util.function.BiFunction;
+import java.util.Collections;
 
 
 @CommonsLog
-@AggregatorMetadata(sourceTypes = {"ActiveMQ-XML"}, targetTypes = {"ActiveMQ-XML", "ActiveMQ-Java", "AWS-CloudFormation-JSON", "MessageEndpoint"})
+@AggregatorMetadata(sourceTypes = {"ActiveMQ-XML"}, targetTypes = {"", "ActiveMQ-XML", "ActiveMQ-Java", "AWS-CloudFormation-JSON", "MessageEndpoint"})
 public class ActiveMQXMLAggregator extends ActiveMQAggregator {
 
     private static final String FILENAME = "camel.xml";

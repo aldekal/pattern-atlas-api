@@ -2,14 +2,16 @@ package com.patternpedia.api.util.aggregator;
 
 import com.patternpedia.api.entities.designmodel.AggregationData;
 import com.patternpedia.api.entities.designmodel.ConcreteSolution;
-import com.patternpedia.api.entities.designmodel.DesignModelPatternEdge;
 import com.patternpedia.api.entities.designmodel.DesignModelPatternInstance;
 import com.patternpedia.api.rest.model.FileDTO;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 
-@AggregatorMetadata(sourceTypes = {"AWS-CloudFormation-JSON"}, targetTypes = {"AWS-CloudFormation-JSON"})
+@AggregatorMetadata(sourceTypes = {"AWS-CloudFormation-JSON"}, targetTypes = {"", "AWS-CloudFormation-JSON"})
 public class AWSCloudFormationJsonAggregator extends ActiveMQAggregator {
 
     private static final String FILENAME = "CloudFormation-Template.json";
@@ -45,14 +47,16 @@ public class AWSCloudFormationJsonAggregator extends ActiveMQAggregator {
         // Render template and wrap into camel context
         String renderedCloudFormationTemplate = renderTemplate(cloudFormationTemplate, templateContext);
 
-        templateContext.compute("resources", (String key, Object value) -> {
-            List resources = new ArrayList<>();
-            if (value != null) {
-                resources.addAll((Collection) value);
-            }
-            resources.add(renderedCloudFormationTemplate);
-            return resources;
-        });
+        if (renderedCloudFormationTemplate != null && !renderedCloudFormationTemplate.trim().isEmpty()) {
+            templateContext.compute("resources", (String key, Object value) -> {
+                List resources = new ArrayList<>();
+                if (value != null) {
+                    resources.addAll((Collection) value);
+                }
+                resources.add(renderedCloudFormationTemplate);
+                return resources;
+            });
+        }
 
         if (aggregationData.getTarget() != null && "AWS-CloudFormation-JSON".equals(aggregationData.getTarget().getConcreteSolution().getAggregatorType())) {
             return;

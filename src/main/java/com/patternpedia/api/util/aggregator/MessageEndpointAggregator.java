@@ -5,13 +5,10 @@ import com.patternpedia.api.entities.designmodel.ConcreteSolution;
 import com.patternpedia.api.entities.designmodel.DesignModelPatternInstance;
 import com.patternpedia.api.rest.model.FileDTO;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 
-@AggregatorMetadata(sourceTypes = {"MessageEndpoint"}, targetTypes = {"ActiveMQ-XML", "ActiveMQ-Java"})
+@AggregatorMetadata(sourceTypes = {"MessageEndpoint"}, targetTypes = {"", "ActiveMQ-XML", "ActiveMQ-Java"})
 public class MessageEndpointAggregator extends ActiveMQAggregator {
 
     private static final String MIME_TYPE = "text/x-java";

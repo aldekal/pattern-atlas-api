@@ -21,13 +21,17 @@ public class AggregatorScanner {
 
     public static Aggregator findMatchingAggregatorImpl(String sourceType, String targetType) {
         try {
+            if (targetType == null) {
+                targetType = "";
+            }
+
             List<Class> classList = findAggregatorImplementations(AggregatorScanner.class.getPackage().getName());
             for (Class implCandidate : classList) {
                 AggregatorMetadata annotation = (AggregatorMetadata) implCandidate.getAnnotation(AggregatorMetadata.class);
                 List<Object> sourceTypes = Arrays.asList(annotation.sourceTypes());
                 List<Object> targetTypes = Arrays.asList(annotation.targetTypes());
 
-                if (sourceTypes.contains(sourceType) && (targetType == null || targetTypes.contains(targetType))) {
+                if (sourceTypes.contains(sourceType) && targetTypes.contains(targetType)) {
                     return (Aggregator) implCandidate.newInstance();
                 }
             }
