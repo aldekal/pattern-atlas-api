@@ -26,6 +26,12 @@ public class PatternRenderServiceImpl implements PatternRenderService {
     @Autowired
     private DiscussionService discussionService;
 
+    /**
+     *
+     * @param pattern Pattern received from Frontend (not saved in DB yet)
+     * @param oldVersion Database version of the received Pattern
+     * @return content JSON that includes ids of the rendered LaTeX code instead of the LaTeX code
+     */
     @Override
     public Object renderContent(Pattern pattern, Pattern oldVersion) {
         String jsonString = null;
@@ -50,7 +56,7 @@ public class PatternRenderServiceImpl implements PatternRenderService {
             return null;
 
 
-        //get old quantikz and qcircuit occurences
+        //get old quantikz and qcircuit occurences and match them with the related svg tags and imageids
         ArrayList<String> oldContentOccurances = new ArrayList<>();
         ArrayList<String> oldSVGOccurances = new ArrayList<>();
         while(true){
@@ -80,7 +86,9 @@ public class PatternRenderServiceImpl implements PatternRenderService {
             }
         }
 
+
         int countQuantikz = 0;
+        //JaccardSimilarity is ued to check if the Quantikz Occurance is similar to the previous one. If that is the case all comments of the old graphic get copied to the new one
         JaccardSimilarity jaccardSimilarity =  new JaccardSimilarity();
         while (true) {
             Integer[] occuranceStartEnd = getNextOccurance(jsonString, "\\\\begin{quantikz}", "\\end{quantikz}");
@@ -94,7 +102,6 @@ public class PatternRenderServiceImpl implements PatternRenderService {
                     if(oldContentOccurances.get(i).equals(renderContent)){
                         occured = true;
                         jsonString = jsonString.replace(jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 14), " " + oldSVGOccurances.get(i) + " ");
-                        System.out.print("INSIDE OF EQUALS FOR " + i + "  " + jsonString);
                     }
                 }
 
@@ -140,6 +147,7 @@ public class PatternRenderServiceImpl implements PatternRenderService {
                     settings.add("\\usepackage{amsmath}  \n");
                     settings.add("\\usepackage{listings} \n");
                     settings.add("\\renewcommand{\\arraystretch}{1.5} \n");
+                    renderContent = renderContent.replace(" end}"," }");
                     byte []renderedFile = renderContentViaAPI(renderContent, settings, "svg");
                     String id = saveAndUploadFile(renderedFile, "svg");
                     jsonString = jsonString.replace(jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 4), " " + id + " ");
@@ -166,11 +174,19 @@ public class PatternRenderServiceImpl implements PatternRenderService {
 
     }
 
+
     public Integer[] getNextOccurance(String content, String begin, String end) {
         return new Integer[]{content.indexOf(begin, 0), content.indexOf(end, 0)};
     }
 
 
+    /**
+     *
+     * @param content LaTeX code
+     * @param packages LaTeX packages
+     * @param output Output Format for example "svg"
+     * @return Renderresult as byte array
+     */
     public byte[] renderContentViaAPI(String content, List<String> packages, String output){
         LatexContent latexContent = new LatexContent(content,packages,output);
         byte[] file = null;
@@ -190,11 +206,17 @@ public class PatternRenderServiceImpl implements PatternRenderService {
     }
 
 
+    /**
+     *
+     * @param file File to upload as byte array
+     * @param output Filetype for example "svg"
+     * @return ImageId surrounded by <SVG></SVG> Tags
+     */
     public String saveAndUploadFile(byte[] file, String output) {
         Image image = new Image();
         image.setData(file);
         image.setFileName("latexRender" + Instant.now().getEpochSecond());
-        image.setFileType("svg");
+        image.setFileType(output);
         Image uploadedImage = imageService.createImage(image);
         return "<SVG>" + uploadedImage.getId().toString() + "</SVG>";
     }

@@ -5,6 +5,7 @@ import com.patternpedia.api.entities.DiscussionTopic;
 import com.patternpedia.api.rest.model.DiscussionTopicModel;
 import com.patternpedia.api.service.DiscussionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,13 +24,13 @@ public class DiscussionController {
         this.discussionService = discussionService;
     }
 
-
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(
             value = "/add-topic"
     )
     public @ResponseBody
     DiscussionTopic addDiscussionTopic(@RequestBody DiscussionTopic topic){
-        System.out.print(topic);
+        // deepcode ignore XSS: <please specify a reason of ignoring this>
         return this.discussionService.createTopic(topic);
     }
 
@@ -37,18 +38,19 @@ public class DiscussionController {
             value = "/delete-topic/{id}"
     )
     public @ResponseBody
-    ResponseEntity<?> deleteDiscussionTopic(@PathVariable String id){
-        UUID uuid = UUID.fromString(id);
-        this.discussionService.deleteTopicById(uuid);
+    ResponseEntity<?> deleteDiscussionTopic(@PathVariable UUID topicId){
+        this.discussionService.deleteTopicById(topicId);
         return ResponseEntity.noContent().build();
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(
             value = "/add-comment/{topicId}"
     )
     public @ResponseBody
-    DiscussionComment addDiscussionComment(@PathVariable String topicId, @RequestBody DiscussionComment comment){
-        comment.setDiscussionTopic(this.discussionService.getTopicById(UUID.fromString(topicId)));
+    DiscussionComment addDiscussionComment(@PathVariable UUID topicId, @RequestBody DiscussionComment comment){
+        comment.setDiscussionTopic(this.discussionService.getTopicById(topicId));
+        // deepcode ignore XSS: <please specify a reason of ignoring this>
         return this.discussionService.createComment(comment);
     }
 
@@ -56,29 +58,26 @@ public class DiscussionController {
             value = "/get-comments-by-topic/{topicId}"
     )
     public @ResponseBody
-    List<DiscussionComment> getCommentsByTopic(@PathVariable String topicId){
-        UUID uuid = UUID.fromString(topicId);
-        return this.discussionService.getCommentsByTopicId(uuid);
+    List<DiscussionComment> getCommentsByTopic(@PathVariable UUID topicId){
+        // deepcode ignore XSS: <please specify a reason of ignoring this>
+        return this.discussionService.getCommentsByTopicId(topicId);
     }
-
 
     @GetMapping(
             value = "/get-topic-by-image/{imageId}"
     )
     public @ResponseBody
-    List<DiscussionTopic> getTopicsByImageId(@PathVariable String imageId){
-        UUID uuid = UUID.fromString(imageId);
-        return this.discussionService.getTopicsByImageId(uuid);
+    List<DiscussionTopic> getTopicsByImageId(@PathVariable UUID imageId){
+        // deepcode ignore XSS: <please specify a reason of ignoring this>
+        return this.discussionService.getTopicsByImageId(imageId);
     }
 
     @GetMapping(
             value = "/get-topics-and-comments-by-image/{imageId}"
     )
     public @ResponseBody
-    List<DiscussionTopicModel> getTopicsAndCommentsByImageId(@PathVariable String imageId){
-        UUID uuid = UUID.fromString(imageId);
-        return this.discussionService.getTopicsAndCommentsByImageId(uuid);
+    List<DiscussionTopicModel> getTopicsAndCommentsByImageId(@PathVariable UUID imageId){
+        // deepcode ignore XSS: <please specify a reason of ignoring this>
+        return this.discussionService.getTopicsAndCommentsByImageId(imageId);
     }
-
-
 }
