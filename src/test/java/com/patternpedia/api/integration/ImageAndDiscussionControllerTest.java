@@ -136,5 +136,12 @@ public class ImageAndDiscussionControllerTest extends IntegrationTest {
         Assert.assertEquals(description, discussionTopic.getDescription());
         String commentText1 = jsonObjectGetTopicsAndCommentsByImage.getJSONObject(0).getJSONArray("discussionComments").getJSONObject(0).get("text").toString();
         Assert.assertEquals(commentText1, discussionComment.getText());
+
+        //Test delete-topic
+        final String baseUrlDeleteTopic = "http://localhost:"+port+"/delete-topic/"+ topicId;
+        URI uriDeleteTopic= new URI(baseUrlDeleteTopic);
+        this.restTemplate.delete(uriDeleteTopic);
+        ResponseEntity<String> resultGetCommentsByTopicAfterDelete = this.restTemplate.getForEntity(uriGetCommentsByTopic, String.class);
+        Assert.assertEquals(404, resultGetCommentsByTopicAfterDelete.getStatusCodeValue());
         }
 }

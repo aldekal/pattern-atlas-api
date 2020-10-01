@@ -35,7 +35,7 @@ public class DiscussionController {
     }
 
     @DeleteMapping(
-            value = "/delete-topic/{id}"
+            value = "/delete-topic/{topicId}"
     )
     public @ResponseBody
     ResponseEntity<?> deleteDiscussionTopic(@PathVariable UUID topicId){
