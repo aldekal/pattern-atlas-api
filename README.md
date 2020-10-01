@@ -1,1 +1,1 @@
-# pattern-atlas-backend
+# Pattern Atlas API

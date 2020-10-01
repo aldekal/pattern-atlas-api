@@ -3,11 +3,8 @@ package com.patternpedia.api.entities;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+
+import javax.persistence.*;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -39,6 +36,6 @@ public class DirectedEdge extends PatternRelationDescriptor {
 
     @JsonIgnore
     @ToString.Exclude
-    @OneToMany(mappedBy = "directedEdge")
+    @OneToMany(mappedBy = "directedEdge", cascade = CascadeType.REMOVE)
     private List<PatternViewDirectedEdge> patternViews;
 }
