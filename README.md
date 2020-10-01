@@ -1,1 +1,1 @@
-# pattern-pedia-views-backend
+# pattern-atlas-backend
