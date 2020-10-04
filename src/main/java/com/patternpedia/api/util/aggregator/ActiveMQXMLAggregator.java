@@ -16,6 +16,7 @@ public class ActiveMQXMLAggregator extends ActiveMQAggregator {
     private static final String FILENAME = "camel.xml";
     private static final String MIME_TYPE = "text/xml";
     private static final String WRAPPER_TEMPLATE = "file:///home/marcel/Dokumente/Studium Softwaretechnik/Vorlesungen/14. Semester/Masterthesis/Pattern Atlas/concrete-solutions/eip-activemq-xml/camel.st";
+    private static final String TEMPLATE_KEY = "-template";
 
 
     @Override
@@ -26,9 +27,9 @@ public class ActiveMQXMLAggregator extends ActiveMQAggregator {
         DesignModelPatternInstance sourcePattern = aggregationData.getSource();
         ConcreteSolution concreteSolution = sourcePattern.getConcreteSolution();
         String patternInstanceId = sourcePattern.getPatternInstanceId().toString();
-        String targetInstanceId = aggregationData.getTarget().getPatternInstanceId().toString();
+        String targetInstanceId = aggregationData.getTarget() == null ? null : aggregationData.getTarget().getPatternInstanceId().toString();
 
-        camelContext.append(aggregationData.getTemplateContext().getOrDefault(patternInstanceId + "-template", ""));
+        camelContext.append(aggregationData.getTemplateContext().getOrDefault(patternInstanceId + TEMPLATE_KEY, ""));
 
         String concreteSolutionTemplate = readFile(concreteSolution.getTemplateRef());
 
@@ -37,7 +38,9 @@ public class ActiveMQXMLAggregator extends ActiveMQAggregator {
             camelContext.insert(0, idComment + "\n" + extendVariables(concreteSolutionTemplate, patternInstanceId) + "\n");
         }
 
-        aggregationData.getTemplateContext().put(targetInstanceId + "-template", camelContext.toString());
+        if (targetInstanceId != null) {
+            aggregationData.getTemplateContext().put(targetInstanceId + TEMPLATE_KEY, camelContext.toString());
+        }
 
         if (aggregationData.getEdge() != null) {
             addInputOutputChannelContext(aggregationData);
@@ -60,7 +63,9 @@ public class ActiveMQXMLAggregator extends ActiveMQAggregator {
         String wrapperTemplate = readFile(WRAPPER_TEMPLATE);
         String camelConfig = renderTemplate(wrapperTemplate, Collections.singletonMap("camelContext", renderedCamelContext));
 
-        aggregationData.getTemplateContext().put(targetInstanceId + "-template", camelConfig);
+        if (targetInstanceId != null) {
+            aggregationData.getTemplateContext().put(targetInstanceId + TEMPLATE_KEY, camelConfig);
+        }
 
         FileDTO aggregationResult = new FileDTO(FILENAME, MIME_TYPE, camelConfig);
         aggregationData.setResult(aggregationResult);
