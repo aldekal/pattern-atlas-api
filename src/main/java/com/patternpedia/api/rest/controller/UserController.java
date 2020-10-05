@@ -4,6 +4,10 @@ import com.patternpedia.api.config.Authority;
 import com.patternpedia.api.rest.model.user.*;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import com.patternpedia.api.entities.user.UserRole;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,6 +45,7 @@ public class UserController {
     /**
      * GET Methods
      */
+    @Operation(operationId = "getAllUsers", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all users")
     @GetMapping(value = "")
     @PreAuthorize(value = Authority.USER_READ_ALL)
     CollectionModel<EntityModel<UserModel>> getAll() {
@@ -77,6 +82,7 @@ public class UserController {
     /**
      * CREATE Methods
      */
+    @Operation(operationId = "createUser", responses = {@ApiResponse(responseCode = "200")}, description = "Create a user")
     @PostMapping(value = "")
     @PreAuthorize(value = Authority.USER_CREATE)
     @ResponseStatus(HttpStatus.CREATED)
@@ -87,6 +93,7 @@ public class UserController {
     /**
      * UPDATE Methods
      */
+    @Operation(operationId = "updateUser", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Update a user")
     @PutMapping(value = "/{userId}")
     @PreAuthorize(value = Authority.USER_EDIT)
     @ResponseStatus(HttpStatus.ACCEPTED)
@@ -104,6 +111,7 @@ public class UserController {
     /**
      * DELETE Methods
      */
+    @Operation(operationId = "deleteUser", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Delete a user")
     @DeleteMapping(value = "/{userId}")
     @PreAuthorize(value = Authority.USER_DELETE)
     ResponseEntity<?> deleteUser(@PathVariable UUID userId) {

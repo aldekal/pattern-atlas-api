@@ -8,6 +8,12 @@ import com.patternpedia.api.rest.model.shared.CommentModel;
 import com.patternpedia.api.rest.model.shared.EvidenceModel;
 import com.patternpedia.api.service.CandidateService;
 import com.patternpedia.api.service.PatternLanguageService;
+import io.swagger.v3.core.util.Json;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.CollectionModel;
@@ -46,20 +52,25 @@ public class CandidateController {
     /**
      * GET Methods
      */
+    @Operation(operationId = "getAllCandiates", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all candidates")
     @GetMapping(value = "")
     CollectionModel<EntityModel<CandidateModel>> all() {
+
         List<EntityModel<CandidateModel>> candidates = this.candidateService.getAllCandidates()
                 .stream()
                 .map(candidate -> new EntityModel<>(new CandidateModel(candidate)))
                 .collect(Collectors.toList());
+
         return new CollectionModel<>(candidates);
     }
 
+    @Operation(operationId = "getCandidateById", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Retrieve a single candidate by id")
     @GetMapping(value = "/{candidateId}")
     ResponseEntity<EntityModel<CandidateModel>> getCandidateById(@PathVariable UUID candidateId) {
         return ResponseEntity.ok(new EntityModel<>(new CandidateModel(this.candidateService.getCandidateById(candidateId))));
     }
 
+    @Operation(operationId = "getCandidateByURI", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Retrieve a single candidate by URI")
     @GetMapping(value = "/?uri={candidateUri}")
     ResponseEntity<EntityModel<CandidateModel>> getCandidateByUri(@PathVariable String candidateUri) {
         return ResponseEntity.ok(new EntityModel<>(new CandidateModel(this.candidateService.getCandidateByURI(candidateUri))));
@@ -68,13 +79,14 @@ public class CandidateController {
     /**
      * CREATE Methods
      */
+    @Operation(operationId = "createCandidate", responses = {@ApiResponse(responseCode = "201")}, description = "Create a candidate")
     @PostMapping(value = "")
-//    @PreAuthorize(value = Authority.PATTERN_CANDIDATE_CREATE)
     @ResponseStatus(HttpStatus.CREATED)
     ResponseEntity<EntityModel<CandidateModel>> newCandidate(@RequestBody CandidateModelRequest candidateModelRequest, @AuthenticationPrincipal Principal principal) {
         return ResponseEntity.ok(new EntityModel<>(new CandidateModel(this.candidateService.createCandidate(candidateModelRequest, UUID.fromString(principal.getName())))));
     }
 
+    @Operation(operationId = "createCandidateComment", responses = {@ApiResponse(responseCode = "201")}, description = "Create a candidate comment")
     @PostMapping(value = "/{candidateId}/comments")
     @PreAuthorize(value = Authority.COMMENT)
     @ResponseStatus(HttpStatus.CREATED)
@@ -92,6 +104,7 @@ public class CandidateController {
     /**
      * UPDATE Methods
      */
+    @Operation(operationId = "updateCandidate", responses = {@ApiResponse(responseCode = "200")}, description = "Update a candidate")
     @PutMapping(value = "/{candidateId}")
 //    @PreAuthorize(value = Authority.PATTERN_CANDIDATE_EDIT)
     @ResponseStatus(HttpStatus.ACCEPTED)
@@ -106,7 +119,6 @@ public class CandidateController {
         return ResponseEntity.ok(new EntityModel<>(new CommentModel(this.candidateService.updateComment(candidateId, candidateCommentId, UUID.fromString(principal.getName()), commentModel))));
     }
 
-
     @PutMapping(value = "/{candidateId}/evidences/{candidateEvidenceId}")
     @PreAuthorize(value = Authority.EVIDENCE)
     @ResponseStatus(HttpStatus.ACCEPTED)
@@ -117,6 +129,7 @@ public class CandidateController {
     /**
      * DELETE Methods
      */
+    @Operation(operationId = "deleteCandidateById", responses = {@ApiResponse(responseCode = "204")}, description = "Delete candidate by id")
     @DeleteMapping(value = "/{candidateId}")
 //    @PreAuthorize(value = Authority.PATTERN_CANDIDATE_DELETE)
     @ResponseStatus(HttpStatus.OK)

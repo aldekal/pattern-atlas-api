@@ -6,6 +6,8 @@ import com.patternpedia.api.rest.model.shared.CommentModel;
 import com.patternpedia.api.rest.model.issue.IssueModel;
 import com.patternpedia.api.rest.model.shared.EvidenceModel;
 import com.patternpedia.api.service.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.CollectionModel;
@@ -44,6 +46,7 @@ public class IssueController {
     /**
      * GET Methods
      */
+    @Operation(operationId = "getAllIssues", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all issues")
     @GetMapping(value = "")
     CollectionModel<EntityModel<IssueModel>> getAll() {
         List<EntityModel<IssueModel>> issues = this.issueService.getAllIssues()
@@ -53,12 +56,14 @@ public class IssueController {
         return new CollectionModel<>(issues);
     }
 
+    @Operation(operationId = "getIssueById", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve issue by id")
     @GetMapping(value = "/{issueId}")
     @PreAuthorize(value = "#oauth2.hasScope('read')")
     ResponseEntity<EntityModel<IssueModel>> getIssueById(@PathVariable UUID issueId) {
         return ResponseEntity.ok(new EntityModel<>(new IssueModel(this.issueService.getIssueById(issueId))));
     }
 
+    @Operation(operationId = "getIssueByURI", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve issue by URI")
     @GetMapping(value = "/?uri={issueUri}")
     ResponseEntity<EntityModel<IssueModel>> getIssueByUri(@PathVariable String issueUri) {
         return ResponseEntity.ok(new EntityModel<>(new IssueModel(this.issueService.getIssueByURI(issueUri))));
@@ -67,6 +72,7 @@ public class IssueController {
     /**
      * CREATE Methods
      */
+    @Operation(operationId = "createIssue", responses = {@ApiResponse(responseCode = "201")}, description = "Create an issue")
     @PostMapping(value = "")
     @PreAuthorize(value = "#oauth2.hasScope('write')")
     @ResponseStatus(HttpStatus.CREATED)
@@ -74,6 +80,7 @@ public class IssueController {
         return ResponseEntity.ok(new EntityModel<>(new IssueModel(this.issueService.createIssue(issueModelRequest, UUID.fromString(principal.getName())))));
     }
 
+    @Operation(operationId = "createIssueComment", responses = {@ApiResponse(responseCode = "201")}, description = "Create an issue comment")
     @PostMapping(value = "/{issueId}/comments")
     @ResponseStatus(HttpStatus.CREATED)
     ResponseEntity<EntityModel<CommentModel>> newIssueComment(@PathVariable UUID issueId, @AuthenticationPrincipal Principal principal, @RequestBody CommentModel commentModel) {
@@ -89,6 +96,7 @@ public class IssueController {
     /**
      * UPDATE Methods
      */
+    @Operation(operationId = "updateIssue", responses = {@ApiResponse(responseCode = "200")}, description = "Update an issue")
     @PutMapping(value = "/{issueId}")
     ResponseEntity<EntityModel<IssueModel>> putIssue(@PathVariable UUID issueId, @AuthenticationPrincipal Principal principal, @RequestBody IssueModelRequest issueModelRequest) {
         return ResponseEntity.ok(new EntityModel<>(new IssueModel(this.issueService.updateIssue(issueId, UUID.fromString(principal.getName()), issueModelRequest))));
@@ -107,6 +115,7 @@ public class IssueController {
     /**
      * DELETE Methods
      */
+    @Operation(operationId = "deleteIssue", responses = {@ApiResponse(responseCode = "200")}, description = "Delete an issue")
     @DeleteMapping(value = "/{issueId}")
     ResponseEntity<?> deleteIssue(@PathVariable UUID issueId) {
         this.issueService.deleteIssue(issueId);
