@@ -3,13 +3,13 @@ package com.patternpedia.api.service;
 import com.patternpedia.api.entities.issue.comment.IssueComment;
 import com.patternpedia.api.entities.issue.Issue;
 import com.patternpedia.api.entities.issue.author.IssueAuthor;
-import com.patternpedia.api.entities.issue.comment.IssueCommentRating;
+import com.patternpedia.api.entities.issue.evidence.IssueEvidence;
 import com.patternpedia.api.entities.shared.AuthorConstant;
 import com.patternpedia.api.entities.user.UserEntity;
 import com.patternpedia.api.repositories.*;
 import com.patternpedia.api.rest.model.issue.IssueModelRequest;
-import com.patternpedia.api.rest.model.shared.AuthorModel;
 import com.patternpedia.api.rest.model.shared.CommentModel;
+import com.patternpedia.api.rest.model.shared.EvidenceModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -27,7 +27,7 @@ public class IssueServiceImpl implements IssueService {
 
     private IssueRepository issueRepository;
     private IssueCommentRepository issueCommentRepository;
-    private IssueCommentRatingRepository issueCommentRatingRepository;
+    private IssueEvidenceRepository issueEvidenceRepository;
     private UserService userService;
 
     Logger logger = LoggerFactory.getLogger(IssueServiceImpl.class);
@@ -35,12 +35,12 @@ public class IssueServiceImpl implements IssueService {
     public IssueServiceImpl(
             IssueRepository issueRepository,
             IssueCommentRepository issueCommentRepository,
-            IssueCommentRatingRepository issueCommentRatingRepository,
+            IssueEvidenceRepository issueEvidenceRepository,
             UserService userService
     ) {
         this.issueRepository = issueRepository;
         this.issueCommentRepository = issueCommentRepository;
-        this.issueCommentRatingRepository = issueCommentRatingRepository;
+        this.issueEvidenceRepository = issueEvidenceRepository;
         this.userService = userService;
     }
 
@@ -116,6 +116,20 @@ public class IssueServiceImpl implements IssueService {
         this.issueRepository.deleteById(IssueId);
     }
 
+    public boolean authorPermissions(UUID issueId, UUID userId) {
+        if (issueId == null)
+            return false;
+        Issue issue = this.getIssueById(issueId);
+        for (IssueAuthor author : issue.getAuthors()) {
+            if (author.getUser().getId() == userId) {
+                if (author.getRole().equals(AuthorConstant.OWNER)  || author.getRole().equals(AuthorConstant.MAINTAINER) ) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Comment
      */
@@ -164,5 +178,55 @@ public class IssueServiceImpl implements IssueService {
         if (!issueComment.getUser().equals(this.userService.getUserById(userId)))
             throw new EntityNotFoundException(String.format("Issue comment with id %s does not belong to user with id %s", commentId, userId));
         return issueComment;
+    }
+
+    /**
+     * Evidence
+     */
+    @Override
+    @Transactional
+    public IssueEvidence createEvidence(UUID issueId, UUID userId, EvidenceModel evidenceModel) {
+        Issue issue = this.getIssueById(issueId);
+        UserEntity user = this.userService.getUserById(userId);
+
+        IssueEvidence issueEvidence = new IssueEvidence(evidenceModel.getTitle(), evidenceModel.getContext(), evidenceModel.getType(), evidenceModel.getSupporting(), evidenceModel.getSource(), issue, user);
+        return this.issueEvidenceRepository.save(issueEvidence);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public IssueEvidence getEvidenceById(UUID issueEvidenceId) {
+        return this.issueEvidenceRepository.findById(issueEvidenceId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Issue comment with ID %s not found!", issueEvidenceId)));
+    }
+
+    @Override
+    @Transactional
+    public IssueEvidence updateEvidence(UUID issueId, UUID evidenceId, UUID userId, EvidenceModel evidenceModel) {
+        if (evidenceModel == null)
+            throw new RuntimeException("Issue comment to update is null!");
+        IssueEvidence issueEvidence = this.authIssueEvidence(issueId, evidenceId, userId);
+        // UPDATE issue evidence
+        issueEvidence.updateEvidence(evidenceModel.getTitle(), evidenceModel.getContext(), evidenceModel.getType(), evidenceModel.getSupporting(), evidenceModel.getSource());
+        return this.issueEvidenceRepository.save(issueEvidence);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> deleteEvidence(UUID issueId, UUID evidenceId, UUID userId) {
+        this.authIssueEvidence(issueId, evidenceId, userId);
+        this.issueEvidenceRepository.deleteById(evidenceId);
+        return ResponseEntity.noContent().build();
+    }
+
+    private IssueEvidence authIssueEvidence(UUID issueId, UUID commentId, UUID userId) {
+        IssueEvidence issueEvidence = this.getEvidenceById(commentId);
+        // CORRECT Issue
+        if (!issueEvidence.getIssue().equals(this.getIssueById(issueId)))
+            throw new EntityNotFoundException(String.format("Issue comment with id %s does not belong to issue with id %s", commentId, issueId));
+        // CORRECT user
+        if (!issueEvidence.getUser().equals(this.userService.getUserById(userId)))
+            throw new EntityNotFoundException(String.format("Issue comment with id %s does not belong to user with id %s", commentId, userId));
+        return issueEvidence;
     }
 }

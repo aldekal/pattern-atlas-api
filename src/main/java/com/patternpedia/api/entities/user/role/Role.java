@@ -30,5 +30,13 @@ public class Role {
         this.name = name;
     }
 
+    public boolean checkPrivilege(String privilege) {
+       for (Privilege p : this.privileges) {
+           if (p.getName().equals(privilege)) {
+               return true;
+           }
+       }
+       return false;
+    }
 
 }

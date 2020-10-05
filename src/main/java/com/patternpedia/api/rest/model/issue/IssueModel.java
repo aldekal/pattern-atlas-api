@@ -4,6 +4,7 @@ import com.patternpedia.api.entities.issue.Issue;
 import com.patternpedia.api.entities.issue.IssueRating;
 import com.patternpedia.api.rest.model.shared.AuthorModel;
 import com.patternpedia.api.rest.model.shared.CommentModel;
+import com.patternpedia.api.rest.model.shared.EvidenceModel;
 import com.patternpedia.api.rest.model.shared.RatingModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -30,6 +31,7 @@ public class IssueModel {
     private Collection<UUID> downVotes = new ArrayList<>();
     private List<AuthorModel> authors = new ArrayList<>();
     private List<CommentModel> comments = new ArrayList<>();
+    private List<EvidenceModel> evidences = new ArrayList<>();
 
     public IssueModel(Issue issue) {
         this.id = issue.getId();
@@ -46,5 +48,6 @@ public class IssueModel {
         }
         this.authors = issue.getAuthors().stream().map(issueAuthor -> new AuthorModel(issueAuthor.getUser(), issueAuthor.getRole())).collect(Collectors.toList());
         this.comments = issue.getComments().stream().map(issueComment -> CommentModel.from(issueComment)).collect(Collectors.toList());
+        this.evidences = issue.getEvidences().stream().map(issueEvidence -> EvidenceModel.from(issueEvidence)).collect(Collectors.toList());
     }
 }

@@ -2,13 +2,14 @@ package com.patternpedia.api.rest.model.shared;
 
 import com.patternpedia.api.entities.candidate.CandidateRating;
 import com.patternpedia.api.entities.candidate.comment.CandidateCommentRating;
+import com.patternpedia.api.entities.candidate.evidence.CandidateEvidenceRating;
 import com.patternpedia.api.entities.issue.IssueRating;
 import com.patternpedia.api.entities.issue.comment.IssueCommentRating;
+import com.patternpedia.api.entities.issue.evidence.IssueEvidenceRating;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.Collection;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -29,13 +30,30 @@ public class RatingModel {
         this.userId = issueCommentRating.getUser().getId();
     }
 
-    public RatingModel(CandidateRating candidateRating) {
-        this.rating = candidateRating.getRating();
+    public RatingModel(IssueEvidenceRating issueEvidenceRating) {
+        this.rating = issueEvidenceRating.getRating();
+        this.userId = issueEvidenceRating.getUser().getId();
+    }
+
+    public RatingModel(CandidateRating candidateRating, int rating) {
+        this.rating = rating;
         this.userId = candidateRating.getUser().getId();
     }
+
+//    public RatingModel(CandidateRating candidateRating) {
+//        int readability = candidateRating.getReadability();
+//        int understandability = candidateRating.getUnderstandability();
+//        int appropriateness = candidateRating.getAppropriateness();
+//        this.userId = candidateRating.getUser().getId();
+//    }
 
     public RatingModel(CandidateCommentRating candidateCommentRating) {
         this.rating = candidateCommentRating.getRating();
         this.userId = candidateCommentRating.getUser().getId();
+    }
+
+    public RatingModel(CandidateEvidenceRating candidateEvidenceRating) {
+        this.rating = candidateEvidenceRating.getRating();
+        this.userId = candidateEvidenceRating.getUser().getId();
     }
 }

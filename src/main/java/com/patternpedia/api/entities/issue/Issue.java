@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.patternpedia.api.entities.EntityWithURI;
 import com.patternpedia.api.entities.issue.author.IssueAuthor;
 import com.patternpedia.api.entities.issue.comment.IssueComment;
+import com.patternpedia.api.entities.issue.evidence.IssueEvidence;
 import com.patternpedia.api.rest.model.issue.IssueModelRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -34,6 +35,10 @@ public class Issue extends EntityWithURI {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<IssueComment> comments = new ArrayList<>();
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<IssueEvidence> evidences = new ArrayList<>();
 
     public Issue (IssueModelRequest issueModelRequest) {
         this.setUri(issueModelRequest.getUri());

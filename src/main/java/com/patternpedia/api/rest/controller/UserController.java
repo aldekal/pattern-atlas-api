@@ -1,5 +1,6 @@
 package com.patternpedia.api.rest.controller;
 
+import com.patternpedia.api.config.Authority;
 import com.patternpedia.api.rest.model.user.*;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -41,7 +42,7 @@ public class UserController {
      * GET Methods
      */
     @GetMapping(value = "")
-    @PreAuthorize(value = "hasAuthority('READ_USER_ALL')")
+    @PreAuthorize(value = Authority.USER_READ_ALL)
     CollectionModel<EntityModel<UserModel>> getAll() {
         List<EntityModel<UserModel>> users = this.userService.getAllUsers()
                 .stream()
@@ -77,6 +78,7 @@ public class UserController {
      * CREATE Methods
      */
     @PostMapping(value = "")
+    @PreAuthorize(value = Authority.USER_CREATE)
     @ResponseStatus(HttpStatus.CREATED)
     ResponseEntity<EntityModel<UserModel>> newUser(@RequestBody UserModelRequest userModelRequest) {
         return ResponseEntity.ok(new EntityModel<>(new UserModel(this.userService.createUser(userModelRequest))));
@@ -86,12 +88,14 @@ public class UserController {
      * UPDATE Methods
      */
     @PutMapping(value = "/{userId}")
+    @PreAuthorize(value = Authority.USER_EDIT)
     @ResponseStatus(HttpStatus.ACCEPTED)
     ResponseEntity<EntityModel<UserModel>> updateUser(@PathVariable UUID userId, @RequestBody UserModelRequest userModelRequest) {
         return ResponseEntity.ok(new EntityModel<>(new UserModel(this.userService.updateUser(userId, userModelRequest))));
     }
 
     @PutMapping(value = "/roles/{roleId}/privileges/{privilegeId}")
+    @PreAuthorize(value = Authority.USER_READ_ALL)
     @ResponseStatus(HttpStatus.ACCEPTED)
     ResponseEntity<EntityModel<RoleModel>> updateUserRole(@PathVariable UUID roleId, @PathVariable UUID privilegeId, @RequestBody RoleModelRequest roleModelRequest) {
         return ResponseEntity.ok(new EntityModel<>(new RoleModel(this.userService.updateRole(roleId, privilegeId, roleModelRequest))));
@@ -101,6 +105,7 @@ public class UserController {
      * DELETE Methods
      */
     @DeleteMapping(value = "/{userId}")
+    @PreAuthorize(value = Authority.USER_DELETE)
     ResponseEntity<?> deleteUser(@PathVariable UUID userId) {
         this.userService.deleteUser(userId);
         return ResponseEntity.noContent().build();

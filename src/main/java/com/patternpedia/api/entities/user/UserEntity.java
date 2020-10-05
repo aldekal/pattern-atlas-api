@@ -2,20 +2,20 @@ package com.patternpedia.api.entities.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.patternpedia.api.entities.candidate.CandidateRating;
 import com.patternpedia.api.entities.candidate.comment.CandidateComment;
 import com.patternpedia.api.entities.candidate.author.CandidateAuthor;
-import com.patternpedia.api.entities.candidate.CandidateRating;
+import com.patternpedia.api.entities.candidate.evidence.CandidateEvidence;
 import com.patternpedia.api.entities.issue.comment.IssueComment;
 import com.patternpedia.api.entities.issue.author.IssueAuthor;
 import com.patternpedia.api.entities.issue.IssueRating;
+import com.patternpedia.api.entities.issue.evidence.IssueEvidence;
 import com.patternpedia.api.entities.user.role.Role;
 import com.patternpedia.api.rest.model.user.UserModel;
-import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.NaturalId;
-import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -60,6 +60,10 @@ public class UserEntity implements Serializable{
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<IssueComment> issueComments = new ArrayList<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<IssueEvidence> issueEvidence = new ArrayList<>();
+
     /** Candidate fields*/
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -72,6 +76,10 @@ public class UserEntity implements Serializable{
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CandidateComment> candidateComments = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CandidateEvidence> candidateEvidence = new ArrayList<>();
 
     /** Pattern fields*/
 //    @JsonIgnore

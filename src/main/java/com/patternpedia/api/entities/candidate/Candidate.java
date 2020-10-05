@@ -6,6 +6,8 @@ import com.patternpedia.api.entities.EntityWithURI;
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.candidate.author.CandidateAuthor;
 import com.patternpedia.api.entities.candidate.comment.CandidateComment;
+import com.patternpedia.api.entities.candidate.evidence.CandidateEvidence;
+import com.patternpedia.api.entities.issue.evidence.IssueEvidence;
 import com.patternpedia.api.rest.model.candidate.CandidateModelRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -48,6 +50,10 @@ public class Candidate extends EntityWithURI {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CandidateComment> comments = new ArrayList<>();
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CandidateEvidence> evidences = new ArrayList<>();
 
     public Candidate (CandidateModelRequest candidateModelRequest) {
 //        this.setId(candidateModel.getId());

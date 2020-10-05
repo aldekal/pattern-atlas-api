@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patternpedia.api.rest.model.issue.IssueModelRequest;
 import com.patternpedia.api.rest.model.shared.CommentModel;
 import com.patternpedia.api.rest.model.issue.IssueModel;
+import com.patternpedia.api.rest.model.shared.EvidenceModel;
 import com.patternpedia.api.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,6 +80,12 @@ public class IssueController {
         return ResponseEntity.ok(new EntityModel<>(new CommentModel(this.issueService.createComment(issueId, UUID.fromString(principal.getName()), commentModel))));
     }
 
+    @PostMapping(value = "/{issueId}/evidences")
+    @ResponseStatus(HttpStatus.CREATED)
+    ResponseEntity<EntityModel<EvidenceModel>> newIssueEvidence(@PathVariable UUID issueId, @AuthenticationPrincipal Principal principal, @RequestBody EvidenceModel evidenceModel) {
+        return ResponseEntity.ok(new EntityModel<>(new EvidenceModel(this.issueService.createEvidence(issueId, UUID.fromString(principal.getName()), evidenceModel))));
+    }
+
     /**
      * UPDATE Methods
      */
@@ -90,6 +97,11 @@ public class IssueController {
     @PutMapping(value = "/{issueId}/comments/{issueCommentId}")
     ResponseEntity<EntityModel<CommentModel>> putIssueCommentRating(@PathVariable UUID issueId, @PathVariable UUID issueCommentId, @AuthenticationPrincipal Principal principal, @RequestBody CommentModel commentModel) {
         return ResponseEntity.ok(new EntityModel<>(new CommentModel(this.issueService.updateComment(issueId, issueCommentId, UUID.fromString(principal.getName()), commentModel))));
+    }
+
+    @PutMapping(value = "/{issueId}/evidences/{issueEvidenceId}")
+    ResponseEntity<EntityModel<EvidenceModel>> putIssueEvidenceRating(@PathVariable UUID issueId, @PathVariable UUID issueEvidenceId, @AuthenticationPrincipal Principal principal, @RequestBody EvidenceModel evidenceModel) {
+        return ResponseEntity.ok(new EntityModel<>(new EvidenceModel(this.issueService.updateEvidence(issueId, issueEvidenceId, UUID.fromString(principal.getName()), evidenceModel))));
     }
 
     /**
@@ -104,5 +116,10 @@ public class IssueController {
     @DeleteMapping(value = "/{issueId}/comments/{issueCommentId}")
     ResponseEntity<?> deleteComment(@PathVariable UUID issueId, @PathVariable UUID issueCommentId, @AuthenticationPrincipal Principal principal) {
         return this.issueService.deleteComment(issueId, issueCommentId, UUID.fromString(principal.getName()));
+    }
+
+    @DeleteMapping(value = "/{issueId}/evidences/{issueEvidenceId}")
+    ResponseEntity<?> deleteEvidence(@PathVariable UUID issueId, @PathVariable UUID issueEvidenceId, @AuthenticationPrincipal Principal principal) {
+        return this.issueService.deleteEvidence(issueId, issueEvidenceId, UUID.fromString(principal.getName()));
     }
 }

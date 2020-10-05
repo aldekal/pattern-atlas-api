@@ -3,14 +3,18 @@ package com.patternpedia.api.service;
 import com.patternpedia.api.entities.candidate.Candidate;
 import com.patternpedia.api.entities.candidate.comment.CandidateComment;
 import com.patternpedia.api.entities.candidate.author.CandidateAuthor;
-import com.patternpedia.api.entities.candidate.comment.CandidateCommentRating;
-import com.patternpedia.api.entities.issue.comment.IssueComment;
+import com.patternpedia.api.entities.candidate.evidence.CandidateEvidence;
+import com.patternpedia.api.entities.issue.Issue;
+import com.patternpedia.api.entities.issue.author.IssueAuthor;
+import com.patternpedia.api.entities.issue.evidence.IssueEvidence;
 import com.patternpedia.api.entities.shared.AuthorConstant;
 import com.patternpedia.api.entities.user.UserEntity;
+import com.patternpedia.api.entities.user.role.PrivilegeConstant;
 import com.patternpedia.api.repositories.*;
 import com.patternpedia.api.rest.model.candidate.CandidateModelRequest;
 import com.patternpedia.api.rest.model.shared.AuthorModel;
 import com.patternpedia.api.rest.model.shared.CommentModel;
+import com.patternpedia.api.rest.model.shared.EvidenceModel;
 import com.patternpedia.api.util.RatingHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,27 +33,28 @@ import java.util.UUID;
 public class CandidateServiceImpl implements CandidateService {
 
     private CandidateRepository candidateRepository;
-    private CandidateRatingRepository candidateRatingRepository;
     private CandidateCommentRepository candidateCommentRepository;
+    private CandidateEvidenceRepository candidateEvidenceRepository;
     private PatternLanguageService patternLanguageService;
     private UserService userService;
-    private RatingHelper ratingHelper;
+    private IssueService issueService;
 
     Logger logger = LoggerFactory.getLogger(IssueServiceImpl.class);
 
     public CandidateServiceImpl(
             CandidateRepository candidateRepository,
-            CandidateRatingRepository candidateRatingRepository,
             CandidateCommentRepository candidateCommentRepository,
+            CandidateEvidenceRepository candidateEvidenceRepository,
             PatternLanguageService patternLanguageService,
-            UserService userService
+            UserService userService,
+            IssueService issueService
     ) {
         this.candidateRepository = candidateRepository;
-        this.candidateRatingRepository = candidateRatingRepository;
         this.candidateCommentRepository = candidateCommentRepository;
+        this.candidateEvidenceRepository = candidateEvidenceRepository;
         this.patternLanguageService = patternLanguageService;
         this.userService = userService;
-        this.ratingHelper = new RatingHelper();
+        this.issueService = issueService;
     }
 
     @Override
@@ -65,6 +70,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Transactional
     public Candidate createCandidate(CandidateModelRequest candidateModelRequest, UUID userId) {
         Candidate candidate = new Candidate(candidateModelRequest);
+        UserEntity user = this.userService.getUserById(userId);
         if (null == candidate)
             throw new RuntimeException("Candidate to create is null");
         if (this.candidateRepository.existsByName(candidate.getName()))
@@ -72,22 +78,35 @@ public class CandidateServiceImpl implements CandidateService {
         if (this.candidateRepository.existsByUri(candidateModelRequest.getUri()))
             throw new EntityExistsException(String.format("Candidate uri %s already exist!", candidateModelRequest.getUri()));
 
-        // ADD authors
-        Candidate newCandidate = this.candidateRepository.save(candidate);
-        if (candidateModelRequest.getAuthors() != null) {
-            for (AuthorModel authorModel : candidateModelRequest.getAuthors()) {
-                newCandidate.getAuthors().add(new CandidateAuthor(newCandidate, this.userService.getUserById(authorModel.getUserId()), authorModel.getAuthorRole()));
+        // ISSUE TO PATTERN
+        if (user.getRole().checkPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_CREATE) || this.issueService.authorPermissions(candidateModelRequest.getIssueId(), userId)) {
+            Candidate newCandidate = this.candidateRepository.save(candidate);
+            if (candidateModelRequest.getIssueId() != null) {
+                logger.info("Issue to Candidate request");
+                Issue issue = this.issueService.getIssueById(candidateModelRequest.getIssueId());
+                for (IssueEvidence issueEvidence: issue.getEvidences()) {
+                    CandidateEvidence evidence = new CandidateEvidence(issueEvidence, newCandidate, user);
+                    newCandidate.getEvidences().add(evidence);
+                }
+                this.issueService.deleteIssue(candidateModelRequest.getIssueId());
             }
+            // ADD authorr
+            if (candidateModelRequest.getAuthors() != null) {
+                for (AuthorModel authorModel : candidateModelRequest.getAuthors()) {
+                    newCandidate.getAuthors().add(new CandidateAuthor(newCandidate, this.userService.getUserById(authorModel.getUserId()), authorModel.getAuthorRole()));
+                }
+            } else {
+                newCandidate.getAuthors().add(new CandidateAuthor(newCandidate, this.userService.getUserById(userId), AuthorConstant.OWNER));
+            }
+
+            // ADD pattern language
+            if (candidateModelRequest.getPatternLanguageId() != null && this.patternLanguageService.getPatternLanguageById(candidateModelRequest.getPatternLanguageId()) != null)
+                newCandidate.setPatternLanguage(this.patternLanguageService.getPatternLanguageById(candidateModelRequest.getPatternLanguageId()));
+
+            return this.candidateRepository.save(newCandidate);
         } else {
-            newCandidate.getAuthors().add(new CandidateAuthor(newCandidate, this.userService.getUserById(userId), AuthorConstant.OWNER));
+            throw new RuntimeException("You don't have the permission");
         }
-
-
-        // ADD pattern language
-        if (candidateModelRequest.getPatternLanguageId() != null && this.patternLanguageService.getPatternLanguageById(candidateModelRequest.getPatternLanguageId()) != null)
-            newCandidate.setPatternLanguage(this.patternLanguageService.getPatternLanguageById(candidateModelRequest.getPatternLanguageId()));
-
-        return this.candidateRepository.save(newCandidate);
     }
 
     @Override
@@ -117,30 +136,55 @@ public class CandidateServiceImpl implements CandidateService {
             throw new RuntimeException("Candidate to update is null!");
         }
         Candidate candidate = this.getCandidateById(candidateId);
+        UserEntity user = this.userService.getUserById(userId);
 
-        // UPDATE issue fields
-        if (this.candidateRepository.existsByUri(candidateModelRequest.getUri())) {
-            Candidate candidateByURI = this.getCandidateByURI(candidateModelRequest.getUri());
-            // NOT uri & name change
-            if (!candidateByURI.getId().equals(candidate.getId())) {
-                throw new EntityExistsException(String.format("Candidate uri %s already exist!", candidateModelRequest.getUri()));
+        if (user.getRole().checkPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_EDIT_ALL) || this.authorPermissions(candidateModelRequest.getId(), userId)) {
+            // UPDATE issue fields
+            if (this.candidateRepository.existsByUri(candidateModelRequest.getUri())) {
+                Candidate candidateByURI = this.getCandidateByURI(candidateModelRequest.getUri());
+                // NOT uri & name change
+                if (!candidateByURI.getId().equals(candidate.getId())) {
+                    throw new EntityExistsException(String.format("Candidate uri %s already exist!", candidateModelRequest.getUri()));
+                }
             }
+            // ADD pattern language
+            if (candidateModelRequest.getPatternLanguageId() != null && this.patternLanguageService.getPatternLanguageById(candidateModelRequest.getPatternLanguageId()) != null)
+                candidate.setPatternLanguage(this.patternLanguageService.getPatternLanguageById(candidateModelRequest.getPatternLanguageId()));
+
+            // UPDATE issue fields
+            candidate.updateCandidate(candidateModelRequest);
+
+            return this.candidateRepository.save(candidate);
+        } else {
+            throw new RuntimeException("You don't have the permission");
         }
-        // ADD pattern language
-        if (candidateModelRequest.getPatternLanguageId() != null && this.patternLanguageService.getPatternLanguageById(candidateModelRequest.getPatternLanguageId()) != null)
-            candidate.setPatternLanguage(this.patternLanguageService.getPatternLanguageById(candidateModelRequest.getPatternLanguageId()));
-
-        // UPDATE issue fields
-        candidate.updateCandidate(candidateModelRequest);
-
-        return this.candidateRepository.save(candidate);
     }
 
     @Override
     @Transactional
-    public void deleteCandidate(UUID candidateId) {
-        this.getCandidateById(candidateId);
-        this.candidateRepository.deleteById(candidateId);
+    public void deleteCandidate(UUID candidateId, UUID userId) {
+        UserEntity user = this.userService.getUserById(userId);
+
+        if (user.getRole().checkPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_DELETE_ALL) || this.authorPermissions(candidateId, userId)) {
+            this.candidateRepository.deleteById(candidateId);
+        } else {
+            throw new RuntimeException("You don't have the permission");
+        }
+
+    }
+
+    public boolean authorPermissions(UUID candidateId, UUID userId) {
+        if (candidateId == null)
+            return false;
+        Candidate candidate = this.getCandidateById(candidateId);
+        for (CandidateAuthor author : candidate.getAuthors()) {
+            if (author.getUser().getId() == userId) {
+                if (author.getRole().equals(AuthorConstant.OWNER) || author.getRole().equals(AuthorConstant.MAINTAINER)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -193,5 +237,61 @@ public class CandidateServiceImpl implements CandidateService {
         if (!candidateComment.getUser().equals(this.userService.getUserById(userId)))
             throw new EntityNotFoundException(String.format("Candidate comment with id %s does not belong to user with id %s", commentId, userId));
         return candidateComment;
+    }
+
+    /**
+     * Evidence
+     */
+    @Override
+    @Transactional
+    public CandidateEvidence createEvidence(UUID candidateId, UUID userId, EvidenceModel evidenceModel) {
+        Candidate candidate = this.getCandidateById(candidateId);
+        UserEntity user = this.userService.getUserById(userId);
+
+        CandidateEvidence candidateEvidence = new CandidateEvidence(
+                evidenceModel.getTitle(),
+                evidenceModel.getContext(),
+                evidenceModel.getType(),
+                evidenceModel.getSupporting(),
+                evidenceModel.getSource(),
+                candidate, user);
+        return this.candidateEvidenceRepository.save(candidateEvidence);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CandidateEvidence getEvidenceById(UUID evidenceId) {
+        return this.candidateEvidenceRepository.findById(evidenceId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Candidate evidence with ID %s not found!", evidenceId)));
+    }
+
+    @Override
+    @Transactional
+    public CandidateEvidence updateEvidence(UUID candidateId, UUID evidenceId, UUID userId, EvidenceModel evidenceModel) {
+        if (evidenceModel == null)
+            throw new RuntimeException("Candidate evidence to update is null!");
+        CandidateEvidence candidateEvidence = this.authCandidateEvidence(candidateId, evidenceId, userId);
+        // UPDATE Candidate evidence
+        candidateEvidence.updateEvidence(evidenceModel.getTitle(), evidenceModel.getContext(), evidenceModel.getType(), evidenceModel.getSupporting(), evidenceModel.getSource());
+        return this.candidateEvidenceRepository.save(candidateEvidence);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> deleteEvidence(UUID candidateId, UUID evidenceId, UUID userId) {
+        this.authCandidateEvidence(candidateId, evidenceId, userId);
+        this.candidateEvidenceRepository.deleteById(evidenceId);
+        return ResponseEntity.noContent().build();
+    }
+
+    private CandidateEvidence authCandidateEvidence(UUID candidateId, UUID evidenceId, UUID userId) {
+        CandidateEvidence candidateEvidence = this.getEvidenceById(evidenceId);
+        // CORRECT Evidence
+        if (!candidateEvidence.getCandidate().equals(this.getCandidateById(candidateId)))
+            throw new EntityNotFoundException(String.format("Candidate comment with id %s does not belong to candidate with id %s", evidenceId, candidateId));
+        // CORRECT user
+        if (!candidateEvidence.getUser().equals(this.userService.getUserById(userId)))
+            throw new EntityNotFoundException(String.format("Candidate comment with id %s does not belong to user with id %s", evidenceId, userId));
+        return candidateEvidence;
     }
 }

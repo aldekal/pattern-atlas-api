@@ -8,5 +8,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource(exported = false)
 public interface CandidateRatingRepository extends JpaRepository<CandidateRating, CompositeKey> {
 
-    boolean existsByIdAndRating(CompositeKey compositeKey, int rating);
+    boolean existsById(CompositeKey compositeKey);
+    boolean existsByIdAndReadability(CompositeKey compositeKey, int rating);
+    boolean existsByIdAndUnderstandability(CompositeKey compositeKey, int rating);
+    boolean existsByIdAndAppropriateness(CompositeKey compositeKey, int rating);
 }
