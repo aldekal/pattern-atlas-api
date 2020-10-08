@@ -9,7 +9,5 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class AuthorModelRequest {
-
-    private String authorRole;
+public class AuthorModelRequest extends AuthorModel {
 }

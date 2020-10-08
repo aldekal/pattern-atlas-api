@@ -21,8 +21,6 @@ public interface UserService {
 
     /** Role */
     List<Role> getAllRoles();
-
     List<Privilege> getAllPrivileges();
-
     Role updateRole(UUID roleId, UUID privilegeId, RoleModelRequest roleModelRequest);
 }

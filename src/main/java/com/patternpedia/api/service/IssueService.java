@@ -2,12 +2,18 @@ package com.patternpedia.api.service;
 
 import java.util.List;
 
+import com.patternpedia.api.entities.issue.IssueRating;
+import com.patternpedia.api.entities.issue.author.IssueAuthor;
 import com.patternpedia.api.entities.issue.comment.IssueComment;
 import com.patternpedia.api.entities.issue.Issue;
+import com.patternpedia.api.entities.issue.comment.IssueCommentRating;
 import com.patternpedia.api.entities.issue.evidence.IssueEvidence;
+import com.patternpedia.api.entities.issue.evidence.IssueEvidenceRating;
 import com.patternpedia.api.rest.model.issue.IssueModelRequest;
+import com.patternpedia.api.rest.model.shared.AuthorModelRequest;
 import com.patternpedia.api.rest.model.shared.CommentModel;
 import com.patternpedia.api.rest.model.shared.EvidenceModel;
+import com.patternpedia.api.rest.model.shared.RatingModelRequest;
 import org.springframework.http.ResponseEntity;
 
 import java.util.UUID;
@@ -26,27 +32,39 @@ public interface IssueService {
 
     Issue updateIssue(UUID issueId, UUID userId, IssueModelRequest issueModelRequest);
 
+    Issue updateIssueRating(UUID issueId, UUID userId, RatingModelRequest ratingModelRequest);
+
     void deleteIssue(UUID issueId);
 
     boolean authorPermissions(UUID issueId, UUID userId);
 
+    /** Author */
+
+    Issue saveIssueAuthor(UUID issueId, AuthorModelRequest authorModelRequest);
+
+    Issue deleteIssueAuthor(UUID issueId, UUID userId);
+
     /** Comment */
-    IssueComment createComment(UUID issueId, UUID userId, CommentModel commentModel);
+    Issue createComment(UUID issueId, UUID userId, CommentModel commentModel);
 
     IssueComment getCommentById(UUID issueCommentId);
 
-    IssueComment updateComment(UUID issueId, UUID commentId, UUID userId, CommentModel commentModel);
+    Issue updateComment(UUID issueId, UUID commentId, UUID userId, CommentModel commentModel);
 
-    ResponseEntity<?> deleteComment(UUID issueId, UUID commentId, UUID userId);
+    Issue updateIssueCommentRating(UUID issueId, UUID commentId, UUID userId, RatingModelRequest ratingModelRequest);
+
+    Issue deleteComment(UUID issueId, UUID commentId, UUID userId);
 
     /** Evidence */
-    IssueEvidence createEvidence(UUID issueId, UUID userId, EvidenceModel evidenceModel);
+    Issue createEvidence(UUID issueId, UUID userId, EvidenceModel evidenceModel);
 
     IssueEvidence getEvidenceById(UUID issueEvidenceId);
 
-    IssueEvidence updateEvidence(UUID issueId, UUID evidenceId, UUID userId, EvidenceModel evidenceModel);
+    Issue updateEvidence(UUID issueId, UUID evidenceId, UUID userId, EvidenceModel evidenceModel);
 
-    ResponseEntity<?> deleteEvidence(UUID issueId, UUID evidenceId, UUID userId);
+    Issue updateIssueEvidenceRating(UUID issueId, UUID evidenceID, UUID userId, RatingModelRequest ratingModelRequest);
+
+    Issue deleteEvidence(UUID issueId, UUID evidenceId, UUID userId);
 
 
 }

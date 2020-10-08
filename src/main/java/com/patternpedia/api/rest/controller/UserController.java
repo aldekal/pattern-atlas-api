@@ -4,7 +4,6 @@ import com.patternpedia.api.config.Authority;
 import com.patternpedia.api.rest.model.user.*;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import com.patternpedia.api.entities.user.UserRole;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

@@ -2,9 +2,8 @@ package com.patternpedia.api.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patternpedia.api.rest.model.issue.IssueModelRequest;
-import com.patternpedia.api.rest.model.shared.CommentModel;
+import com.patternpedia.api.rest.model.shared.*;
 import com.patternpedia.api.rest.model.issue.IssueModel;
-import com.patternpedia.api.rest.model.shared.EvidenceModel;
 import com.patternpedia.api.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,6 +18,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -52,6 +52,8 @@ public class IssueController {
         List<EntityModel<IssueModel>> issues = this.issueService.getAllIssues()
                 .stream()
                 .map(issue -> new EntityModel<>(new IssueModel(issue)))
+//                .sorted(Comparator.comparingInt(i -> i.getContent().getRating()))
+                .sorted((i1, i2) -> Integer.compare(i2.getContent().getRating(), i1.getContent().getRating()))
                 .collect(Collectors.toList());
         return new CollectionModel<>(issues);
     }
@@ -83,14 +85,15 @@ public class IssueController {
     @Operation(operationId = "createIssueComment", responses = {@ApiResponse(responseCode = "201")}, description = "Create an issue comment")
     @PostMapping(value = "/{issueId}/comments")
     @ResponseStatus(HttpStatus.CREATED)
-    ResponseEntity<EntityModel<CommentModel>> newIssueComment(@PathVariable UUID issueId, @AuthenticationPrincipal Principal principal, @RequestBody CommentModel commentModel) {
-        return ResponseEntity.ok(new EntityModel<>(new CommentModel(this.issueService.createComment(issueId, UUID.fromString(principal.getName()), commentModel))));
+    ResponseEntity<EntityModel<IssueModel>> newIssueComment(@PathVariable UUID issueId, @AuthenticationPrincipal Principal principal, @RequestBody CommentModel commentModel) {
+        return ResponseEntity.ok(new EntityModel<>(new IssueModel(this.issueService.createComment(issueId, UUID.fromString(principal.getName()), commentModel))));
     }
 
+    @Operation(operationId = "createIssueEvidence", responses = {@ApiResponse(responseCode = "201")}, description = "Create an issue evidence")
     @PostMapping(value = "/{issueId}/evidences")
     @ResponseStatus(HttpStatus.CREATED)
-    ResponseEntity<EntityModel<EvidenceModel>> newIssueEvidence(@PathVariable UUID issueId, @AuthenticationPrincipal Principal principal, @RequestBody EvidenceModel evidenceModel) {
-        return ResponseEntity.ok(new EntityModel<>(new EvidenceModel(this.issueService.createEvidence(issueId, UUID.fromString(principal.getName()), evidenceModel))));
+    ResponseEntity<EntityModel<IssueModel>> newIssueEvidence(@PathVariable UUID issueId, @AuthenticationPrincipal Principal principal, @RequestBody EvidenceModel evidenceModel) {
+        return ResponseEntity.ok(new EntityModel<>(new IssueModel(this.issueService.createEvidence(issueId, UUID.fromString(principal.getName()), evidenceModel))));
     }
 
     /**
@@ -102,14 +105,40 @@ public class IssueController {
         return ResponseEntity.ok(new EntityModel<>(new IssueModel(this.issueService.updateIssue(issueId, UUID.fromString(principal.getName()), issueModelRequest))));
     }
 
-    @PutMapping(value = "/{issueId}/comments/{issueCommentId}")
-    ResponseEntity<EntityModel<CommentModel>> putIssueCommentRating(@PathVariable UUID issueId, @PathVariable UUID issueCommentId, @AuthenticationPrincipal Principal principal, @RequestBody CommentModel commentModel) {
-        return ResponseEntity.ok(new EntityModel<>(new CommentModel(this.issueService.updateComment(issueId, issueCommentId, UUID.fromString(principal.getName()), commentModel))));
+    @Operation(operationId = "updateIssueRatings", responses = {@ApiResponse(responseCode = "200")}, description = "Update an issue ratings")
+    @PutMapping(value = "/{issueId}/ratings")
+    ResponseEntity<EntityModel<IssueModel>> putIssueRating(@PathVariable UUID issueId, @AuthenticationPrincipal Principal principal, @RequestBody RatingModelRequest ratingModelRequest) {
+        return ResponseEntity.ok(new EntityModel<>(new IssueModel(this.issueService.updateIssueRating(issueId, UUID.fromString(principal.getName()), ratingModelRequest))));
     }
 
+    @Operation(operationId = "updateIssueAuthors", responses = {@ApiResponse(responseCode = "200")}, description = "Update an issue authors")
+    @PutMapping(value = "{issueId}/authors")
+    ResponseEntity<EntityModel<IssueModel>> putIssueAuthor(@PathVariable UUID issueId, @RequestBody AuthorModelRequest authorModelRequest) {
+        return ResponseEntity.ok(new EntityModel<>(new IssueModel(this.issueService.saveIssueAuthor(issueId, authorModelRequest))));
+    }
+
+    @Operation(operationId = "updateIssue", responses = {@ApiResponse(responseCode = "200")}, description = "Update an issue comment")
+    @PutMapping(value = "/{issueId}/comments/{issueCommentId}")
+    ResponseEntity<EntityModel<IssueModel>> putIssueComment(@PathVariable UUID issueId, @PathVariable UUID issueCommentId, @AuthenticationPrincipal Principal principal, @RequestBody CommentModel commentModel) {
+        return ResponseEntity.ok(new EntityModel<>(new IssueModel(this.issueService.updateComment(issueId, issueCommentId, UUID.fromString(principal.getName()), commentModel))));
+    }
+
+    @Operation(operationId = "updateIssue", responses = {@ApiResponse(responseCode = "200")}, description = "Update an issue comment rating")
+    @PutMapping(value = "/{issueId}/comments/{issueCommentId}/ratings")
+    ResponseEntity<EntityModel<IssueModel>> putIssueCommentRating(@PathVariable UUID issueId, @PathVariable UUID issueCommentId, @AuthenticationPrincipal Principal principal, @RequestBody RatingModelRequest ratingModelRequest) {
+        return ResponseEntity.ok(new EntityModel<>(new IssueModel(this.issueService.updateIssueCommentRating(issueId, issueCommentId, UUID.fromString(principal.getName()), ratingModelRequest))));
+    }
+
+    @Operation(operationId = "updateIssue", responses = {@ApiResponse(responseCode = "200")}, description = "Update an issue evidence")
     @PutMapping(value = "/{issueId}/evidences/{issueEvidenceId}")
-    ResponseEntity<EntityModel<EvidenceModel>> putIssueEvidenceRating(@PathVariable UUID issueId, @PathVariable UUID issueEvidenceId, @AuthenticationPrincipal Principal principal, @RequestBody EvidenceModel evidenceModel) {
-        return ResponseEntity.ok(new EntityModel<>(new EvidenceModel(this.issueService.updateEvidence(issueId, issueEvidenceId, UUID.fromString(principal.getName()), evidenceModel))));
+    ResponseEntity<EntityModel<IssueModel>> putIssueEvidence(@PathVariable UUID issueId, @PathVariable UUID issueEvidenceId, @AuthenticationPrincipal Principal principal, @RequestBody EvidenceModel evidenceModel) {
+        return ResponseEntity.ok(new EntityModel<>(new IssueModel(this.issueService.updateEvidence(issueId, issueEvidenceId, UUID.fromString(principal.getName()), evidenceModel))));
+    }
+
+    @Operation(operationId = "updateIssueEvidenceRating", responses = {@ApiResponse(responseCode = "200")}, description = "Update an issue evidence rating")
+    @PutMapping(value = "/{issueId}/evidences/{issueEvidenceId}/ratings")
+    ResponseEntity<EntityModel<IssueModel>> putIssueEvidenceRating(@PathVariable UUID issueId, @PathVariable UUID issueEvidenceId, @AuthenticationPrincipal Principal principal, @RequestBody RatingModelRequest ratingModelRequest) {
+        return ResponseEntity.ok(new EntityModel<>(new IssueModel(this.issueService.updateIssueEvidenceRating(issueId, issueEvidenceId, UUID.fromString(principal.getName()), ratingModelRequest))));
     }
 
     /**
@@ -122,13 +151,21 @@ public class IssueController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping(value = "/{issueId}/comments/{issueCommentId}")
-    ResponseEntity<?> deleteComment(@PathVariable UUID issueId, @PathVariable UUID issueCommentId, @AuthenticationPrincipal Principal principal) {
-        return this.issueService.deleteComment(issueId, issueCommentId, UUID.fromString(principal.getName()));
+    @Operation(operationId = "deleteIssueAuthor", responses = {@ApiResponse(responseCode = "200")}, description = "Delete an issue")
+    @DeleteMapping(value = "{issueId}/authors/{userId}")
+    ResponseEntity<EntityModel<IssueModel>> deleteIssueAuthor(@PathVariable UUID issueId, @PathVariable UUID userId) {
+        return ResponseEntity.ok(new EntityModel<>(new IssueModel(this.issueService.deleteIssueAuthor(issueId, userId))));
     }
 
+    @Operation(operationId = "deleteIssueComment", responses = {@ApiResponse(responseCode = "200")}, description = "Delete an issue comment")
+    @DeleteMapping(value = "/{issueId}/comments/{issueCommentId}")
+    ResponseEntity<EntityModel<IssueModel>> deleteComment(@PathVariable UUID issueId, @PathVariable UUID issueCommentId, @AuthenticationPrincipal Principal principal) {
+        return ResponseEntity.ok(new EntityModel<>(new IssueModel(this.issueService.deleteComment(issueId, issueCommentId, UUID.fromString(principal.getName())))));
+    }
+
+    @Operation(operationId = "deleteIssueEvidence", responses = {@ApiResponse(responseCode = "200")}, description = "Delete an issue evidence")
     @DeleteMapping(value = "/{issueId}/evidences/{issueEvidenceId}")
-    ResponseEntity<?> deleteEvidence(@PathVariable UUID issueId, @PathVariable UUID issueEvidenceId, @AuthenticationPrincipal Principal principal) {
-        return this.issueService.deleteEvidence(issueId, issueEvidenceId, UUID.fromString(principal.getName()));
+    ResponseEntity<EntityModel<IssueModel>> deleteEvidence(@PathVariable UUID issueId, @PathVariable UUID issueEvidenceId, @AuthenticationPrincipal Principal principal) {
+        return ResponseEntity.ok(new EntityModel<>(new IssueModel(this.issueService.deleteEvidence(issueId, issueEvidenceId, UUID.fromString(principal.getName())))));
     }
 }

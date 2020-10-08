@@ -138,6 +138,16 @@ public class PatternLanguageController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping(value = "/patternSchemas")
+    CollectionModel<EntityModel<PatternLanguageSchemaModel>> getAllPatternLanguagesWithSchema() {
+        List<EntityModel<PatternLanguageSchemaModel>> patternLanguages = this.patternLanguageService.getPatternLanguages()
+                .stream()
+                .map(patternLanguage -> new EntityModel<>(new PatternLanguageSchemaModel(patternLanguage)))
+                .collect(Collectors.toList());
+
+        return new CollectionModel<>(patternLanguages);
+    }
+
     @Operation(operationId = "getPatternSchema", responses = {@ApiResponse(responseCode = "200")}, description = "Get pattern schema by pattern language id")
     @GetMapping(value = "/{patternLanguageId}/patternSchema")
     EntityModel<PatternSchema> getPatternSchema(@PathVariable UUID patternLanguageId) {

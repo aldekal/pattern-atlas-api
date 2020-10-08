@@ -41,4 +41,6 @@ public class PatternLanguage extends PatternGraph {
     @JsonIgnore
     @OneToMany(mappedBy = "patternLanguage", fetch = FetchType.LAZY)
     private List<UndirectedEdge> undirectedEdges;
+
+
 }

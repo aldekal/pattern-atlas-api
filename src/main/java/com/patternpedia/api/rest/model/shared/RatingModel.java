@@ -40,13 +40,6 @@ public class RatingModel {
         this.userId = candidateRating.getUser().getId();
     }
 
-//    public RatingModel(CandidateRating candidateRating) {
-//        int readability = candidateRating.getReadability();
-//        int understandability = candidateRating.getUnderstandability();
-//        int appropriateness = candidateRating.getAppropriateness();
-//        this.userId = candidateRating.getUser().getId();
-//    }
-
     public RatingModel(CandidateCommentRating candidateCommentRating) {
         this.rating = candidateCommentRating.getRating();
         this.userId = candidateCommentRating.getUser().getId();

@@ -1,6 +1,7 @@
 package com.patternpedia.api.entities;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -33,4 +34,9 @@ public class PatternSchema {
     @OneToOne
     @MapsId
     private PatternLanguage patternLanguage;
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, patternSectionSchemas);
+    }
 }

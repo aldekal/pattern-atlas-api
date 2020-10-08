@@ -1,15 +1,20 @@
 package com.patternpedia.api.service;
 
+import com.patternpedia.api.entities.issue.IssueRating;
 import com.patternpedia.api.entities.issue.comment.IssueComment;
 import com.patternpedia.api.entities.issue.Issue;
 import com.patternpedia.api.entities.issue.author.IssueAuthor;
+import com.patternpedia.api.entities.issue.comment.IssueCommentRating;
 import com.patternpedia.api.entities.issue.evidence.IssueEvidence;
+import com.patternpedia.api.entities.issue.evidence.IssueEvidenceRating;
 import com.patternpedia.api.entities.shared.AuthorConstant;
 import com.patternpedia.api.entities.user.UserEntity;
 import com.patternpedia.api.repositories.*;
 import com.patternpedia.api.rest.model.issue.IssueModelRequest;
+import com.patternpedia.api.rest.model.shared.AuthorModelRequest;
 import com.patternpedia.api.rest.model.shared.CommentModel;
 import com.patternpedia.api.rest.model.shared.EvidenceModel;
+import com.patternpedia.api.rest.model.shared.RatingModelRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -26,21 +31,33 @@ import java.util.*;
 public class IssueServiceImpl implements IssueService {
 
     private IssueRepository issueRepository;
+    private IssueRatingRepository issueRatingRepository;
+    private IssueAuthorRepository issueAuthorRepository;
     private IssueCommentRepository issueCommentRepository;
+    private IssueCommentRatingRepository issueCommentRatingRepository;
     private IssueEvidenceRepository issueEvidenceRepository;
+    private IssueEvidenceRatingRepository issueEvidenceRatingRepository;
     private UserService userService;
 
     Logger logger = LoggerFactory.getLogger(IssueServiceImpl.class);
 
     public IssueServiceImpl(
             IssueRepository issueRepository,
+            IssueRatingRepository issueRatingRepository,
+            IssueAuthorRepository issueAuthorRepository,
             IssueCommentRepository issueCommentRepository,
+            IssueCommentRatingRepository issueCommentRatingRepository,
             IssueEvidenceRepository issueEvidenceRepository,
+            IssueEvidenceRatingRepository issueEvidenceRatingRepository,
             UserService userService
     ) {
         this.issueRepository = issueRepository;
+        this.issueRatingRepository = issueRatingRepository;
+        this.issueAuthorRepository = issueAuthorRepository;
         this.issueCommentRepository = issueCommentRepository;
+        this.issueCommentRatingRepository = issueCommentRatingRepository;
         this.issueEvidenceRepository = issueEvidenceRepository;
+        this.issueEvidenceRatingRepository = issueEvidenceRatingRepository;
         this.userService = userService;
     }
 
@@ -111,6 +128,19 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     @Transactional
+    public Issue updateIssueRating(UUID issueId, UUID userId, RatingModelRequest ratingModelRequest) {
+        Issue issue = this.getIssueById(issueId);
+        UserEntity user = this.userService.getUserById(userId);
+        IssueRating issueRating = new IssueRating(issue, user, ratingModelRequest.getRating());
+        if (this.issueRatingRepository.existsByIdAndRating(issueRating.getId(), issueRating.getRating())) {
+            issueRating.setRating(0);
+        }
+        issueRating = this.issueRatingRepository.save(issueRating);
+        return issueRating.getIssue();
+    }
+
+    @Override
+    @Transactional
     public void deleteIssue(UUID IssueId) {
         this.getIssueById(IssueId);
         this.issueRepository.deleteById(IssueId);
@@ -131,16 +161,41 @@ public class IssueServiceImpl implements IssueService {
     }
 
     /**
+     * Author
+     */
+    @Override
+    @Transactional
+    public Issue saveIssueAuthor(UUID issueId, AuthorModelRequest authorModelRequest) {
+        Issue issue = this.getIssueById(issueId);
+        UserEntity user = userService.getUserById(authorModelRequest.getUserId());
+        IssueAuthor issueAuthor = new IssueAuthor(issue, user, authorModelRequest.getAuthorRole());
+        issueAuthor = this.issueAuthorRepository.save(issueAuthor);
+        return issueAuthor.getIssue();
+    }
+
+    @Override
+    @Transactional
+    public Issue deleteIssueAuthor(UUID issueId, UUID userId) {
+        Issue issue = this.getIssueById(issueId);
+        UserEntity user = this.userService.getUserById(userId);
+        IssueAuthor issueAuthor = new IssueAuthor(issue, user);
+        if (this.issueAuthorRepository.existsById(issueAuthor.getId())) {
+            this.issueAuthorRepository.deleteById(issueAuthor.getId());
+        }
+        return this.getIssueById(issueId);
+    }
+
+    /**
      * Comment
      */
     @Override
     @Transactional
-    public IssueComment createComment(UUID issueId, UUID userId, CommentModel commentModel) {
+    public Issue createComment(UUID issueId, UUID userId, CommentModel commentModel) {
         Issue issue = this.getIssueById(issueId);
         UserEntity user = this.userService.getUserById(userId);
 
-        IssueComment comment = new IssueComment(commentModel.getText(), issue, user);
-        return this.issueCommentRepository.save(comment);
+        IssueComment comment = this.issueCommentRepository.save(new IssueComment(commentModel.getText(), issue, user));
+        return comment.getIssue();
     }
 
     @Override
@@ -152,24 +207,38 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     @Transactional
-    public IssueComment updateComment(UUID issueId, UUID commentId, UUID userId, CommentModel commentModel) {
+    public Issue updateComment(UUID issueId, UUID commentId, UUID userId, CommentModel commentModel) {
         if (commentModel == null)
             throw new RuntimeException("Issue comment to update is null!");
-        IssueComment issueComment = this.authIssueComment(issueId, commentId, userId);
-        // UPDATE issue comment
-        issueComment.updateComment(commentModel.getText());
-        return this.issueCommentRepository.save(issueComment);
+        IssueComment comment = this.existsIssueComment(issueId, commentId, userId);
+        comment.updateComment(commentModel.getText());
+        comment = this.issueCommentRepository.save(comment);
+        return comment.getIssue();
     }
 
     @Override
     @Transactional
-    public ResponseEntity<?> deleteComment(UUID issueId, UUID commentId, UUID userId) {
-        this.authIssueComment(issueId, commentId, userId);
-        this.issueCommentRepository.deleteById(commentId);
-        return ResponseEntity.noContent().build();
+    public Issue updateIssueCommentRating(UUID issueId, UUID commentId, UUID userId, RatingModelRequest ratingModelRequest) {
+        IssueComment issueComment = this.getCommentById(commentId);
+        UserEntity user = this.userService.getUserById(userId);
+        IssueCommentRating issueCommentRating = new IssueCommentRating(issueComment, user, ratingModelRequest.getRating());
+        if (this.issueCommentRatingRepository.existsByIdAndRating(issueCommentRating.getId(), issueCommentRating.getRating())) {
+            issueCommentRating.setRating(0);
+        }
+        issueCommentRating = this.issueCommentRatingRepository.save(issueCommentRating);
+        return issueCommentRating.getIssueComment().getIssue();
     }
 
-    private IssueComment authIssueComment(UUID issueId, UUID commentId, UUID userId) {
+    @Override
+    @Transactional
+    public Issue deleteComment(UUID issueId, UUID commentId, UUID userId) {
+        this.existsIssueComment(issueId, commentId, userId);
+        this.issueCommentRepository.deleteById(commentId);
+        return this.getIssueById(issueId);
+    }
+
+    // Check if Issue comment exists
+    private IssueComment existsIssueComment(UUID issueId, UUID commentId, UUID userId) {
         IssueComment issueComment = this.getCommentById(commentId);
         // CORRECT Issue
         if (!issueComment.getIssue().equals(this.getIssueById(issueId)))
@@ -185,12 +254,13 @@ public class IssueServiceImpl implements IssueService {
      */
     @Override
     @Transactional
-    public IssueEvidence createEvidence(UUID issueId, UUID userId, EvidenceModel evidenceModel) {
+    public Issue createEvidence(UUID issueId, UUID userId, EvidenceModel evidenceModel) {
         Issue issue = this.getIssueById(issueId);
         UserEntity user = this.userService.getUserById(userId);
 
         IssueEvidence issueEvidence = new IssueEvidence(evidenceModel.getTitle(), evidenceModel.getContext(), evidenceModel.getType(), evidenceModel.getSupporting(), evidenceModel.getSource(), issue, user);
-        return this.issueEvidenceRepository.save(issueEvidence);
+        issueEvidence = this.issueEvidenceRepository.save(issueEvidence);
+        return issueEvidence.getIssue();
     }
 
     @Override
@@ -202,24 +272,39 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     @Transactional
-    public IssueEvidence updateEvidence(UUID issueId, UUID evidenceId, UUID userId, EvidenceModel evidenceModel) {
+    public Issue updateEvidence(UUID issueId, UUID evidenceId, UUID userId, EvidenceModel evidenceModel) {
         if (evidenceModel == null)
             throw new RuntimeException("Issue comment to update is null!");
-        IssueEvidence issueEvidence = this.authIssueEvidence(issueId, evidenceId, userId);
+        IssueEvidence issueEvidence = this.existsIssueEvidence(issueId, evidenceId, userId);
         // UPDATE issue evidence
         issueEvidence.updateEvidence(evidenceModel.getTitle(), evidenceModel.getContext(), evidenceModel.getType(), evidenceModel.getSupporting(), evidenceModel.getSource());
-        return this.issueEvidenceRepository.save(issueEvidence);
+        issueEvidence = this.issueEvidenceRepository.save(issueEvidence);
+        return issueEvidence.getIssue();
     }
 
     @Override
     @Transactional
-    public ResponseEntity<?> deleteEvidence(UUID issueId, UUID evidenceId, UUID userId) {
-        this.authIssueEvidence(issueId, evidenceId, userId);
-        this.issueEvidenceRepository.deleteById(evidenceId);
-        return ResponseEntity.noContent().build();
+    public Issue updateIssueEvidenceRating(UUID issueId, UUID evidenceID, UUID userId, RatingModelRequest ratingModelRequest) {
+        Issue issue = this.getIssueById(issueId);
+        IssueEvidence issueEvidence = this.getEvidenceById(evidenceID);
+        UserEntity user = this.userService.getUserById(userId);
+        IssueEvidenceRating issueEvidenceRating = new IssueEvidenceRating(issueEvidence, user, ratingModelRequest.getRating());
+        if (this.issueEvidenceRatingRepository.existsByIdAndRating(issueEvidenceRating.getId(), issueEvidenceRating.getRating())) {
+            issueEvidenceRating.setRating(0);
+        }
+        issueEvidenceRating = this.issueEvidenceRatingRepository.save(issueEvidenceRating);
+        return issueEvidenceRating.getIssueEvidence().getIssue();
     }
 
-    private IssueEvidence authIssueEvidence(UUID issueId, UUID commentId, UUID userId) {
+    @Override
+    @Transactional
+    public Issue deleteEvidence(UUID issueId, UUID evidenceId, UUID userId) {
+        this.existsIssueEvidence(issueId, evidenceId, userId);
+        this.issueEvidenceRepository.deleteById(evidenceId);
+        return this.getIssueById(issueId);
+    }
+
+    private IssueEvidence existsIssueEvidence(UUID issueId, UUID commentId, UUID userId) {
         IssueEvidence issueEvidence = this.getEvidenceById(commentId);
         // CORRECT Issue
         if (!issueEvidence.getIssue().equals(this.getIssueById(issueId)))

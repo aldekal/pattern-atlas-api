@@ -1,9 +1,12 @@
 package com.patternpedia.api.service;
 
 import com.patternpedia.api.entities.candidate.Candidate;
+import com.patternpedia.api.entities.candidate.CandidateRating;
 import com.patternpedia.api.entities.candidate.comment.CandidateComment;
 import com.patternpedia.api.entities.candidate.author.CandidateAuthor;
+import com.patternpedia.api.entities.candidate.comment.CandidateCommentRating;
 import com.patternpedia.api.entities.candidate.evidence.CandidateEvidence;
+import com.patternpedia.api.entities.candidate.evidence.CandidateEvidenceRating;
 import com.patternpedia.api.entities.issue.Issue;
 import com.patternpedia.api.entities.issue.author.IssueAuthor;
 import com.patternpedia.api.entities.issue.evidence.IssueEvidence;
@@ -12,9 +15,7 @@ import com.patternpedia.api.entities.user.UserEntity;
 import com.patternpedia.api.entities.user.role.PrivilegeConstant;
 import com.patternpedia.api.repositories.*;
 import com.patternpedia.api.rest.model.candidate.CandidateModelRequest;
-import com.patternpedia.api.rest.model.shared.AuthorModel;
-import com.patternpedia.api.rest.model.shared.CommentModel;
-import com.patternpedia.api.rest.model.shared.EvidenceModel;
+import com.patternpedia.api.rest.model.shared.*;
 import com.patternpedia.api.util.RatingHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,8 +34,12 @@ import java.util.UUID;
 public class CandidateServiceImpl implements CandidateService {
 
     private CandidateRepository candidateRepository;
+    private CandidateRatingRepository candidateRatingRepository;
+    private CandidateAuthorRepository candidateAuthorRepository;
     private CandidateCommentRepository candidateCommentRepository;
+    private CandidateCommentRatingRepository candidateCommentRatingRepository;
     private CandidateEvidenceRepository candidateEvidenceRepository;
+    private CandidateEvidenceRatingRepository candidateEvidenceRatingRepository;
     private PatternLanguageService patternLanguageService;
     private UserService userService;
     private IssueService issueService;
@@ -43,15 +48,23 @@ public class CandidateServiceImpl implements CandidateService {
 
     public CandidateServiceImpl(
             CandidateRepository candidateRepository,
+            CandidateRatingRepository candidateRatingRepository,
+            CandidateAuthorRepository candidateAuthorRepository,
             CandidateCommentRepository candidateCommentRepository,
+            CandidateCommentRatingRepository candidateCommentRatingRepository,
             CandidateEvidenceRepository candidateEvidenceRepository,
+            CandidateEvidenceRatingRepository candidateEvidenceRatingRepository,
             PatternLanguageService patternLanguageService,
             UserService userService,
             IssueService issueService
     ) {
         this.candidateRepository = candidateRepository;
+        this.candidateRatingRepository = candidateRatingRepository;
+        this.candidateAuthorRepository = candidateAuthorRepository;
         this.candidateCommentRepository = candidateCommentRepository;
+        this.candidateCommentRatingRepository = candidateCommentRatingRepository;
         this.candidateEvidenceRepository = candidateEvidenceRepository;
+        this.candidateEvidenceRatingRepository = candidateEvidenceRatingRepository;
         this.patternLanguageService = patternLanguageService;
         this.userService = userService;
         this.issueService = issueService;
@@ -90,7 +103,7 @@ public class CandidateServiceImpl implements CandidateService {
                 }
                 this.issueService.deleteIssue(candidateModelRequest.getIssueId());
             }
-            // ADD authorr
+            // ADD author
             if (candidateModelRequest.getAuthors() != null) {
                 for (AuthorModel authorModel : candidateModelRequest.getAuthors()) {
                     newCandidate.getAuthors().add(new CandidateAuthor(newCandidate, this.userService.getUserById(authorModel.getUserId()), authorModel.getAuthorRole()));
@@ -162,6 +175,40 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     @Transactional
+    public Candidate updateCandidateRating(UUID candidateId, UUID userId, RatingModelMultiRequest ratingModelMultiRequest) {
+        Candidate candidate = this.getCandidateById(candidateId);
+        UserEntity user = this.userService.getUserById(userId);
+        CandidateRating candidateRating = new CandidateRating(candidate, user);
+        if (this.candidateRatingRepository.existsById(candidateRating.getId())) {
+            candidateRating = this.candidateRatingRepository.getOne(candidateRating.getId());
+        }
+        if (ratingModelMultiRequest.getRatingType().equals(RatingType.READABILITY)) {
+            candidateRating.setReadability(ratingModelMultiRequest.getRating());
+
+        } else if (ratingModelMultiRequest.getRatingType().equals(RatingType.UNDERSTANDABILITY)) {
+            candidateRating.setUnderstandability(ratingModelMultiRequest.getRating());
+
+        } else if (ratingModelMultiRequest.getRatingType().equals(RatingType.APPROPIATENESS)) {
+            candidateRating.setAppropriateness(ratingModelMultiRequest.getRating());
+
+        } else {
+            throw new EntityExistsException(String.format("Rating type does not exists", ratingModelMultiRequest.getRatingType()));
+        }
+        CandidateRating updatedCandidateRating = this.candidateRatingRepository.save(candidateRating);
+        return updatedCandidateRating.getCandidate();
+
+//        if (ratingModelMultiRequest.getRatingType().equals(RatingType.READABILITY)) {
+//            return new RatingModel(updatedCandidateRating, updatedCandidateRating.getReadability());
+//        } else if (ratingModelMultiRequest.getRatingType().equals(RatingType.UNDERSTANDABILITY)) {
+//            return new RatingModel(updatedCandidateRating, updatedCandidateRating.getUnderstandability());
+//        } else{
+//            return new RatingModel(updatedCandidateRating, updatedCandidateRating.getAppropriateness());
+//        }
+
+    }
+
+    @Override
+    @Transactional
     public void deleteCandidate(UUID candidateId, UUID userId) {
         UserEntity user = this.userService.getUserById(userId);
 
@@ -188,16 +235,42 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     /**
+     * Author
+     */
+    @Override
+    @Transactional
+    public Candidate saveCandidateAuthor(UUID candidateId, AuthorModelRequest authorModelRequest) {
+        Candidate candidate = this.getCandidateById(candidateId);
+        UserEntity user = this.userService.getUserById(authorModelRequest.getUserId());
+        CandidateAuthor candidateAuthor = new CandidateAuthor(candidate, user, authorModelRequest.getAuthorRole());
+        candidateAuthor = this.candidateAuthorRepository.save(candidateAuthor);
+        return candidateAuthor.getCandidate();
+    }
+
+    @Override
+    @Transactional
+    public Candidate deleteCandidateAuthor(UUID candidateId, UUID userId) {
+        Candidate candidate = this.getCandidateById(candidateId);
+        UserEntity user = this.userService.getUserById(userId);
+        CandidateAuthor candidateAuthor = new CandidateAuthor(candidate, user);
+        if (this.candidateAuthorRepository.existsById(candidateAuthor.getId())) {
+            this.candidateAuthorRepository.deleteById(candidateAuthor.getId());
+        }
+        return this.getCandidateById(candidateId);
+    }
+
+    /**
      * Comment
      */
     @Override
     @Transactional
-    public CandidateComment createComment(UUID candidateId, UUID userId, CommentModel commentModel) {
+    public Candidate createComment(UUID candidateId, UUID userId, CommentModel commentModel) {
         Candidate candidate = this.getCandidateById(candidateId);
         UserEntity user = this.userService.getUserById(userId);
 
         CandidateComment comment = new CandidateComment(commentModel.getText(), candidate, user);
-        return this.candidateCommentRepository.save(comment);
+        comment = this.candidateCommentRepository.save(comment);
+        return comment.getCandidate();
     }
 
     @Override
@@ -209,7 +282,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     @Transactional
-    public CandidateComment updateComment(UUID candidateId, UUID commentId, UUID userId, CommentModel commentModel) {
+    public Candidate updateComment(UUID candidateId, UUID commentId, UUID userId, CommentModel commentModel) {
         if (commentModel == null)
             throw new RuntimeException("Candidate comment to update is null!");
         // Used to check if candidate actually exists
@@ -217,15 +290,30 @@ public class CandidateServiceImpl implements CandidateService {
 
         // UPDATE issue comment
         candidateComment.updateComment(commentModel.getText());
-        return this.candidateCommentRepository.save(candidateComment);
+        candidateComment = this.candidateCommentRepository.save(candidateComment);
+        return candidateComment.getCandidate();
     }
 
     @Override
     @Transactional
-    public ResponseEntity<?> deleteComment(UUID issueId, UUID commentId, UUID userId) {
-        this.authCandidateComment(issueId, commentId, userId);
+    public Candidate updateCandidateCommentRating(UUID candidateId, UUID commentId, UUID userId, RatingModelRequest ratingModelRequest) {
+        Candidate candidate = this.getCandidateById(candidateId);
+        CandidateComment candidateComment = this.getCommentById(commentId);
+        UserEntity user = this.userService.getUserById(userId);
+        CandidateCommentRating candidateCommentRating = new CandidateCommentRating(candidateComment, user, ratingModelRequest.getRating());
+        if (this.candidateCommentRatingRepository.existsByIdAndRating(candidateCommentRating.getId(), candidateCommentRating.getRating())) {
+            candidateCommentRating.setRating(0);
+        }
+        candidateCommentRating = this.candidateCommentRatingRepository.save(candidateCommentRating);
+        return candidateCommentRating.getCandidateComment().getCandidate();
+    }
+
+    @Override
+    @Transactional
+    public Candidate deleteComment(UUID candidateId, UUID commentId, UUID userId) {
+        this.authCandidateComment(candidateId, commentId, userId);
         this.candidateCommentRepository.deleteById(commentId);
-        return ResponseEntity.noContent().build();
+        return this.getCandidateById(candidateId);
     }
 
     private CandidateComment authCandidateComment(UUID candidateId, UUID commentId, UUID userId) {
@@ -244,7 +332,7 @@ public class CandidateServiceImpl implements CandidateService {
      */
     @Override
     @Transactional
-    public CandidateEvidence createEvidence(UUID candidateId, UUID userId, EvidenceModel evidenceModel) {
+    public Candidate createEvidence(UUID candidateId, UUID userId, EvidenceModel evidenceModel) {
         Candidate candidate = this.getCandidateById(candidateId);
         UserEntity user = this.userService.getUserById(userId);
 
@@ -255,7 +343,8 @@ public class CandidateServiceImpl implements CandidateService {
                 evidenceModel.getSupporting(),
                 evidenceModel.getSource(),
                 candidate, user);
-        return this.candidateEvidenceRepository.save(candidateEvidence);
+        candidateEvidence = this.candidateEvidenceRepository.save(candidateEvidence);
+        return candidateEvidence.getCandidate();
     }
 
     @Override
@@ -267,24 +356,39 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     @Transactional
-    public CandidateEvidence updateEvidence(UUID candidateId, UUID evidenceId, UUID userId, EvidenceModel evidenceModel) {
+    public Candidate updateEvidence(UUID candidateId, UUID evidenceId, UUID userId, EvidenceModel evidenceModel) {
         if (evidenceModel == null)
             throw new RuntimeException("Candidate evidence to update is null!");
-        CandidateEvidence candidateEvidence = this.authCandidateEvidence(candidateId, evidenceId, userId);
+        CandidateEvidence candidateEvidence = this.existsCandidateEvidence(candidateId, evidenceId, userId);
         // UPDATE Candidate evidence
         candidateEvidence.updateEvidence(evidenceModel.getTitle(), evidenceModel.getContext(), evidenceModel.getType(), evidenceModel.getSupporting(), evidenceModel.getSource());
-        return this.candidateEvidenceRepository.save(candidateEvidence);
+        candidateEvidence = this.candidateEvidenceRepository.save(candidateEvidence);
+        return candidateEvidence.getCandidate();
     }
 
     @Override
     @Transactional
-    public ResponseEntity<?> deleteEvidence(UUID candidateId, UUID evidenceId, UUID userId) {
-        this.authCandidateEvidence(candidateId, evidenceId, userId);
-        this.candidateEvidenceRepository.deleteById(evidenceId);
-        return ResponseEntity.noContent().build();
+    public Candidate updateCandidateEvidenceRating(UUID candidateId, UUID evidenceID, UUID userId, RatingModelRequest ratingModelRequest) {
+        Candidate candidate = this.getCandidateById(candidateId);
+        CandidateEvidence candidateEvidence = this.getEvidenceById(evidenceID);
+        UserEntity user = this.userService.getUserById(userId);
+        CandidateEvidenceRating candidateEvidenceRating = new CandidateEvidenceRating(candidateEvidence, user, ratingModelRequest.getRating());
+        if (this.candidateEvidenceRatingRepository.existsByIdAndRating(candidateEvidenceRating.getId(), candidateEvidenceRating.getRating())) {
+            candidateEvidenceRating.setRating(0);
+        }
+        candidateEvidenceRating = this.candidateEvidenceRatingRepository.save(candidateEvidenceRating);
+        return candidateEvidenceRating.getCandidateEvidence().getCandidate();
     }
 
-    private CandidateEvidence authCandidateEvidence(UUID candidateId, UUID evidenceId, UUID userId) {
+    @Override
+    @Transactional
+    public Candidate deleteEvidence(UUID candidateId, UUID evidenceId, UUID userId) {
+        this.existsCandidateEvidence(candidateId, evidenceId, userId);
+        this.candidateEvidenceRepository.deleteById(evidenceId);
+        return this.getCandidateById(candidateId);
+    }
+
+    private CandidateEvidence existsCandidateEvidence(UUID candidateId, UUID evidenceId, UUID userId) {
         CandidateEvidence candidateEvidence = this.getEvidenceById(evidenceId);
         // CORRECT Evidence
         if (!candidateEvidence.getCandidate().equals(this.getCandidateById(candidateId)))
