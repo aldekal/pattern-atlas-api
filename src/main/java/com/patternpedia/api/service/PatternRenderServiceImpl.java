@@ -48,7 +48,7 @@ public class PatternRenderServiceImpl implements PatternRenderService {
                 renderedContentOld = mapper.writeValueAsString(oldVersion.getRenderedContent());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            return null;
         }
 
 
@@ -168,7 +168,7 @@ public class PatternRenderServiceImpl implements PatternRenderService {
         try {
             map = mapper.readValue(jsonString, Map.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            return null;
         }
         return map;
 
@@ -200,7 +200,7 @@ public class PatternRenderServiceImpl implements PatternRenderService {
             ResponseEntity<byte[]> result = restTemplate.postForEntity(uri, entity, byte[].class);
             file = result.getBody();
         } catch (Exception e){
-            e.printStackTrace();
+            return null;
         }
         return file;
     }

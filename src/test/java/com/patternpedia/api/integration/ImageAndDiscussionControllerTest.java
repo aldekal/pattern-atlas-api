@@ -71,7 +71,7 @@ public class ImageAndDiscussionControllerTest extends IntegrationTest {
         ResponseEntity<String> resultUpdateImage = this.restTemplate.postForEntity(uriUpdateImage, requestUpdateImage, String.class);
         Assert.assertEquals(200, resultUpdateImage.getStatusCodeValue());
         JSONObject jsonObjectUpdateImage = new JSONObject(resultUpdateImage.getBody());
-        Assert.assertEquals(jsonObjectUpdateImage.get("fileName"), image.getFileName());
+        Assert.assertEquals(jsonObjectUpdateImage.get("fileName"), updatedImage.getFileName());
 
         //Test add-topic
         DiscussionTopic discussionTopic = this.integrationTestHelper.getDefaultDiscussionTopic();
@@ -110,6 +110,7 @@ public class ImageAndDiscussionControllerTest extends IntegrationTest {
         ResponseEntity<String> resultGetImageAndCommentsById = this.restTemplate.getForEntity(uriGetImageAndCommentsById, String.class);
         Assert.assertEquals(200, resultGetImageAndCommentsById.getStatusCodeValue());
         JSONObject jsonObjectGetImageAndCommentsById= new JSONObject(resultGetImageAndCommentsById.getBody());
+        // deepcode ignore test: String.valueOf and toString() return Array as numbers not the included content as json String
         String getImage = new String(Base64.getDecoder().decode(jsonObjectGetImageAndCommentsById.get("image").toString()));
         Assert.assertTrue(getImage.contains(image.getFileType()));
         String topicDescription = jsonObjectGetImageAndCommentsById.getJSONArray("topicModels").getJSONObject(0).getJSONObject("discussionTopic").get("description").toString();
