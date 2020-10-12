@@ -59,7 +59,7 @@ public class ImageAndDiscussionControllerTest extends IntegrationTest {
         URI uriGetImage = new URI(baseUrlGetImage);
         ResponseEntity<String> resultGetImage = this.restTemplate.getForEntity(uriGetImage, String.class);
         Assert.assertEquals(200, resultGetImage.getStatusCodeValue());
-//         deepcode ignore test: String.valueOf and toString() doesnt work for byte[]
+        //deepcode ignore ReplaceBoxedConstructor~java.lang.String: String.valueOf and toString() doesnt work for byte[]
         Assert.assertEquals(resultGetImage.getBody(), new String(image.getData()));
 
         //Test update-image
@@ -111,7 +111,7 @@ public class ImageAndDiscussionControllerTest extends IntegrationTest {
         ResponseEntity<String> resultGetImageAndCommentsById = this.restTemplate.getForEntity(uriGetImageAndCommentsById, String.class);
         Assert.assertEquals(200, resultGetImageAndCommentsById.getStatusCodeValue());
         JSONObject jsonObjectGetImageAndCommentsById= new JSONObject(resultGetImageAndCommentsById.getBody());
-        // deepcode ignore test: String.valueOf and toString() doesnt work for byte[]
+        // deepcode ignore ReplaceBoxedConstructor~java.lang.String: String.valueOf and toString() doesnt work for byte[]
         String getImage = new String(Base64.getDecoder().decode(jsonObjectGetImageAndCommentsById.get("image").toString()));
         Assert.assertTrue(getImage.contains(image.getFileType()));
         String topicDescription = jsonObjectGetImageAndCommentsById.getJSONArray("topicModels").getJSONObject(0).getJSONObject("discussionTopic").get("description").toString();
