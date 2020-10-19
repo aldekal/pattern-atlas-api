@@ -31,7 +31,7 @@ It runs on Port 8081
 #### Turn authentication on/off for PatternPediaAPI
 If you don't need the capabilities of the PatternPediaAuth server during development. You can follow the instructions in the following file 
 [Security Config file](https://github.com/PatternPedia/pattern-pedia-views-backend/blob/ba-meyer-master/src/main/java/com/patternpedia/api/config/ResourceServerConfig.java)
-to turn those off or on. An easier way will be added in future realease.
+to turn those off or on. An easier way will be added in a future realease.
 
 #### Default User
 During development default users are
