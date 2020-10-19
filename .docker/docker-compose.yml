@@ -3,9 +3,9 @@ services:
   db:
     image: postgres:10
     environment:
-      POSTGRES_USER: patternpedia
-      POSTGRES_PASSWORD: patternpedia
-      POSTGRES_DB: patternpedia
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
     ports:
       - "5432:5432"
     networks:
