@@ -8,15 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.patternpedia.api.entities.*;
-import com.patternpedia.api.repositories.DirectedEdgeRepository;
-import com.patternpedia.api.repositories.PatternLanguageRepository;
-import com.patternpedia.api.repositories.PatternRepository;
-import com.patternpedia.api.repositories.PatternSchemaRepository;
-import com.patternpedia.api.repositories.PatternSectionSchemaRepository;
-import com.patternpedia.api.repositories.PatternViewDirectedEdgeRepository;
-import com.patternpedia.api.repositories.PatternViewPatternRepository;
-import com.patternpedia.api.repositories.PatternViewRepository;
-import com.patternpedia.api.repositories.UndirectedEdgeReository;
+import com.patternpedia.api.repositories.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -55,6 +47,13 @@ public class IntegrationTestHelper {
     private ObjectMapper objectMapper;
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private ImageRepository imageRepository;
+    @Autowired
+    private DiscussionCommentRepository discussionCommentRepository;
+    @Autowired
+    private DiscussionTopicRepository discussionTopicRepository;
+
 
     public void cleanUpRepos() {
         System.out.println("Cleaning up...");
@@ -85,6 +84,15 @@ public class IntegrationTestHelper {
 
         this.patternLanguageRepository.deleteAll();
         System.out.println("Cleaned up patternLanguageRepository");
+
+        this.imageRepository.deleteAll();
+        System.out.println("Cleaned up imageRepository");
+
+        this.discussionCommentRepository.deleteAll();
+        System.out.println("Cleaned up discussionCommentRepository");
+
+        this.discussionTopicRepository.deleteAll();
+        System.out.println("Cleaned up discussionTopicRepository");
     }
 
     public ObjectNode getDefaultPatternContent() {
@@ -217,4 +225,31 @@ public class IntegrationTestHelper {
 
         return this.objectMapper.readValue(getPatternResponse.getResponse().getContentAsByteArray(), Pattern.class);
     }
+
+    public Image getDefaultImage(){
+        Image image = new Image();
+        image.setId(UUID.randomUUID());
+        image.setFileName("testImage");
+        image.setFileType("testType");
+        image.setData("testFile".getBytes());
+        return image;
+    }
+
+    public DiscussionTopic getDefaultDiscussionTopic(){
+        DiscussionTopic discussionTopic = new DiscussionTopic();
+        discussionTopic.setId(UUID.randomUUID());
+        discussionTopic.setTitle("TestTopic");
+        discussionTopic.setDescription("Testdescription");
+        discussionTopic.setImageId(this.getDefaultImage().getId());
+        return discussionTopic;
+    }
+
+    public DiscussionComment getDefaultDiscussionComment(){
+        DiscussionComment discussionComment = new DiscussionComment();
+        discussionComment.setId(UUID.randomUUID());
+        discussionComment.setText("TestText");
+        discussionComment.setDiscussionTopic(this.getDefaultDiscussionTopic());
+        return discussionComment;
+    }
+
 }

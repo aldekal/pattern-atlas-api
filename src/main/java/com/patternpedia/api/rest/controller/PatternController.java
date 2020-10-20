@@ -10,12 +10,9 @@ import com.patternpedia.api.entities.*;
 import com.patternpedia.api.exception.DirectedEdgeNotFoundException;
 import com.patternpedia.api.exception.UndirectedEdgeNotFoundException;
 import com.patternpedia.api.rest.model.PatternContentModel;
+import com.patternpedia.api.rest.model.PatternRenderedContentModel;
 import com.patternpedia.api.rest.model.PatternModel;
-import com.patternpedia.api.service.PatternLanguageService;
-import com.patternpedia.api.service.PatternRelationDescriptorService;
-import com.patternpedia.api.service.PatternService;
-import com.patternpedia.api.service.PatternViewService;
-
+import com.patternpedia.api.service.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.validation.Valid;
@@ -50,17 +47,20 @@ public class PatternController {
     private PatternViewService patternViewService;
     private PatternRelationDescriptorService patternRelationDescriptorService;
     private ObjectMapper objectMapper;
+    private PatternRenderService patternRenderService;
 
     public PatternController(PatternService patternService,
                              PatternLanguageService patternLanguageService,
                              PatternViewService patternViewService,
                              PatternRelationDescriptorService patternRelationDescriptorService,
+                             PatternRenderService patternRenderService,
                              ObjectMapper objectMapper) {
         this.patternService = patternService;
         this.patternLanguageService = patternLanguageService;
         this.patternViewService = patternViewService;
         this.patternRelationDescriptorService = patternRelationDescriptorService;
         this.objectMapper = objectMapper;
+        this.patternRenderService = patternRenderService;
     }
 
     static List<Link> getPatternLanguagePatternCollectionLinks(UUID patternLanguageId) {
@@ -90,6 +90,7 @@ public class PatternController {
                 .andAffordance(afford(methodOn(PatternController.class).updatePatternViaPut(pattern.getPatternLanguage().getId(), pattern.getId(), null)))
                 .andAffordance(afford(methodOn(PatternController.class).deletePatternOfPatternLanguage(pattern.getPatternLanguage().getId(), pattern.getId()))));
         links.add(linkTo(methodOn(PatternController.class).getPatternContentOfPattern(pattern.getPatternLanguage().getId(), pattern.getId())).withRel("content"));
+        links.add(linkTo(methodOn(PatternController.class).getPatternRenderedContentOfPattern(pattern.getPatternLanguage().getId(), pattern.getId())).withRel("renderedContent"));
         links.add(linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(pattern.getPatternLanguage().getId())).withRel("patternLanguage"));
 
         if (null != pattern.getPatternViews()) {
@@ -261,6 +262,7 @@ public class PatternController {
                 .map(pattern -> new EntityModel<>(PatternModel.from(pattern),
                         linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(patternLanguageId, pattern.getId())).withSelfRel(),
                         linkTo(methodOn(PatternController.class).getPatternContentOfPattern(patternLanguageId, pattern.getId())).withRel("content"),
+                        linkTo(methodOn(PatternController.class).getPatternRenderedContentOfPattern(patternLanguageId, pattern.getId())).withRel("renderedContent"),
                         linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage")))
                 .collect(Collectors.toList());
         return new CollectionModel<>(patterns, getPatternLanguagePatternCollectionLinks(patternLanguageId));
@@ -314,7 +316,13 @@ public class PatternController {
     @PostMapping(value = "/patternViews/{patternViewId}/patterns")
     @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> addPatternToPatternView(@PathVariable UUID patternViewId, @RequestBody Pattern pattern) {
+    public ResponseEntity<?> addPatternToPatternView(@PathVariable UUID patternViewId, @RequestBody Pattern pattern)  {
+        Object renderedContent = patternRenderService.renderContent(pattern, null);
+        if (renderedContent != null){
+            pattern.setRenderedContent(renderedContent);
+        } else {
+            pattern.setRenderedContent(pattern.getContent());
+        }
         this.patternViewService.addPatternToPatternView(patternViewId, pattern.getId());
         return ResponseEntity.created(linkTo(methodOn(PatternController.class)
                 .getPatternOfPatternViewById(patternViewId, pattern.getId())).toUri()).build();
@@ -345,7 +353,12 @@ public class PatternController {
         if (null == pattern.getUri()) {
             pattern.setUri(patternLanguage.getUri() + '/' + CaseUtils.toCamelCase(pattern.getName(), false));
         }
-
+        Object renderedContent = patternRenderService.renderContent(pattern, null);
+        if (renderedContent != null){
+            pattern.setRenderedContent(renderedContent);
+        } else {
+            pattern.setRenderedContent(pattern.getContent());
+        }
         pattern = this.patternLanguageService.createPatternAndAddToPatternLanguage(patternLanguageId, pattern);
 
         return ResponseEntity.created(linkTo(methodOn(PatternController.class)
@@ -367,6 +380,13 @@ public class PatternController {
         PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
         Pattern persistedVersion = this.patternService.getPatternById(patternId);
         // Remark: At the moment we do not support changing name, uri of a pattern
+
+        Object renderedContent = patternRenderService.renderContent(pattern, persistedVersion);
+        if (renderedContent != null){
+            persistedVersion.setRenderedContent(renderedContent);
+        } else {
+            persistedVersion.setRenderedContent(pattern.getContent());
+        }
         persistedVersion.setIconUrl(pattern.getIconUrl());
         persistedVersion.setContent(pattern.getContent());
 
@@ -374,6 +394,7 @@ public class PatternController {
         return new EntityModel<>(pattern,
                 linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(patternLanguageId, patternId)).withSelfRel(),
                 linkTo(methodOn(PatternController.class).getPatternContentOfPattern(patternLanguageId, patternId)).withRel("content"),
+                linkTo(methodOn(PatternController.class).getPatternRenderedContentOfPattern(patternLanguageId, patternId)).withRel("renderedContent"),
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
     }
 
@@ -400,6 +421,27 @@ public class PatternController {
         return new EntityModel<>(model,
                 linkTo(methodOn(PatternController.class).getPatternContentOfPattern(patternLanguageId, patternId)).withSelfRel(),
                 linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(patternLanguageId, patternId)).withRel("pattern"),
+                linkTo(methodOn(PatternController.class).getPatternRenderedContentOfPattern(patternLanguageId, patternId)).withRel("renderedContent"),
+                linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
+    }
+
+
+    @GetMapping(value = "/patternLanguages/{patternLanguageId}/patterns/{patternId}/renderedContent")
+    EntityModel<Object> getPatternRenderedContentOfPattern(@PathVariable UUID patternLanguageId, @PathVariable UUID patternId) {
+
+        Pattern pattern = this.patternLanguageService.getPatternOfPatternLanguageById(patternLanguageId, patternId);
+        PatternRenderedContentModel model = new PatternRenderedContentModel();
+
+        if (null == pattern.getRenderedContent()) {
+            model.setRenderedContent(this.objectMapper.createObjectNode());
+        } else {
+            model.setRenderedContent(pattern.getRenderedContent());
+        }
+
+        return new EntityModel<>(model,
+                linkTo(methodOn(PatternController.class).getPatternContentOfPattern(patternLanguageId, patternId)).withSelfRel(),
+                linkTo(methodOn(PatternController.class).getPatternOfPatternLanguageById(patternLanguageId, patternId)).withRel("pattern"),
+                linkTo(methodOn(PatternController.class).getPatternRenderedContentOfPattern(patternLanguageId, patternId)).withRel("content"),
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
     }
 }
