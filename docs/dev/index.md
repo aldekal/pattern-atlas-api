@@ -57,7 +57,7 @@ During development default users are
 ## Main API Endpoints
 API-Root:   /
 
-Swagger-UI: http://localhost:8080/swagger-ui/index.html?url=/v3/api-docs#/
+Swagger-UI: http://localhost:8080/swagger-ui
 
 HAL - Browser: On "/" -> redirects to http://localhost:8080/explorer/index.html#uri=/
 
