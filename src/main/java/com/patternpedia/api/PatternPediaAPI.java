@@ -1,6 +1,10 @@
 package com.patternpedia.api;
 
 import com.vladmihalcea.hibernate.type.util.Configuration;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Contact;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.info.License;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -11,6 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @Slf4j
 @SpringBootApplication
+@OpenAPIDefinition(info = @Info(title = "pattern-atlas-api", version = "1.0", contact = @Contact(url = "https://github.com/PatternAtlas/pattern-atlas-api", name = "Pattern Atlas API")))
 public class PatternPediaAPI implements CommandLineRunner {
 
     public static void main(String[] args) {

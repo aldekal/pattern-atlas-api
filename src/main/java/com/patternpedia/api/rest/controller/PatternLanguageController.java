@@ -1,21 +1,7 @@
 package com.patternpedia.api.rest.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.patternpedia.api.entities.PatternLanguage;
-import com.patternpedia.api.entities.PatternSchema;
-import com.patternpedia.api.rest.model.GraphModel;
-import com.patternpedia.api.rest.model.PatternLanguageModel;
-import com.patternpedia.api.service.PatternLanguageService;
-import org.apache.commons.text.CaseUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -23,7 +9,29 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import com.patternpedia.api.entities.PatternLanguage;
+import com.patternpedia.api.entities.PatternSchema;
+import com.patternpedia.api.rest.model.GraphModel;
+import com.patternpedia.api.rest.model.PatternLanguageModel;
+import com.patternpedia.api.service.PatternLanguageService;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.apache.commons.text.CaseUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
@@ -70,18 +78,19 @@ public class PatternLanguageController {
         return links;
     }
 
-    @GetMapping
+    @Operation(operationId = "getAllPatternLanguageModels",  responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all pattern languages")
+    @GetMapping(value = "")
     CollectionModel<EntityModel<PatternLanguageModel>> getAllPatternLanguages() {
-        List<EntityModel<PatternLanguageModel>> patternLanguages = this.patternLanguageService.getPatternLanguages()
+        List<EntityModel<PatternLanguageModel>> patternLanguageModels = this.patternLanguageService.getPatternLanguages()
                 .stream()
                 .map(PatternLanguageModel::toModel)
                 .map(patternLanguageModel -> new EntityModel<>(patternLanguageModel,
                         getPatternLanguageLinks(patternLanguageModel.getId())))
                 .collect(Collectors.toList());
-
-        return new CollectionModel<>(patternLanguages, getPatternLanguageCollectionLinks());
+        return new CollectionModel<>(patternLanguageModels, getPatternLanguageCollectionLinks());
     }
 
+    @Operation(operationId = "getPatternLanguageByURI", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Retrieve pattern language by URI")
     @GetMapping(value = "/findByUri")
     EntityModel<PatternLanguage> findPatternLanguageByUri(@RequestParam String encodedUri) throws UnsupportedEncodingException {
         String uri = URLDecoder.decode(encodedUri, StandardCharsets.UTF_8.toString());
@@ -90,6 +99,7 @@ public class PatternLanguageController {
         return new EntityModel<>(patternLanguage, getPatternLanguageLinks(patternLanguage.getId()));
     }
 
+    @Operation(operationId = "getPatternLanguageByID", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Retrieve pattern language by ID")
     @GetMapping(value = "/{patternLanguageId}")
     EntityModel<PatternLanguage> getPatternLanguageById(@PathVariable UUID patternLanguageId) {
         PatternLanguage patternLanguage = this.patternLanguageService.getPatternLanguageById(patternLanguageId);
@@ -97,10 +107,11 @@ public class PatternLanguageController {
         return new EntityModel<>(patternLanguage, getPatternLanguageLinks(patternLanguage.getId()));
     }
 
+    @Operation(operationId = "createPatternLanguage", responses = {@ApiResponse(responseCode = "201")}, description = "Create pattern language")
     @PostMapping
     @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)
-    ResponseEntity<?> createPatternLanguage(@RequestBody PatternLanguage patternLanguage) {
+    ResponseEntity<EntityModel<PatternLanguage>> createPatternLanguage(@RequestBody PatternLanguage patternLanguage) {
         String patternLanguageNameAsCamelCase = CaseUtils.toCamelCase(patternLanguage.getName(), false);
         String uri = String.format("https://patternpedia.org/patternLanguages/%s", patternLanguageNameAsCamelCase);
         patternLanguage.setUri(uri);
@@ -111,18 +122,21 @@ public class PatternLanguageController {
                 .build();
     }
 
+    @Operation(operationId = "updatePatternLanguage", responses = {@ApiResponse(responseCode = "200")}, description = "Update pattern language")
     @PutMapping(value = "/{patternLanguageId}")
-    ResponseEntity<?> putPatternLanguage(@PathVariable UUID patternLanguageId, @RequestBody PatternLanguage patternLanguage) {
+    ResponseEntity<Void> putPatternLanguage(@PathVariable UUID patternLanguageId, @RequestBody PatternLanguage patternLanguage) {
         this.patternLanguageService.updatePatternLanguage(patternLanguage);
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(operationId = "deletePatternLanguage", responses = {@ApiResponse(responseCode = "204")}, description = "Delete pattern language")
     @DeleteMapping(value = "/{patternLanguageId}")
-    ResponseEntity<?> deletePatternLanguage(@PathVariable UUID patternLanguageId) {
+    ResponseEntity<Void> deletePatternLanguage(@PathVariable UUID patternLanguageId) {
         this.patternLanguageService.deletePatternLanguage(patternLanguageId);
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(operationId = "getPatternSchema", responses = {@ApiResponse(responseCode = "200")}, description = "Get pattern schema by pattern language id")
     @GetMapping(value = "/{patternLanguageId}/patternSchema")
     EntityModel<PatternSchema> getPatternSchema(@PathVariable UUID patternLanguageId) {
         PatternSchema schema = this.patternLanguageService.getPatternSchemaByPatternLanguageId(patternLanguageId);
@@ -135,14 +149,16 @@ public class PatternLanguageController {
                 linkTo(methodOn(PatternLanguageController.class).getPatternLanguageById(patternLanguageId)).withRel("patternLanguage"));
     }
 
+    @Operation(operationId = "updatePatternSchema", responses = {@ApiResponse(responseCode = "204")}, description = "Update pattern schema by pattern language id")
     @PutMapping(value = "/{patternLanguageId}/patternSchema")
-    ResponseEntity<?> updatePatternSchema(@PathVariable UUID patternLanguageId, @RequestBody PatternSchema patternSchema) {
+    ResponseEntity<Void> updatePatternSchema(@PathVariable UUID patternLanguageId, @RequestBody PatternSchema patternSchema) {
         this.patternLanguageService.updatePatternSchemaOfPatternLanguage(patternLanguageId, patternSchema);
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(operationId = "getPatternLanguageGraph", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve pattern language graph")
     @GetMapping(value = "/{patternLanguageId}/graph")
-    ResponseEntity<?> getPatternLanguageGraph(@PathVariable UUID patternLanguageId) {
+    HttpEntity<EntityModel<Object>> getPatternLanguageGraph(@PathVariable UUID patternLanguageId) {
         Object graph = this.patternLanguageService.getGraphOfPatternLanguage(patternLanguageId);
 
         GraphModel model = new GraphModel();
@@ -159,21 +175,23 @@ public class PatternLanguageController {
         return ResponseEntity.ok(entityModel);
     }
 
+    @Operation(operationId = "postPatternLanguageGraph", responses = {@ApiResponse(responseCode = "200")}, description = "Update pattern language graph")
     @PostMapping(value = "/{patternLanguageId}/graph")
-    ResponseEntity<?> postPatternLanguageGraph(@PathVariable UUID patternLanguageId, @RequestBody Object graph) {
+    ResponseEntity<URI> postPatternLanguageGraph(@PathVariable UUID patternLanguageId, @RequestBody Object graph) {
         this.patternLanguageService.updateGraphOfPatternLanguage(patternLanguageId, graph);
-        return ResponseEntity.created(linkTo(methodOn(PatternLanguageController.class).getPatternLanguageGraph(patternLanguageId)).toUri())
-                .build();
+        return ResponseEntity.ok(linkTo(methodOn(PatternLanguageController.class).getPatternLanguageGraph(patternLanguageId)).toUri());
     }
 
+    @Operation(operationId = "putPatternLanguageGraph", responses = {@ApiResponse(responseCode = "204")}, description = "Update pattern language graph")
     @PutMapping(value = "/{patternLanguageId}/graph")
-    ResponseEntity<?> putPatternLanguageGraph(@PathVariable UUID patternLanguageId, @RequestBody Object graph) {
+    ResponseEntity<Void> putPatternLanguageGraph(@PathVariable UUID patternLanguageId, @RequestBody Object graph) {
         this.patternLanguageService.updateGraphOfPatternLanguage(patternLanguageId, graph);
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(operationId = "deletePatternLanguageGraph", responses = {@ApiResponse(responseCode = "204")}, description = "Delete pattern language graph")
     @DeleteMapping(value = "/{patternLanguageId}/graph")
-    ResponseEntity<?> deletePatternLanguageGraph(@PathVariable UUID patternLanguageId) {
+    ResponseEntity<Void> deletePatternLanguageGraph(@PathVariable UUID patternLanguageId) {
         this.patternLanguageService.deleteGraphOfPatternLanguage(patternLanguageId);
         return ResponseEntity.noContent().build();
     }
