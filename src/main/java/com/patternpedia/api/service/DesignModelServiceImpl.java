@@ -114,13 +114,6 @@ public class DesignModelServiceImpl implements DesignModelService {
 
     @Override
     @Transactional
-    public void updatePatternInstance(UUID designModelId, UUID patternInstanceId, Pattern pattern) {
-//        List<DesignModelPatternInstance> patternList = this.designModelPatternInstanceRepository.findTopByDesignModel_IdAndPatternInstanceId(patternInstanceId);
-    }
-
-
-    @Override
-    @Transactional
     public void updatePatternInstancePosition(UUID designModelId, UUID patternInstanceId, Double x, Double y) {
         DesignModelPatternInstance patternInstance = this.designModelPatternInstanceRepository
                 .findTopByDesignModel_IdAndPatternInstanceId(designModelId, patternInstanceId)

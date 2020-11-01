@@ -1,6 +1,5 @@
 package com.patternpedia.api.service;
 
-import com.patternpedia.api.entities.Pattern;
 import com.patternpedia.api.entities.designmodel.DesignModel;
 import com.patternpedia.api.entities.designmodel.DesignModelEdgeType;
 import com.patternpedia.api.entities.designmodel.DesignModelPatternEdge;
@@ -24,8 +23,6 @@ public interface DesignModelService {
     void deletePatternInstance(UUID designModelId, UUID patternInstanceId);
 
     DesignModelPatternInstance getPatternInstance(UUID designModelId, UUID patternInstanceId);
-
-    void updatePatternInstance(UUID designModelId, UUID patternInstanceId, Pattern pattern);
 
     void updatePatternInstancePosition(UUID designModelId, UUID patternInstanceId, Double x, Double y);
 
