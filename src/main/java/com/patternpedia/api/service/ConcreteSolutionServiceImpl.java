@@ -1,11 +1,10 @@
 package com.patternpedia.api.service;
 
-import com.patternpedia.api.entities.designmodel.AggregationData;
-import com.patternpedia.api.entities.designmodel.ConcreteSolution;
-import com.patternpedia.api.entities.designmodel.DesignModelPatternEdge;
-import com.patternpedia.api.entities.designmodel.DesignModelPatternInstance;
+import com.patternpedia.api.entities.designmodel.*;
+import com.patternpedia.api.exception.AggregationException;
 import com.patternpedia.api.exception.ConcreteSolutionNotFoundException;
 import com.patternpedia.api.repositories.ConcreteSolutionRepository;
+import com.patternpedia.api.repositories.DesignModelEdgeTypeRepository;
 import com.patternpedia.api.rest.model.FileDTO;
 import com.patternpedia.api.util.aggregator.Aggregator;
 import com.patternpedia.api.util.aggregator.AggregatorScanner;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 @Service
@@ -23,10 +21,13 @@ import java.util.stream.Stream;
 public class ConcreteSolutionServiceImpl implements ConcreteSolutionService {
 
     private final ConcreteSolutionRepository concreteSolutionRepository;
+    private final DesignModelEdgeTypeRepository designModelEdgeTypeRepository;
 
 
-    public ConcreteSolutionServiceImpl(ConcreteSolutionRepository concreteSolutionRepository) {
+    public ConcreteSolutionServiceImpl(ConcreteSolutionRepository concreteSolutionRepository,
+                                       DesignModelEdgeTypeRepository designModelEdgeTypeRepository) {
         this.concreteSolutionRepository = concreteSolutionRepository;
+        this.designModelEdgeTypeRepository = designModelEdgeTypeRepository;
     }
 
 
@@ -58,7 +59,10 @@ public class ConcreteSolutionServiceImpl implements ConcreteSolutionService {
 
 
     private void swapEdgeDirections(List<DesignModelPatternEdge> edges) {
-        Set<String> edgeTypesToSwapDirections = Stream.of("produce", "publish").collect(Collectors.toSet());
+        Set<String> edgeTypesToSwapDirections = this.designModelEdgeTypeRepository.findAll().stream()
+                .filter(DesignModelEdgeType::getSwap)
+                .map(DesignModelEdgeType::getName)
+                .collect(Collectors.toSet());
 
         for (DesignModelPatternEdge edge : edges) {
             if (edge.isDirectedEdge() && edgeTypesToSwapDirections.contains(edge.getType())) {
@@ -97,7 +101,6 @@ public class ConcreteSolutionServiceImpl implements ConcreteSolutionService {
             leafNodes.remove(edge.getPatternInstance2().getPatternInstanceId());
         }
 
-        log.info("Leaf nodes: " + leafNodes.toString());
         return leafNodes;
     }
 
@@ -114,7 +117,9 @@ public class ConcreteSolutionServiceImpl implements ConcreteSolutionService {
         final UUID leafNodeUUID = leafNodes.contains(lastLeafUUID) ? lastLeafUUID : leafNodes.iterator().next();
         lastLeafUUID = leafNodeUUID;
 
-        DesignModelPatternInstance leafPatternInstance = patternInstances.stream().filter(designModelPatternInstance -> leafNodeUUID.equals(designModelPatternInstance.getPatternInstanceId())).findAny().get();
+        DesignModelPatternInstance leafPatternInstance = patternInstances.stream()
+                .filter(designModelPatternInstance -> leafNodeUUID.equals(designModelPatternInstance.getPatternInstanceId()))
+                .findAny().orElse(null);
 
         if (patternInstances.size() == 1) {
             return new AggregationData(leafPatternInstance, null, null);
@@ -127,9 +132,11 @@ public class ConcreteSolutionServiceImpl implements ConcreteSolutionService {
         if (edge != null) {
             UUID predecessorNodeUUID = edge.getPatternInstance2().getPatternInstanceId();
 
-            predecessorPatternInstance = patternInstances.stream().filter(designModelPatternInstance -> predecessorNodeUUID.equals(designModelPatternInstance.getPatternInstanceId())).findAny().get();
+            predecessorPatternInstance = patternInstances.stream()
+                    .filter(designModelPatternInstance -> predecessorNodeUUID.equals(designModelPatternInstance.getPatternInstanceId()))
+                    .findAny().orElse(null);
 
-            log.info("Found leaf [" + leafNodeUUID.toString() + "] and predecessor [" + predecessorNodeUUID.toString() + "]: " + leafPatternInstance.getPattern().getName() + " ---" + edge.getType() + "--> " + predecessorPatternInstance.getPattern().getName());
+            log.info("Found leaf [" + leafNodeUUID.toString() + "] and predecessor [" + predecessorNodeUUID.toString() + "]: " + leafPatternInstance.getPattern().getName() + " ---" + edge.getType() + "--- " + predecessorPatternInstance.getPattern().getName());
         }
 
         return new AggregationData(leafPatternInstance, predecessorPatternInstance, edge);
@@ -142,16 +149,20 @@ public class ConcreteSolutionServiceImpl implements ConcreteSolutionService {
         String targetAggregationType = null;
         try {
             targetAggregationType = aggregationData.getTarget().getConcreteSolution().getAggregatorType();
-        } catch (NullPointerException e) {
+        } catch (NullPointerException ignored) {
         }
 
         Aggregator aggregator = AggregatorScanner.findMatchingAggregatorImpl(sourceAggregationType, targetAggregationType);
 
         if (aggregator == null) {
-            throw new RuntimeException("Aggregation type combination is not yet supported: [" + sourceAggregationType + "] --> [" + targetAggregationType + "]");
+            throw new AggregationException("Aggregation type combination is not yet supported: [" + sourceAggregationType + "] --> [" + targetAggregationType + "]");
         }
 
-        aggregator.aggregate(aggregationData);
+        try {
+            aggregator.aggregate(aggregationData);
+        } catch (AggregationException e) {
+            throw new AggregationException("Failed to aggregate concrete solutions");
+        }
     }
 
 
@@ -178,7 +189,7 @@ public class ConcreteSolutionServiceImpl implements ConcreteSolutionService {
             }
 
             edges.remove(aggregationData.getEdge());
-            if (!edges.stream().filter(edge -> aggregationData.getSource().getPatternInstanceId().equals(edge.getPatternInstance1().getPatternInstanceId())).findAny().isPresent()) {
+            if (!edges.stream().anyMatch(edge -> aggregationData.getSource().getPatternInstanceId().equals(edge.getPatternInstance1().getPatternInstanceId()))) {
                 patternInstances.remove(aggregationData.getSource());
             }
         }

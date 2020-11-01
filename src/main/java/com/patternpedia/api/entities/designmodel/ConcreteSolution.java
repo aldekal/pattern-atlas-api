@@ -29,9 +29,7 @@ public class ConcreteSolution {
     @ElementCollection
     private List<String> properties;
 
-    private String templateRef;
+    private String templateUri;
 
     private String aggregatorType;
-
-    private Integer priority;
 }

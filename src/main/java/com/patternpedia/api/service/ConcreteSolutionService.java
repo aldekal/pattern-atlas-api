@@ -19,7 +19,5 @@ public interface ConcreteSolutionService {
 
     ConcreteSolution getConcreteSolution(UUID uuid);
 
-//    ConcreteSolution getConcreteSolution(URI patternUri, String technology);
-
     List<FileDTO> aggregate(List<DesignModelPatternInstance> patternInstances, List<DesignModelPatternEdge> edges, Map<UUID, UUID> concreteSolutionMapping);
 }

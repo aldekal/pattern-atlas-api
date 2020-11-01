@@ -1,8 +1,7 @@
 package com.patternpedia.api.rest.exception;
 
-import com.patternpedia.api.exception.*;
+import com.patternpedia.api.exception.NullPatternSchemaException;
 import com.patternpedia.api.rest.model.ErrorMessageDTO;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -33,8 +32,8 @@ public class RestResponseExceptionHandler
         return handleExceptionInternal(ex, errorMessage, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
-    @ExceptionHandler({
-            InvalidDataAccessResourceUsageException.class
+    @ExceptionHandler(value = {
+            Exception.class
     })
     protected ResponseEntity<Object> handleStorageExceptions(RuntimeException ex, WebRequest request) {
         ErrorMessageDTO errorMessage = new ErrorMessageDTO(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

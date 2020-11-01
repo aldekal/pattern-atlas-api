@@ -1,11 +1,12 @@
 package com.patternpedia.api.util.aggregator;
 
-import com.patternpedia.api.entities.designmodel.AggregationData;
 import com.patternpedia.api.entities.designmodel.DesignModelPatternInstance;
+import com.patternpedia.api.exception.AggregationException;
 import lombok.extern.apachecommons.CommonsLog;
 import org.stringtemplate.v4.ST;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Map;
@@ -16,20 +17,21 @@ import java.util.stream.Collectors;
 @CommonsLog
 public abstract class AggregatorImpl implements Aggregator {
 
+    protected static final String CONCRETE_SOLUTION_REPO = "https://raw.githubusercontent.com/marzn/pattern-atlas-pattern-implementations/main/";
+
     protected static final Random RANDOM = new Random();
 
 
-    public abstract void aggregate(AggregationData aggregationData);
-
-
     protected static String readFile(String url) {
+        log.info("Read file from " + url);
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new URL(url).openStream()))) {
             return reader.lines().collect(Collectors.joining("\n"));
 
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+        } catch (IOException e) {
+            String errorMsg = "Failed to read file from " + url;
+            log.error(errorMsg);
+            throw new AggregationException(errorMsg);
         }
-        return null;
     }
 
 
@@ -52,6 +54,6 @@ public abstract class AggregatorImpl implements Aggregator {
 
 
     protected static String getIdentifier(DesignModelPatternInstance patternInstance) {
-        return patternInstance.getPattern().getName().replaceAll(" ", "-").toLowerCase() + "-" + patternInstance.getPatternInstanceId().toString();
+        return patternInstance.getPattern().getName().replace(" ", "-").toLowerCase() + "-" + patternInstance.getPatternInstanceId().toString();
     }
 }

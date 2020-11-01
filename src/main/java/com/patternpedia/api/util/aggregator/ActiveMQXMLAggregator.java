@@ -15,7 +15,7 @@ public class ActiveMQXMLAggregator extends ActiveMQAggregator {
 
     private static final String FILENAME = "camel.xml";
     private static final String MIME_TYPE = "text/xml";
-    private static final String WRAPPER_TEMPLATE = "file:///home/marcel/Dokumente/Studium Softwaretechnik/Vorlesungen/14. Semester/Masterthesis/Pattern Atlas/concrete-solutions/eip-activemq-xml/camel.st";
+    private static final String WRAPPER_TEMPLATE = CONCRETE_SOLUTION_REPO + "eip-activemq-xml/camel.st";
     private static final String TEMPLATE_KEY = "-template";
 
 
@@ -31,7 +31,7 @@ public class ActiveMQXMLAggregator extends ActiveMQAggregator {
 
         camelContext.append(aggregationData.getTemplateContext().getOrDefault(patternInstanceId + TEMPLATE_KEY, ""));
 
-        String concreteSolutionTemplate = readFile(concreteSolution.getTemplateRef());
+        String concreteSolutionTemplate = readFile(concreteSolution.getTemplateUri());
 
         String idComment = "<!-- " + getIdentifier(sourcePattern) + " -->";
         if (!camelContext.toString().contains(idComment)) {

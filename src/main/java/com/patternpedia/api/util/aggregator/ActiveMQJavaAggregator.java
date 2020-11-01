@@ -13,7 +13,7 @@ public class ActiveMQJavaAggregator extends ActiveMQAggregator {
 
     private static final String FILENAME = "PatternAtlasRouteBuilder.java";
     private static final String MIME_TYPE = "text/x-java";
-    private static final String WRAPPER_TEMPLATE = "file:///home/marcel/Dokumente/Studium Softwaretechnik/Vorlesungen/14. Semester/Masterthesis/Pattern Atlas/concrete-solutions/eip-activemq-java/camel.st";
+    private static final String WRAPPER_TEMPLATE = CONCRETE_SOLUTION_REPO + "eip-activemq-java/camel.st";
     private static final String TEMPLATE_KEY = "-template-jdsl";
 
 
@@ -29,7 +29,7 @@ public class ActiveMQJavaAggregator extends ActiveMQAggregator {
 
         camelContext.append(aggregationData.getTemplateContext().getOrDefault(patternInstanceId + TEMPLATE_KEY, ""));
 
-        String concreteSolutionTemplate = readFile(concreteSolution.getTemplateRef());
+        String concreteSolutionTemplate = readFile(concreteSolution.getTemplateUri());
 
         String idComment = "/* " + getIdentifier(aggregationData.getSource()) + " */";
         if (!camelContext.toString().contains(idComment)) {

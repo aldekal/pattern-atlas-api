@@ -12,7 +12,6 @@ import java.util.function.BiFunction;
 @CommonsLog
 public abstract class ActiveMQAggregator extends AggregatorImpl {
 
-
     @Override
     public abstract void aggregate(AggregationData aggregationData);
 

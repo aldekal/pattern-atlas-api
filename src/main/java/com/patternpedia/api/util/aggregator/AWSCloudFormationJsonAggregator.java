@@ -16,7 +16,7 @@ public class AWSCloudFormationJsonAggregator extends ActiveMQAggregator {
 
     private static final String FILENAME = "CloudFormation-Template.json";
     private static final String MIME_TYPE = "application/json";
-    private static final String WRAPPER_TEMPLATE = "file:///home/marcel/Dokumente/Studium Softwaretechnik/Vorlesungen/14. Semester/Masterthesis/Pattern Atlas/concrete-solutions/aws-cloudformation-json/cloudformation.st";
+    private static final String WRAPPER_TEMPLATE = CONCRETE_SOLUTION_REPO + "aws-cloudformation-json/cloudformation.st";
 
 
     @Override
@@ -28,7 +28,7 @@ public class AWSCloudFormationJsonAggregator extends ActiveMQAggregator {
         String patternInstanceId = sourcePattern.getPatternInstanceId().toString();
         Map<String, Object> templateContext = aggregationData.getTemplateContext();
 
-        String concreteSolutionTemplate = readFile(concreteSolution.getTemplateRef());
+        String concreteSolutionTemplate = readFile(concreteSolution.getTemplateUri());
 
         String cloudFormationTemplate = extendVariables(concreteSolutionTemplate, patternInstanceId) + "\n";
 

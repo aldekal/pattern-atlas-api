@@ -22,7 +22,7 @@ public class MessageEndpointAggregator extends ActiveMQAggregator {
         String patternInstanceId = sourcePattern.getPatternInstanceId().toString();
         Map<String, Object> templateContext = aggregationData.getTemplateContext();
 
-        String concreteSolutionTemplate = readFile(concreteSolution.getTemplateRef());
+        String concreteSolutionTemplate = readFile(concreteSolution.getTemplateUri());
         concreteSolutionTemplate = extendVariables(concreteSolutionTemplate, patternInstanceId);
 
         boolean isProducer = aggregationData.getTarget() == null;
