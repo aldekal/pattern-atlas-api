@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 import com.patternpedia.api.entities.PatternLanguage;
 import com.patternpedia.api.entities.PatternSchema;
-import com.patternpedia.api.rest.model.PatternLanguageGraphModel;
+import com.patternpedia.api.rest.model.GraphModel;
 import com.patternpedia.api.rest.model.PatternLanguageModel;
 import com.patternpedia.api.service.PatternLanguageService;
 
@@ -161,7 +161,7 @@ public class PatternLanguageController {
     HttpEntity<EntityModel<Object>> getPatternLanguageGraph(@PathVariable UUID patternLanguageId) {
         Object graph = this.patternLanguageService.getGraphOfPatternLanguage(patternLanguageId);
 
-        PatternLanguageGraphModel model = new PatternLanguageGraphModel();
+        GraphModel model = new GraphModel();
         if (null == graph) {
             model.setGraph(this.objectMapper.createArrayNode());
         } else {
