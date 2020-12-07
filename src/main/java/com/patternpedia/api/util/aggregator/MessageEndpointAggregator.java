@@ -5,10 +5,12 @@ import com.patternpedia.api.entities.designmodel.ConcreteSolution;
 import com.patternpedia.api.entities.designmodel.DesignModelPatternInstance;
 import com.patternpedia.api.rest.model.FileDTO;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 
-@AggregatorMetadata(sourceTypes = {"MessageEndpoint"}, targetTypes = {"", "ActiveMQ-XML", "ActiveMQ-Java"})
+@AggregatorMetadata(sourceTypes = {"MessageEndpoint"}, targetTypes = {"", "AWS-CloudFormation-JSON", "ActiveMQ-XML", "ActiveMQ-Java"})
 public class MessageEndpointAggregator extends ActiveMQAggregator {
 
     private static final String MIME_TYPE = "text/x-java";
@@ -25,7 +27,8 @@ public class MessageEndpointAggregator extends ActiveMQAggregator {
         String concreteSolutionTemplate = readFile(concreteSolution.getTemplateUri());
         concreteSolutionTemplate = extendVariables(concreteSolutionTemplate, patternInstanceId);
 
-        boolean isProducer = aggregationData.getTarget() == null;
+        List<String> receivingEdgeTypes = Arrays.asList("subscribe", "receive");
+        boolean isProducer = aggregationData.getTarget() == null || !receivingEdgeTypes.contains(aggregationData.getEdge().getType());
 
         String filename = isProducer ? "QueueProducer.java" : "QueueConsumer.java";
         templateContext.put("producer", isProducer);
