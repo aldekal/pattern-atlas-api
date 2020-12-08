@@ -107,7 +107,7 @@ public class ConcreteSolutionServiceImpl implements ConcreteSolutionService {
 
     private UUID lastLeafUUID = null;
 
-    private AggregationData getLeafAndPredecessor(List<DesignModelPatternInstance> patternInstances, List<DesignModelPatternEdge> edges) {
+    private AggregationDataAndPatternEdge getLeafAndPredecessor(List<DesignModelPatternInstance> patternInstances, List<DesignModelPatternEdge> edges) {
         Set<UUID> leafNodes = findLeafNodes(patternInstances, edges);
 
         if (leafNodes.isEmpty()) {
@@ -122,7 +122,7 @@ public class ConcreteSolutionServiceImpl implements ConcreteSolutionService {
                 .findAny().orElse(null);
 
         if (patternInstances.size() == 1) {
-            return new AggregationData(leafPatternInstance, null, null);
+            return new AggregationDataAndPatternEdge(new AggregationData(leafPatternInstance, null), null);
         }
 
         DesignModelPatternEdge edge = edges.stream().filter(designModelPatternEdge -> leafNodeUUID.equals(designModelPatternEdge.getPatternInstance1().getPatternInstanceId())).findAny().orElse(null);
@@ -139,7 +139,7 @@ public class ConcreteSolutionServiceImpl implements ConcreteSolutionService {
             log.info("Found leaf [" + leafNodeUUID.toString() + "] and predecessor [" + predecessorNodeUUID.toString() + "]: " + leafPatternInstance.getPattern().getName() + " ---" + edge.getType() + "--- " + predecessorPatternInstance.getPattern().getName());
         }
 
-        return new AggregationData(leafPatternInstance, predecessorPatternInstance, edge);
+        return new AggregationDataAndPatternEdge(new AggregationData(leafPatternInstance, predecessorPatternInstance), edge);
     }
 
 
@@ -176,7 +176,8 @@ public class ConcreteSolutionServiceImpl implements ConcreteSolutionService {
         List<FileDTO> aggregatedFiles = new ArrayList<>();
 
         while (!patternInstances.isEmpty()) {
-            AggregationData aggregationData = getLeafAndPredecessor(patternInstances, edges);
+            AggregationDataAndPatternEdge aggregationDataAndPatternEdge = getLeafAndPredecessor(patternInstances, edges);
+            AggregationData aggregationData = aggregationDataAndPatternEdge.getAggregationData();
 
             aggregationData.setTemplateContext(templateContext);
 
@@ -188,7 +189,7 @@ public class ConcreteSolutionServiceImpl implements ConcreteSolutionService {
                 aggregatedFiles.add(aggregationData.getResult());
             }
 
-            edges.remove(aggregationData.getEdge());
+            edges.remove(aggregationDataAndPatternEdge.getEdge());
             if (!edges.stream().anyMatch(edge -> aggregationData.getSource().getPatternInstanceId().equals(edge.getPatternInstance1().getPatternInstanceId()))) {
                 patternInstances.remove(aggregationData.getSource());
             }

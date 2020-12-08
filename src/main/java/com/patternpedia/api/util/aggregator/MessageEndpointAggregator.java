@@ -27,8 +27,8 @@ public class MessageEndpointAggregator extends ActiveMQAggregator {
         String concreteSolutionTemplate = readFile(concreteSolution.getTemplateUri());
         concreteSolutionTemplate = extendVariables(concreteSolutionTemplate, patternInstanceId);
 
-        List<String> receivingEdgeTypes = Arrays.asList("subscribe", "receive");
-        boolean isProducer = aggregationData.getTarget() == null || !receivingEdgeTypes.contains(aggregationData.getEdge().getType());
+        List<String> aggregationType = Arrays.asList("ActiveMQ-XML", "ActiveMQ-Java");
+        boolean isProducer = aggregationData.getTarget() == null || !aggregationType.contains(aggregationData.getTarget().getConcreteSolution().getAggregatorType());
 
         String filename = isProducer ? "QueueProducer.java" : "QueueConsumer.java";
         templateContext.put("producer", isProducer);
