@@ -23,6 +23,8 @@ public class ConcreteSolutionServiceImpl implements ConcreteSolutionService {
     private final ConcreteSolutionRepository concreteSolutionRepository;
     private final DesignModelEdgeTypeRepository designModelEdgeTypeRepository;
 
+    private UUID lastSourceNodeUUID = null;
+
 
     public ConcreteSolutionServiceImpl(ConcreteSolutionRepository concreteSolutionRepository,
                                        DesignModelEdgeTypeRepository designModelEdgeTypeRepository) {
@@ -58,7 +60,7 @@ public class ConcreteSolutionServiceImpl implements ConcreteSolutionService {
     }
 
 
-    private void swapEdgeDirections(List<DesignModelPatternEdge> edges) {
+    private void normalizeEdgeDirections(List<DesignModelPatternEdge> edges) {
         Set<String> edgeTypesToSwapDirections = this.designModelEdgeTypeRepository.findAll().stream()
                 .filter(DesignModelEdgeType::getSwap)
                 .map(DesignModelEdgeType::getName)
@@ -74,72 +76,54 @@ public class ConcreteSolutionServiceImpl implements ConcreteSolutionService {
     }
 
 
-    private Set<UUID> findRootNodes(List<DesignModelPatternInstance> patternInstances, List<DesignModelPatternEdge> edges) {
-        Set<UUID> rootNodes = new HashSet<>();
+    private Set<UUID> findSourceNodes(List<DesignModelPatternInstance> patternInstances, List<DesignModelPatternEdge> edges) {
+        Set<UUID> sourceNodes = new HashSet<>();
 
         for (DesignModelPatternInstance patternInstance : patternInstances) {
-            rootNodes.add(patternInstance.getPatternInstanceId());
+            sourceNodes.add(patternInstance.getPatternInstanceId());
         }
 
         for (DesignModelPatternEdge edge : edges) {
-            rootNodes.remove(edge.getPatternInstance1().getPatternInstanceId());
+            sourceNodes.remove(edge.getPatternInstance2().getPatternInstanceId());
         }
 
-        log.info("Root nodes: " + rootNodes.toString());
-        return rootNodes;
+        return sourceNodes;
     }
 
 
-    private Set<UUID> findLeafNodes(List<DesignModelPatternInstance> patternInstances, List<DesignModelPatternEdge> edges) {
-        Set<UUID> leafNodes = new HashSet<>();
+    private AggregationDataAndPatternEdge getSourceNodeAndNeighbor(List<DesignModelPatternInstance> patternInstances, List<DesignModelPatternEdge> edges) {
+        Set<UUID> sourceNodes = findSourceNodes(patternInstances, edges);
 
-        for (DesignModelPatternInstance patternInstance : patternInstances) {
-            leafNodes.add(patternInstance.getPatternInstanceId());
+        if (sourceNodes.isEmpty()) {
+            throw new RuntimeException("No source node found");
         }
 
-        for (DesignModelPatternEdge edge : edges) {
-            leafNodes.remove(edge.getPatternInstance2().getPatternInstanceId());
-        }
+        final UUID sourceNodeUUID = sourceNodes.contains(lastSourceNodeUUID) ? lastSourceNodeUUID : sourceNodes.iterator().next();
+        lastSourceNodeUUID = sourceNodeUUID;
 
-        return leafNodes;
-    }
-
-
-    private UUID lastLeafUUID = null;
-
-    private AggregationData getLeafAndPredecessor(List<DesignModelPatternInstance> patternInstances, List<DesignModelPatternEdge> edges) {
-        Set<UUID> leafNodes = findLeafNodes(patternInstances, edges);
-
-        if (leafNodes.isEmpty()) {
-            throw new RuntimeException("No leaf node found");
-        }
-
-        final UUID leafNodeUUID = leafNodes.contains(lastLeafUUID) ? lastLeafUUID : leafNodes.iterator().next();
-        lastLeafUUID = leafNodeUUID;
-
-        DesignModelPatternInstance leafPatternInstance = patternInstances.stream()
-                .filter(designModelPatternInstance -> leafNodeUUID.equals(designModelPatternInstance.getPatternInstanceId()))
+        DesignModelPatternInstance sourcePatternInstance = patternInstances.stream()
+                .filter(designModelPatternInstance -> sourceNodeUUID.equals(designModelPatternInstance.getPatternInstanceId()))
                 .findAny().orElse(null);
 
         if (patternInstances.size() == 1) {
-            return new AggregationData(leafPatternInstance, null, null);
+            return new AggregationDataAndPatternEdge(new AggregationData(sourcePatternInstance, null), null);
         }
 
-        DesignModelPatternEdge edge = edges.stream().filter(designModelPatternEdge -> leafNodeUUID.equals(designModelPatternEdge.getPatternInstance1().getPatternInstanceId())).findAny().orElse(null);
+        DesignModelPatternEdge edge = edges.stream().filter(designModelPatternEdge -> sourceNodeUUID.equals(designModelPatternEdge.getPatternInstance1().getPatternInstanceId())).findAny().orElse(null);
 
-        DesignModelPatternInstance predecessorPatternInstance = null;
+        DesignModelPatternInstance neighborPatternInstance = null;
 
         if (edge != null) {
-            UUID predecessorNodeUUID = edge.getPatternInstance2().getPatternInstanceId();
+            UUID neighborNodeUUID = edge.getPatternInstance2().getPatternInstanceId();
 
-            predecessorPatternInstance = patternInstances.stream()
-                    .filter(designModelPatternInstance -> predecessorNodeUUID.equals(designModelPatternInstance.getPatternInstanceId()))
+            neighborPatternInstance = patternInstances.stream()
+                    .filter(designModelPatternInstance -> neighborNodeUUID.equals(designModelPatternInstance.getPatternInstanceId()))
                     .findAny().orElse(null);
 
-            log.info("Found leaf [" + leafNodeUUID.toString() + "] and predecessor [" + predecessorNodeUUID.toString() + "]: " + leafPatternInstance.getPattern().getName() + " ---" + edge.getType() + "--- " + predecessorPatternInstance.getPattern().getName());
+            log.info("Found source [" + sourceNodeUUID.toString() + "] and neighbor [" + neighborNodeUUID.toString() + "]: " + sourcePatternInstance.getPattern().getName() + " ---" + edge.getType() + "--- " + neighborPatternInstance.getPattern().getName());
         }
 
-        return new AggregationData(leafPatternInstance, predecessorPatternInstance, edge);
+        return new AggregationDataAndPatternEdge(new AggregationData(sourcePatternInstance, neighborPatternInstance), edge);
     }
 
 
@@ -170,13 +154,14 @@ public class ConcreteSolutionServiceImpl implements ConcreteSolutionService {
 
         linkConcreteSolutionsToPatternInstances(patternInstances, concreteSolutionMapping);
 
-        swapEdgeDirections(edges);
+        normalizeEdgeDirections(edges);
 
         Map<String, Object> templateContext = new HashMap<>();
-        List<FileDTO> aggregatedFiles = new ArrayList<>();
+        List<FileDTO> artefacts = new ArrayList<>();
 
         while (!patternInstances.isEmpty()) {
-            AggregationData aggregationData = getLeafAndPredecessor(patternInstances, edges);
+            AggregationDataAndPatternEdge aggregationDataAndPatternEdge = getSourceNodeAndNeighbor(patternInstances, edges);
+            AggregationData aggregationData = aggregationDataAndPatternEdge.getAggregationData();
 
             aggregationData.setTemplateContext(templateContext);
 
@@ -185,16 +170,15 @@ public class ConcreteSolutionServiceImpl implements ConcreteSolutionService {
             templateContext = aggregationData.getTemplateContext();
 
             if (aggregationData.getResult() != null) {
-                aggregatedFiles.add(aggregationData.getResult());
+                artefacts.add(aggregationData.getResult());
             }
 
-            edges.remove(aggregationData.getEdge());
+            edges.remove(aggregationDataAndPatternEdge.getEdge());
             if (!edges.stream().anyMatch(edge -> aggregationData.getSource().getPatternInstanceId().equals(edge.getPatternInstance1().getPatternInstanceId()))) {
                 patternInstances.remove(aggregationData.getSource());
             }
         }
 
-
-        return aggregatedFiles;
+        return artefacts;
     }
 }

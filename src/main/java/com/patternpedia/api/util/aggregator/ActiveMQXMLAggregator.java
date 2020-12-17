@@ -42,7 +42,7 @@ public class ActiveMQXMLAggregator extends ActiveMQAggregator {
             aggregationData.getTemplateContext().put(targetInstanceId + TEMPLATE_KEY, camelContext.toString());
         }
 
-        if (aggregationData.getEdge() != null) {
+        if (aggregationData.getTarget() != null) {
             addInputOutputChannelContext(aggregationData);
 
             if ("ActiveMQ-XML".equals(aggregationData.getTarget().getConcreteSolution().getAggregatorType())) {
