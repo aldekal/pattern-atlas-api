@@ -40,7 +40,7 @@ public class AWSCloudFormationJsonAggregator extends ActiveMQAggregator {
             );
         }
 
-        if (aggregationData.getEdge() != null) {
+        if (aggregationData.getTarget() != null) {
             addInputOutputChannelContext(aggregationData);
         }
 

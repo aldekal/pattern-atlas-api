@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @CommonsLog
 public abstract class AggregatorImpl implements Aggregator {
 
-    protected static final String CONCRETE_SOLUTION_REPO = "https://raw.githubusercontent.com/marzn/pattern-atlas-pattern-implementations/main/";
+    protected static final String CONCRETE_SOLUTION_REPO = "https://raw.githubusercontent.com/PatternAtlas/pattern-atlas-pattern-implementations/main/";
 
     protected static final Random RANDOM = new Random();
 
