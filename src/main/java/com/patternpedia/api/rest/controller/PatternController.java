@@ -389,6 +389,7 @@ public class PatternController {
         }
         persistedVersion.setIconUrl(pattern.getIconUrl());
         persistedVersion.setContent(pattern.getContent());
+        persistedVersion.setName(pattern.getName());
 
         pattern = this.patternService.updatePattern(persistedVersion);
         return new EntityModel<>(pattern,
