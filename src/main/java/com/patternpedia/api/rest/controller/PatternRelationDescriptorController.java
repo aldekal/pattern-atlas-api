@@ -365,7 +365,7 @@ public class PatternRelationDescriptorController {
         if (request.isNewEdge()) {
             UndirectedEdge undirectedEdge = this.patternViewService.createUndirectedEdgeAndAddToPatternView(patternViewId, request);
             return ResponseEntity.created(linkTo(methodOn(PatternRelationDescriptorController.class)
-                    .getUndirectedEdgeOfPatternViewById(patternViewId, undirectedEdge.getId())).toUri()).build();
+                    .getUndirectedEdgeOfPatternViewById(patternViewId, undirectedEdge.getId())).toUri()).body(undirectedEdge);
         } else {
             this.patternViewService.addUndirectedEdgeToPatternView(patternViewId, request.getUndirectedEdgeId());
             return ResponseEntity.created(linkTo(methodOn(PatternRelationDescriptorController.class)
