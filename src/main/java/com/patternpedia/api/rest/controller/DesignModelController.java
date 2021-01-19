@@ -13,6 +13,7 @@ import org.apache.commons.text.CaseUtils;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,24 +53,24 @@ public class DesignModelController {
 
 
     private static List<Link> getDesignModelLinks(UUID designModelId, String selfRel) {
-        Map<String, Object> linkMap = new HashMap<>();
+        Map<String, WebMvcLinkBuilder> linkMap = new HashMap<>();
 
-        linkMap.put("designModels", methodOn(DesignModelController.class).getDesignModels());
-        linkMap.put("designModel", methodOn(DesignModelController.class).getDesignModel(designModelId));
-        linkMap.put("patterns", methodOn(DesignModelController.class).getDesignModelPatternInstances(designModelId));
-        linkMap.put("edges", methodOn(DesignModelController.class).getDesignModelPatternEdges(designModelId));
-        linkMap.put("edgeTypes", methodOn(DesignModelController.class).getDesignModelPatternEdgeTypes());
-        linkMap.put("concreteSolutions", methodOn(DesignModelController.class).checkConcreteSolutions(designModelId));
-        linkMap.put("aggregate", methodOn(DesignModelController.class).aggregateConcreteSolutions(designModelId, null));
+        linkMap.put("designModels", linkTo(methodOn(DesignModelController.class).getDesignModels()));
+        linkMap.put("designModel", linkTo(methodOn(DesignModelController.class).getDesignModel(designModelId)));
+        linkMap.put("patterns", linkTo(methodOn(DesignModelController.class).getDesignModelPatternInstances(designModelId)));
+        linkMap.put("edges", linkTo(methodOn(DesignModelController.class).getDesignModelPatternEdges(designModelId)));
+        linkMap.put("edgeTypes", linkTo(methodOn(DesignModelController.class).getDesignModelPatternEdgeTypes()));
+        linkMap.put("concreteSolutions",linkTo( methodOn(DesignModelController.class).checkConcreteSolutions(designModelId)));
+        linkMap.put("aggregate", linkTo(methodOn(DesignModelController.class).aggregateConcreteSolutions(designModelId, null)));
 
         List<Link> linkList = new ArrayList<>();
         if (linkMap.containsKey(selfRel)) {
-            linkList.add(linkTo(linkMap.get(selfRel)).withSelfRel());
+            linkList.add(linkMap.get(selfRel).withSelfRel());
         } else {
             log.error("_self link for " + selfRel + " not found in linkMap");
         }
-        for (Map.Entry<String, Object> linkPair : linkMap.entrySet()) {
-            linkList.add(linkTo(linkPair.getValue()).withRel(linkPair.getKey()));
+        for (Map.Entry<String, WebMvcLinkBuilder> linkPair : linkMap.entrySet()) {
+            linkList.add(linkPair.getValue().withRel(linkPair.getKey()));
         }
 
         return linkList;
