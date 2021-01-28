@@ -146,7 +146,7 @@ public class PatternViewController {
         return ResponseEntity.ok(patternView);
     }
 
-    @Operation(operationId = "getPatternViewById", responses = {@ApiResponse(responseCode = "204"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Delete pattern view by id")
+    @Operation(operationId = "deletePatternViewById", responses = {@ApiResponse(responseCode = "204"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Delete pattern view by id")
     @DeleteMapping(value = "/{patternViewId}")
     public ResponseEntity<?> deletePatternView(@PathVariable UUID patternViewId) {
         this.patternViewService.deletePatternView(patternViewId);

@@ -8,6 +8,9 @@ import com.patternpedia.api.rest.model.PatternInstanceDTO;
 import com.patternpedia.api.rest.model.PositionDTO;
 import com.patternpedia.api.service.ConcreteSolutionService;
 import com.patternpedia.api.service.DesignModelService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.text.CaseUtils;
 import org.springframework.hateoas.CollectionModel;
@@ -223,5 +226,12 @@ public class DesignModelController {
         List<DesignModelPatternEdge> directedEdgeList = designModel.getDirectedEdges();
 
         return this.concreteSolutionService.aggregate(patternInstanceList, directedEdgeList, patternConcreteSolutionMap);
+    }
+
+    @Operation(operationId = "deleteDesignModelById", responses = {@ApiResponse(responseCode = "204"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Delete DesignModel by id")
+    @DeleteMapping(value = "/{designModelId}")
+    public ResponseEntity<?>  deleteDesignModel(@PathVariable UUID designModelId) {
+        this.designModelService.deleteDesignModel(designModelId);
+        return ResponseEntity.noContent().build();
     }
 }
