@@ -176,4 +176,9 @@ public class DesignModelServiceImpl implements DesignModelService {
                 designModelId, patternInstanceId1, patternInstanceId2
         );
     }
+
+    @Override
+    public void deleteDesignModel(UUID designModelId) {
+        this.designModelRepository.deleteById(designModelId);
+    }
 }

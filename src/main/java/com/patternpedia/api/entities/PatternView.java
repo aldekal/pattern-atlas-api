@@ -1,5 +1,6 @@
 package com.patternpedia.api.entities;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -18,6 +19,8 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class PatternView extends PatternGraph {
+
+    private URL logo;
 
     @JsonIgnore
     @OneToMany(mappedBy = "patternView", cascade = CascadeType.ALL, orphanRemoval = true)
