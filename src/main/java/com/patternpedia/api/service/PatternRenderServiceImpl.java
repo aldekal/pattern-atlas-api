@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.net.URLEncoder;
 import java.time.Instant;
 import java.util.*;
 
@@ -88,8 +89,6 @@ public class PatternRenderServiceImpl implements PatternRenderService {
 
 
         int countQuantikz = 0;
-        //JaccardSimilarity is ued to check if the Quantikz Occurance is similar to the previous one. If that is the case all comments of the old graphic get copied to the new one
-        JaccardSimilarity jaccardSimilarity =  new JaccardSimilarity();
         while (true) {
             Integer[] occuranceStartEnd = getNextOccurance(jsonString, "\\\\begin{quantikz}", "\\end{quantikz}");
             if (occuranceStartEnd[0] != -1 && occuranceStartEnd[1] != -1) {
@@ -113,9 +112,7 @@ public class PatternRenderServiceImpl implements PatternRenderService {
                     String id = saveAndUploadFile(renderedFile, "svg");
                     jsonString = jsonString.replace(jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 14), " " + id + " ");
                     if(countQuantikz < oldContentOccurances.size()){
-                        if(jaccardSimilarity.apply(oldContentOccurances.get(countQuantikz), renderContent) > 0.8) {
                           this.discussionService.updateTopicsByImageId(UUID.fromString(oldSVGOccurances.get(countQuantikz).substring(5, oldSVGOccurances.get(countQuantikz).length() - 6)), UUID.fromString(id.substring(5, id.length() - 6)));
-                        }
                     }
                 }
                 countQuantikz++ ;
@@ -152,9 +149,7 @@ public class PatternRenderServiceImpl implements PatternRenderService {
                     String id = saveAndUploadFile(renderedFile, "svg");
                     jsonString = jsonString.replace(jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 4), " " + id + " ");
                     if(countQcircuit < oldContentOccurances.size()){
-                        if(jaccardSimilarity.apply(oldContentOccurances.get(countQcircuit), renderContent) > 0.8) {
                             this.discussionService.updateTopicsByImageId(UUID.fromString(oldSVGOccurances.get(countQcircuit).substring(5, oldSVGOccurances.get(countQcircuit).length() - 6)), UUID.fromString(id.substring(5, id.length() - 6)));
-                        }
                     }
                 }
                 countQcircuit++ ;
@@ -196,8 +191,13 @@ public class PatternRenderServiceImpl implements PatternRenderService {
             URI uri = new URI(baseUrl);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<LatexContent> entity = new HttpEntity<>(latexContent, headers);
-            ResponseEntity<byte[]> result = restTemplate.postForEntity(uri, entity, byte[].class);
+            String url = baseUrl + "?content="
+                    + URLEncoder.encode(latexContent.getContent(), "UTF-8");
+            for(String latexPackage : latexContent.getLatexPackages()
+                 ) {
+                url +=  "&packages=" + URLEncoder.encode(latexPackage, "UTF-8");
+            }
+            ResponseEntity<byte[]> result = restTemplate.getForEntity( new URI(url), byte[].class);
             file = result.getBody();
         } catch (Exception e){
             return null;
