@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>com.patternpedia</groupId>
+    <groupId>com.patternatlas</groupId>
     <artifactId>api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
