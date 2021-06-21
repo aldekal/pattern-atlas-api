@@ -1,7 +1,7 @@
 FROM maven:3-jdk-8 as builder
 
-COPY . /tmp/pattern-pedia-api
-WORKDIR /tmp/pattern-pedia-api
+COPY . /tmp/pattern-atlas-api
+WORKDIR /tmp/pattern-atlas-api
 RUN mvn package -DskipTests
 
 
@@ -21,7 +21,7 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
     && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 EXPOSE ${API_PORT}
-COPY --from=builder /tmp/pattern-pedia-api/target/api-0.0.1-SNAPSHOT.jar /var/www/java/api.jar
+COPY --from=builder /tmp/pattern-atlas-api/target/api-0.0.1-SNAPSHOT.jar /var/www/java/api.jar
 
 ADD .docker/application.properties.tpl /var/www/java/application.properties.tpl
 
