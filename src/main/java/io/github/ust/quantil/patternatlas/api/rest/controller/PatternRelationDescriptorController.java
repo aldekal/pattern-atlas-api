@@ -1,9 +1,29 @@
 package io.github.ust.quantil.patternatlas.api.rest.controller;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import io.github.ust.quantil.patternatlas.api.entities.DirectedEdge;
 import io.github.ust.quantil.patternatlas.api.entities.UndirectedEdge;
@@ -17,28 +37,17 @@ import io.github.ust.quantil.patternatlas.api.rest.model.UpdateDirectedEdgeReque
 import io.github.ust.quantil.patternatlas.api.rest.model.UpdateUndirectedEdgeRequest;
 import io.github.ust.quantil.patternatlas.api.service.PatternLanguageService;
 import io.github.ust.quantil.patternatlas.api.service.PatternViewService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping(value = "/", produces = "application/hal+json")
 public class PatternRelationDescriptorController {
 
-    private PatternLanguageService patternLanguageService;
-    private PatternViewService patternViewService;
+    private final PatternLanguageService patternLanguageService;
+    private final PatternViewService patternViewService;
 
     public PatternRelationDescriptorController(PatternLanguageService patternLanguageService,
                                                PatternViewService patternViewService) {

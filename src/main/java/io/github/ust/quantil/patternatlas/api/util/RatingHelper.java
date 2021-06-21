@@ -16,7 +16,6 @@ public class RatingHelper {
                 log.info(String.format("User %s rated up", user.getId()));
                 return 1;
             }
-
         } else if (rating.equals("down")) {
             if (oldRating == -1) {
                 log.info(String.format("User %s deleted down", user.getId()));

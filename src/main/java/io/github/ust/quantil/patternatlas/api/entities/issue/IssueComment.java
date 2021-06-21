@@ -1,7 +1,16 @@
 package io.github.ust.quantil.patternatlas.api.entities.issue;
 
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.github.ust.quantil.patternatlas.api.entities.issue.rating.IssueCommentRating;
 import io.github.ust.quantil.patternatlas.api.entities.shared.Comment;
 import io.github.ust.quantil.patternatlas.api.entities.user.UserEntity;
@@ -10,15 +19,10 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-
 @Entity
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public class IssueComment extends Comment implements Serializable {
 
     @JsonIgnore

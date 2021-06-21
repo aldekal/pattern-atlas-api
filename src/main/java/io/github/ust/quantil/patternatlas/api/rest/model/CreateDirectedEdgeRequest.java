@@ -23,7 +23,7 @@ public class CreateDirectedEdgeRequest {
     }
 
     public static class CreateDirectedEdgeRequestBuilder {
-        private CreateDirectedEdgeRequest createDirectedEdgeRequest;
+        private final CreateDirectedEdgeRequest createDirectedEdgeRequest;
 
         public CreateDirectedEdgeRequestBuilder(UUID sourcePatternId, UUID targetPatternId) {
             this.createDirectedEdgeRequest = new CreateDirectedEdgeRequest(sourcePatternId, targetPatternId);

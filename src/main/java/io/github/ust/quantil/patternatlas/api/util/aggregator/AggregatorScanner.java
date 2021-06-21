@@ -1,6 +1,10 @@
 package io.github.ust.quantil.patternatlas.api.util.aggregator;
 
-import lombok.extern.apachecommons.CommonsLog;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -10,11 +14,7 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.SystemPropertyUtils;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import lombok.extern.apachecommons.CommonsLog;
 
 @CommonsLog
 public class AggregatorScanner {
@@ -35,7 +35,6 @@ public class AggregatorScanner {
                     return (Aggregator) implCandidate.newInstance();
                 }
             }
-
         } catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             log.error(e.getMessage(), e);
         }

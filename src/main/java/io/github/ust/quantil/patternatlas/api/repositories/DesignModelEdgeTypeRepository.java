@@ -1,9 +1,10 @@
 package io.github.ust.quantil.patternatlas.api.repositories;
 
-import io.github.ust.quantil.patternatlas.api.entities.designmodel.DesignModelEdgeType;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
+import io.github.ust.quantil.patternatlas.api.entities.designmodel.DesignModelEdgeType;
 
 public interface DesignModelEdgeTypeRepository extends JpaRepository<DesignModelEdgeType, String> {
 

@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import io.github.ust.quantil.patternatlas.api.entities.DirectedEdge;
-import io.github.ust.quantil.patternatlas.api.entities.Pattern;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+import io.github.ust.quantil.patternatlas.api.entities.DirectedEdge;
+import io.github.ust.quantil.patternatlas.api.entities.Pattern;
 
 @RepositoryRestResource(exported = false)
 public interface DirectedEdgeRepository extends JpaRepository<DirectedEdge, UUID> {

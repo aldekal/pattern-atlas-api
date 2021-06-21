@@ -31,12 +31,12 @@ import io.github.ust.quantil.patternatlas.api.rest.model.CreateUndirectedEdgeReq
 @Transactional
 public class PatternLanguageServiceImpl implements PatternLanguageService {
 
-    private PatternSchemaService patternSchemaService;
-    private PatternService patternService;
-    private PatternRelationDescriptorService patternRelationDescriptorService;
-    private PatternViewService patternViewService;
-    private PatternLanguageRepository patternLanguageRepository;
-    private ObjectMapper objectMapper;
+    private final PatternSchemaService patternSchemaService;
+    private final PatternService patternService;
+    private final PatternRelationDescriptorService patternRelationDescriptorService;
+    private final PatternViewService patternViewService;
+    private final PatternLanguageRepository patternLanguageRepository;
+    private final ObjectMapper objectMapper;
 
     public PatternLanguageServiceImpl(PatternSchemaService patternSchemaService,
                                       PatternService patternService,

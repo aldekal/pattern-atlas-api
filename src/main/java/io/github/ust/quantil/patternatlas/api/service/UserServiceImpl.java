@@ -17,7 +17,7 @@ import io.github.ust.quantil.patternatlas.api.repositories.UserRepository;
 @Transactional
 public class UserServiceImpl implements UserService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 

@@ -1,11 +1,10 @@
 package io.github.ust.quantil.patternatlas.api.service;
 
 import java.util.UUID;
+import javax.validation.Valid;
 
 import io.github.ust.quantil.patternatlas.api.entities.Pattern;
 import io.github.ust.quantil.patternatlas.api.validator.PatternContentConstraint;
-
-import javax.validation.Valid;
 
 public interface PatternService {
 

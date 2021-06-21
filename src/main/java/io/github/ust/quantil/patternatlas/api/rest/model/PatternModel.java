@@ -1,13 +1,14 @@
 package io.github.ust.quantil.patternatlas.api.rest.model;
 
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.github.ust.quantil.patternatlas.api.entities.Pattern;
 import io.github.ust.quantil.patternatlas.api.entities.PatternLanguage;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import java.util.UUID;
 
 @NoArgsConstructor
 @Data

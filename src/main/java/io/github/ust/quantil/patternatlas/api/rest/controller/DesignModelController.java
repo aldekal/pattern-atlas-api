@@ -58,8 +58,8 @@ import lombok.extern.apachecommons.CommonsLog;
 @RequestMapping(value = "/design-models", produces = "application/hal+json")
 public class DesignModelController {
 
-    private DesignModelService designModelService;
-    private ConcreteSolutionService concreteSolutionService;
+    private final DesignModelService designModelService;
+    private final ConcreteSolutionService concreteSolutionService;
 
     public DesignModelController(DesignModelService designModelService, ConcreteSolutionService concreteSolutionService) {
         this.designModelService = designModelService;

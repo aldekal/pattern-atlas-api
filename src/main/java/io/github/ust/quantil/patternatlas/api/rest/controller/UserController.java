@@ -1,25 +1,33 @@
 package io.github.ust.quantil.patternatlas.api.rest.controller;
 
-import io.github.ust.quantil.patternatlas.api.entities.user.UserRole;
-import io.github.ust.quantil.patternatlas.api.entities.user.UserEntity;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.github.ust.quantil.patternatlas.api.service.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.github.ust.quantil.patternatlas.api.entities.user.UserEntity;
+import io.github.ust.quantil.patternatlas.api.entities.user.UserRole;
+import io.github.ust.quantil.patternatlas.api.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @RestController
 @RequestMapping(value = "/users", produces = "application/hal+json")
@@ -29,7 +37,7 @@ public class UserController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     public UserController(
             UserService userService,
@@ -68,7 +76,7 @@ public class UserController {
     }
 
     public void defaultUsers() {
-        List <UserRole> role = new ArrayList<>(Arrays.asList(UserRole.MEMBER));
+        List<UserRole> role = new ArrayList<>(Arrays.asList(UserRole.MEMBER));
         UserEntity userMember = new UserEntity("Member User", "member@mail", passwordEncoder.encode("pass"), role);
         this.userService.createUser(userMember);
         role.add(UserRole.ADMIN);

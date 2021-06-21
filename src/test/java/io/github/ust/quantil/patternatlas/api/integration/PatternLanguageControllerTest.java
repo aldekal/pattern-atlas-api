@@ -1,12 +1,14 @@
 package io.github.ust.quantil.patternatlas.api.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.util.UUID;
 
-import io.github.ust.quantil.patternatlas.api.entities.PatternLanguage;
-import io.github.ust.quantil.patternatlas.api.entities.PatternSchema;
-import io.github.ust.quantil.patternatlas.api.util.IntegrationTestHelper;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,12 +20,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.github.ust.quantil.patternatlas.api.entities.PatternLanguage;
+import io.github.ust.quantil.patternatlas.api.entities.PatternSchema;
+import io.github.ust.quantil.patternatlas.api.util.IntegrationTestHelper;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

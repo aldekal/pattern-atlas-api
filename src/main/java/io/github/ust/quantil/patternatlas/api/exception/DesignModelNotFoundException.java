@@ -1,9 +1,10 @@
 package io.github.ust.quantil.patternatlas.api.exception;
 
-import io.github.ust.quantil.patternatlas.api.entities.designmodel.DesignModel;
+import java.util.UUID;
+
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 
-import java.util.UUID;
+import io.github.ust.quantil.patternatlas.api.entities.designmodel.DesignModel;
 
 public class DesignModelNotFoundException extends ResourceNotFoundException {
 

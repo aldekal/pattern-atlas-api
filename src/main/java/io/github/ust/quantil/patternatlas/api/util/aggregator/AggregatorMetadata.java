@@ -3,7 +3,6 @@ package io.github.ust.quantil.patternatlas.api.util.aggregator;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AggregatorMetadata {
 

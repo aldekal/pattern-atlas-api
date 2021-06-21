@@ -33,9 +33,9 @@ public class IssueController {
 
     Logger logger = LoggerFactory.getLogger(IssueController.class);
 
-    private IssueService issueService;
-    private PatternLanguageService patternLanguageService;
-    private ObjectMapper objectMapper;
+    private final IssueService issueService;
+    private final PatternLanguageService patternLanguageService;
+    private final ObjectMapper objectMapper;
 
     public IssueController(
             IssueService issueService,

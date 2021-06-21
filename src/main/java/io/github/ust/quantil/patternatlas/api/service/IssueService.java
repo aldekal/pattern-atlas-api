@@ -1,15 +1,16 @@
 package io.github.ust.quantil.patternatlas.api.service;
 
 import java.util.List;
-
-import io.github.ust.quantil.patternatlas.api.entities.issue.IssueComment;
-import io.github.ust.quantil.patternatlas.api.entities.issue.Issue;
-
 import java.util.UUID;
+
+import io.github.ust.quantil.patternatlas.api.entities.issue.Issue;
+import io.github.ust.quantil.patternatlas.api.entities.issue.IssueComment;
 
 public interface IssueService {
 
-    /** CRUD  */
+    /**
+     * CRUD
+     */
     Issue createIssue(Issue issue);
 
     Issue getIssueById(UUID issueId);
@@ -22,10 +23,14 @@ public interface IssueService {
 
     void deleteIssue(UUID issueId);
 
-    /** Voting */
+    /**
+     * Voting
+     */
     Issue userRating(UUID issueId, UUID userId, String rating);
 
-    /** Comment */
+    /**
+     * Comment
+     */
     Issue createComment(UUID issueId, UUID userId, IssueComment issueComment);
 
     IssueComment getCommentById(UUID issueCommentId);

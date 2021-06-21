@@ -1,7 +1,18 @@
 package io.github.ust.quantil.patternatlas.api.entities.candidate;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.github.ust.quantil.patternatlas.api.entities.EntityWithURI;
 import io.github.ust.quantil.patternatlas.api.entities.PatternLanguage;
 import io.github.ust.quantil.patternatlas.api.entities.candidate.rating.CandidateRating;
@@ -11,9 +22,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-
-import javax.persistence.*;
-import java.util.*;
 
 @Entity
 @Data
@@ -28,7 +36,7 @@ public class Candidate extends EntityWithURI {
     @ManyToOne
     private PatternLanguage patternLanguage;
 
-//    @Type(type = "jsonb")
+    //    @Type(type = "jsonb")
 //    @Column(columnDefinition = "jsonb")
 //    @NotNull
     private String content;
@@ -45,16 +53,15 @@ public class Candidate extends EntityWithURI {
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CandidateComment> comments = new ArrayList<>();
 
-    public Candidate (CandidateModel candidateModel) {
+    public Candidate(CandidateModel candidateModel) {
         this.setId(candidateModel.getId());
         this.setUri(candidateModel.getUri());
         this.setName(candidateModel.getName());
         this.setIconUrl(candidateModel.getIconUrl());
-       //patternLanguage
+        //patternLanguage
         this.setContent(candidateModel.getContent());
         this.setVersion(candidateModel.getVersion());
     }
-
 
     public void addComment(CandidateComment comment, UserEntity user) {
         comments.add(comment);

@@ -1,12 +1,13 @@
 package io.github.ust.quantil.patternatlas.api.repositories;
 
-import io.github.ust.quantil.patternatlas.api.entities.designmodel.ConcreteSolution;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import io.github.ust.quantil.patternatlas.api.entities.designmodel.ConcreteSolution;
 
 public interface ConcreteSolutionRepository extends JpaRepository<ConcreteSolution, UUID> {
 

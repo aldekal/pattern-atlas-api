@@ -2,22 +2,22 @@ package io.github.ust.quantil.patternatlas.api.validator;
 
 import java.util.Iterator;
 import java.util.Map;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.github.ust.quantil.patternatlas.api.entities.Pattern;
 import io.github.ust.quantil.patternatlas.api.entities.PatternSchema;
 import io.github.ust.quantil.patternatlas.api.entities.PatternSectionSchema;
 import io.github.ust.quantil.patternatlas.api.service.PatternLanguageService;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
-
 public class PatternContentValidator implements ConstraintValidator<PatternContentConstraint, Pattern> {
 
-    private ObjectMapper objectMapper;
-    private PatternLanguageService patternLanguageService;
+    private final ObjectMapper objectMapper;
+    private final PatternLanguageService patternLanguageService;
 
     public PatternContentValidator(ObjectMapper objectMapper,
                                    PatternLanguageService patternLanguageService) {

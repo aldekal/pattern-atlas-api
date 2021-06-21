@@ -1,14 +1,16 @@
 package io.github.ust.quantil.patternatlas.api.service;
 
+import java.util.List;
+import java.util.UUID;
+
 import io.github.ust.quantil.patternatlas.api.entities.candidate.Candidate;
 import io.github.ust.quantil.patternatlas.api.entities.candidate.CandidateComment;
 import io.github.ust.quantil.patternatlas.api.rest.model.CandidateModel;
 
-import java.util.List;
-import java.util.UUID;
-
 public interface CandidateService {
-    /** CRUD  */
+    /**
+     * CRUD
+     */
     Candidate createCandidate(CandidateModel candidateModel);
 
     Candidate updateCandidate(Candidate candidate);
@@ -21,10 +23,14 @@ public interface CandidateService {
 
     List<Candidate> getAllCandidates();
 
-    /** Voting */
+    /**
+     * Voting
+     */
     Candidate userRating(UUID candidateId, UUID userId, String rating);
 
-    /** Comment */
+    /**
+     * Comment
+     */
     Candidate createComment(UUID candidateId, UUID userId, CandidateComment candidateComment);
 
     CandidateComment getCommentById(UUID candidateCommentId);

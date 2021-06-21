@@ -1,13 +1,13 @@
 package io.github.ust.quantil.patternatlas.api.entities.shared;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import java.util.Objects;
+import java.util.UUID;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import java.util.Objects;
-import java.util.UUID;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @MappedSuperclass
 @Data

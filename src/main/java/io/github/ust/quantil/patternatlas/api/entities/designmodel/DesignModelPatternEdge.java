@@ -1,15 +1,15 @@
 package io.github.ust.quantil.patternatlas.api.entities.designmodel;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import static java.lang.Boolean.TRUE;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
-import static java.lang.Boolean.TRUE;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
@@ -41,13 +41,12 @@ public class DesignModelPatternEdge {
 
     private String description;
 
-
     public boolean isDirectedEdge() {
         return TRUE.equals(isDirectedEdge);
     }
 
     public void setPatternInstance1(DesignModelPatternInstance patternInstance) {
-        if(edgeId == null) {
+        if (edgeId == null) {
             this.edgeId = new DesignModelPatternEdgeId();
         }
         this.edgeId.setPatternInstanceId1(patternInstance.getPatternInstanceId());
@@ -55,7 +54,7 @@ public class DesignModelPatternEdge {
     }
 
     public void setPatternInstance2(DesignModelPatternInstance patternInstance) {
-        if(edgeId == null) {
+        if (edgeId == null) {
             this.edgeId = new DesignModelPatternEdgeId();
         }
         this.edgeId.setPatternInstanceId2(patternInstance.getPatternInstanceId());

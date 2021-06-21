@@ -1,7 +1,12 @@
 package io.github.ust.quantil.patternatlas.api.service;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.List;
 import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.github.ust.quantil.patternatlas.api.entities.PatternSchema;
 import io.github.ust.quantil.patternatlas.api.entities.PatternSectionSchema;
@@ -10,18 +15,13 @@ import io.github.ust.quantil.patternatlas.api.exception.PatternSchemaNotFoundExc
 import io.github.ust.quantil.patternatlas.api.repositories.PatternSchemaRepository;
 import io.github.ust.quantil.patternatlas.api.repositories.PatternSectionSchemaRepository;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import static java.util.stream.Collectors.toList;
-
 @Service
 @Transactional
 public class PatternSchemaServiceImpl implements PatternSchemaService {
 
-    private PatternSchemaRepository patternSchemaRepository;
+    private final PatternSchemaRepository patternSchemaRepository;
 
-    private PatternSectionSchemaRepository patternSectionSchemaRepository;
+    private final PatternSectionSchemaRepository patternSectionSchemaRepository;
 
     public PatternSchemaServiceImpl(PatternSchemaRepository patternSchemaRepository,
                                     PatternSectionSchemaRepository patternSectionSchemaRepository) {

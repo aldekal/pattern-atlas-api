@@ -1,13 +1,12 @@
 package io.github.ust.quantil.patternatlas.api.util.aggregator;
 
+import java.util.Collections;
+
 import io.github.ust.quantil.patternatlas.api.entities.designmodel.AggregationData;
 import io.github.ust.quantil.patternatlas.api.entities.designmodel.ConcreteSolution;
 import io.github.ust.quantil.patternatlas.api.entities.designmodel.DesignModelPatternInstance;
 import io.github.ust.quantil.patternatlas.api.rest.model.FileDTO;
 import lombok.extern.apachecommons.CommonsLog;
-
-import java.util.Collections;
-
 
 @CommonsLog
 @AggregatorMetadata(sourceTypes = {"ActiveMQ-XML"}, targetTypes = {"", "ActiveMQ-XML", "ActiveMQ-Java", "AWS-CloudFormation-JSON", "MessageEndpoint"})
@@ -17,7 +16,6 @@ public class ActiveMQXMLAggregator extends ActiveMQAggregator {
     private static final String MIME_TYPE = "text/xml";
     private static final String WRAPPER_TEMPLATE = CONCRETE_SOLUTION_REPO + "eip-activemq-xml/camel.st";
     private static final String TEMPLATE_KEY = "-template";
-
 
     @Override
     public void aggregate(AggregationData aggregationData) {
@@ -49,7 +47,6 @@ public class ActiveMQXMLAggregator extends ActiveMQAggregator {
                 return;
             }
         }
-
 
         // Render template and wrap into camel context
         String renderedCamelContext = renderTemplate(camelContext.toString(), aggregationData.getTemplateContext());

@@ -1,13 +1,18 @@
 package io.github.ust.quantil.patternatlas.api.entities.designmodel;
 
+import java.util.UUID;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
+
+import org.springframework.hateoas.server.core.Relation;
+
 import io.github.ust.quantil.patternatlas.api.entities.Pattern;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.hateoas.server.core.Relation;
-
-import javax.persistence.*;
-import java.util.UUID;
 
 @Entity
 @Data
@@ -32,7 +37,6 @@ public class DesignModelPatternInstance {
 
     @Transient
     private ConcreteSolution concreteSolution;
-
 
     public DesignModelPatternInstance(DesignModel designModel, Pattern pattern) {
         this.designModel = designModel;

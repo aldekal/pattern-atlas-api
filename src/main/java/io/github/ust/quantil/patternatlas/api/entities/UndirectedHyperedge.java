@@ -1,7 +1,6 @@
 package io.github.ust.quantil.patternatlas.api.entities;
 
 import java.util.Set;
-
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 

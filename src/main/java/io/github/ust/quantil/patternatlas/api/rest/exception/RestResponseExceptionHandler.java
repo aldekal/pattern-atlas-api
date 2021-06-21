@@ -1,7 +1,5 @@
 package io.github.ust.quantil.patternatlas.api.rest.exception;
 
-import io.github.ust.quantil.patternatlas.api.exception.NullPatternSchemaException;
-import io.github.ust.quantil.patternatlas.api.rest.model.ErrorMessageDTO;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -10,6 +8,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import io.github.ust.quantil.patternatlas.api.exception.NullPatternSchemaException;
+import io.github.ust.quantil.patternatlas.api.rest.model.ErrorMessageDTO;
 
 @ControllerAdvice
 public class RestResponseExceptionHandler

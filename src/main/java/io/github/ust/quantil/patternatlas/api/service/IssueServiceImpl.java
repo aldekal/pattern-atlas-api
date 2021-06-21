@@ -27,12 +27,12 @@ import io.github.ust.quantil.patternatlas.api.util.RatingHelper;
 @Transactional
 public class IssueServiceImpl implements IssueService {
 
-    private IssueRepository issueRepository;
-    private IssueRatingRepository issueRatingRepository;
-    private IssueCommentRepository issueCommentRepository;
-    private IssueCommentRatingRepository issueCommentRatingRepository;
-    private UserService userService;
-    private RatingHelper ratingHelper;
+    private final IssueRepository issueRepository;
+    private final IssueRatingRepository issueRatingRepository;
+    private final IssueCommentRepository issueCommentRepository;
+    private final IssueCommentRatingRepository issueCommentRatingRepository;
+    private final UserService userService;
+    private final RatingHelper ratingHelper;
 
     Logger logger = LoggerFactory.getLogger(IssueServiceImpl.class);
 

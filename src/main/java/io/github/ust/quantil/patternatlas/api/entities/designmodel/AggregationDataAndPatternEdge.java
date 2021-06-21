@@ -3,12 +3,11 @@ package io.github.ust.quantil.patternatlas.api.entities.designmodel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-
 @AllArgsConstructor
 @Getter
 public class AggregationDataAndPatternEdge {
 
-    private AggregationData aggregationData;
+    private final AggregationData aggregationData;
 
-    private DesignModelPatternEdge edge;
+    private final DesignModelPatternEdge edge;
 }

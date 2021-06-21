@@ -1,13 +1,13 @@
 package io.github.ust.quantil.patternatlas.api.integration;
 
-
-import com.vladmihalcea.hibernate.type.util.Configuration;
 import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.containers.PostgreSQLContainer;
+
+import com.vladmihalcea.hibernate.type.util.Configuration;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

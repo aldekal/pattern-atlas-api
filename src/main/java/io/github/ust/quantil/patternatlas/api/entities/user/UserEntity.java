@@ -1,29 +1,47 @@
 package io.github.ust.quantil.patternatlas.api.entities.user;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.github.ust.quantil.patternatlas.api.entities.candidate.CandidateComment;
-import io.github.ust.quantil.patternatlas.api.entities.candidate.rating.CandidateRating;
-import io.github.ust.quantil.patternatlas.api.entities.issue.IssueComment;
-import io.github.ust.quantil.patternatlas.api.entities.issue.rating.IssueRating;
-import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
+
+import io.github.ust.quantil.patternatlas.api.entities.candidate.CandidateComment;
+import io.github.ust.quantil.patternatlas.api.entities.candidate.rating.CandidateRating;
+import io.github.ust.quantil.patternatlas.api.entities.issue.IssueComment;
+import io.github.ust.quantil.patternatlas.api.entities.issue.rating.IssueRating;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @NoArgsConstructor
 @TypeDef(name = "pgsql_enum", typeClass = PostgreSQLEnumType.class)
-public class UserEntity implements Serializable{
+public class UserEntity implements Serializable {
 
-    /** User fields*/
+    /**
+     * User fields
+     */
     @Id
     @GeneratedValue(generator = "pg-uuid")
     private UUID id;
@@ -42,7 +60,9 @@ public class UserEntity implements Serializable{
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    /** Issue fields*/
+    /**
+     * Issue fields
+     */
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<IssueRating> issueRatings = new HashSet<>();
@@ -51,7 +71,9 @@ public class UserEntity implements Serializable{
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<IssueComment> issueComments = new ArrayList<>();
 
-    /** Candidate fields*/
+    /**
+     * Candidate fields
+     */
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CandidateRating> candidateRatings = new HashSet<>();
@@ -60,7 +82,9 @@ public class UserEntity implements Serializable{
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CandidateComment> candidateComments = new ArrayList<>();
 
-    /** Pattern fields*/
+    /**
+     * Pattern fields
+     */
 //    @JsonIgnore
 //    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private Set<CandidateRating> candidateRatings = new HashSet<>();
@@ -68,7 +92,6 @@ public class UserEntity implements Serializable{
 //    @JsonIgnore
 //    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<CandidateComment> candidateComments = new ArrayList<>();
-
     public UserEntity(String name, String email, String password) {
         this.name = name;
         this.email = email;

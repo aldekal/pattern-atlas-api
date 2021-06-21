@@ -1,13 +1,14 @@
 package io.github.ust.quantil.patternatlas.api.repositories;
 
-import io.github.ust.quantil.patternatlas.api.entities.designmodel.DesignModelPatternEdge;
-import io.github.ust.quantil.patternatlas.api.entities.designmodel.DesignModelPatternEdgeId;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+import io.github.ust.quantil.patternatlas.api.entities.designmodel.DesignModelPatternEdge;
+import io.github.ust.quantil.patternatlas.api.entities.designmodel.DesignModelPatternEdgeId;
 
 @RepositoryRestResource(exported = false)
 public interface DesignModelPatternEdgeRepository extends JpaRepository<DesignModelPatternEdge, DesignModelPatternEdgeId> {

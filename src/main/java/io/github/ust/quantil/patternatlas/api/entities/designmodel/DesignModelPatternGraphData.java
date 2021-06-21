@@ -1,11 +1,11 @@
 package io.github.ust.quantil.patternatlas.api.entities.designmodel;
 
+import javax.persistence.Embeddable;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.Embeddable;
 
 @Embeddable
 @NoArgsConstructor

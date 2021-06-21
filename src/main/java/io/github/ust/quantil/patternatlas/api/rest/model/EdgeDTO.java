@@ -1,15 +1,16 @@
 package io.github.ust.quantil.patternatlas.api.rest.model;
 
+import java.util.UUID;
+
+import org.springframework.hateoas.server.core.Relation;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import io.github.ust.quantil.patternatlas.api.entities.designmodel.DesignModelPatternEdge;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.hateoas.server.core.Relation;
-
-import java.util.UUID;
-
 
 @NoArgsConstructor
 @Data
@@ -30,7 +31,6 @@ public class EdgeDTO {
 
     private String description;
 
-
     public boolean isDirectedEdge() {
         return sourcePatternId != null && targetPatternId != null;
     }
@@ -44,7 +44,6 @@ public class EdgeDTO {
     public UUID getSecondPatternId() {
         return isDirectedEdge() ? targetPatternId : pattern2Id;
     }
-
 
     public static EdgeDTO from(DesignModelPatternEdge designModelPatternEdge) {
         EdgeDTO edgeDTO = new EdgeDTO();

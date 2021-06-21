@@ -2,9 +2,9 @@ package io.github.ust.quantil.patternatlas.api.exception;
 
 import java.util.UUID;
 
-import io.github.ust.quantil.patternatlas.api.entities.PatternView;
-
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+
+import io.github.ust.quantil.patternatlas.api.entities.PatternView;
 
 public class PatternViewNotFoundException extends ResourceNotFoundException {
 

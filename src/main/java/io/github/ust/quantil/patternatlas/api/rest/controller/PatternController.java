@@ -61,12 +61,12 @@ public class PatternController {
 
     final private static Logger LOG = LoggerFactory.getLogger(PatternController.class);
 
-    private PatternService patternService;
-    private PatternLanguageService patternLanguageService;
-    private PatternViewService patternViewService;
-    private PatternRelationDescriptorService patternRelationDescriptorService;
-    private ObjectMapper objectMapper;
-    private PatternRenderService patternRenderService;
+    private final PatternService patternService;
+    private final PatternLanguageService patternLanguageService;
+    private final PatternViewService patternViewService;
+    private final PatternRelationDescriptorService patternRelationDescriptorService;
+    private final ObjectMapper objectMapper;
+    private final PatternRenderService patternRenderService;
 
     public PatternController(PatternService patternService,
                              PatternLanguageService patternLanguageService,

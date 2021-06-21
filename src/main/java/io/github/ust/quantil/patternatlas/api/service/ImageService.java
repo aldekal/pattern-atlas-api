@@ -1,8 +1,10 @@
 package io.github.ust.quantil.patternatlas.api.service;
-import io.github.ust.quantil.patternatlas.api.entities.Image;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+
+import org.springframework.transaction.annotation.Transactional;
+
+import io.github.ust.quantil.patternatlas.api.entities.Image;
 
 public interface ImageService {
 

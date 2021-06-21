@@ -23,7 +23,7 @@ public class CreateUndirectedEdgeRequest {
     }
 
     public static class CreateUndirectedEdgeRequestBuilder {
-        private CreateUndirectedEdgeRequest createUndirectedEdgeRequest;
+        private final CreateUndirectedEdgeRequest createUndirectedEdgeRequest;
 
         public CreateUndirectedEdgeRequestBuilder(UUID sourcePatternid, UUID targetPatternId) {
             this.createUndirectedEdgeRequest = new CreateUndirectedEdgeRequest(sourcePatternid, targetPatternId);

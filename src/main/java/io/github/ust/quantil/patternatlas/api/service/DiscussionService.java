@@ -1,12 +1,13 @@
 package io.github.ust.quantil.patternatlas.api.service;
 
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.transaction.annotation.Transactional;
+
 import io.github.ust.quantil.patternatlas.api.entities.DiscussionComment;
 import io.github.ust.quantil.patternatlas.api.entities.DiscussionTopic;
 import io.github.ust.quantil.patternatlas.api.rest.model.DiscussionTopicModel;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.UUID;
 
 public interface DiscussionService {
 

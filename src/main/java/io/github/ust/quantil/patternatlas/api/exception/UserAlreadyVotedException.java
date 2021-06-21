@@ -1,11 +1,12 @@
 package io.github.ust.quantil.patternatlas.api.exception;
 
-import io.github.ust.quantil.patternatlas.api.entities.PatternView;
-import lombok.NoArgsConstructor;
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import java.util.UUID;
+import io.github.ust.quantil.patternatlas.api.entities.PatternView;
+import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @ResponseStatus(HttpStatus.NOT_FOUND)

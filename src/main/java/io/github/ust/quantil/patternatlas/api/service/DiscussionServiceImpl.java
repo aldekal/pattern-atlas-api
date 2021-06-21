@@ -1,29 +1,30 @@
 package io.github.ust.quantil.patternatlas.api.service;
 
-import io.github.ust.quantil.patternatlas.api.repositories.DiscussionCommentRepository;
-import io.github.ust.quantil.patternatlas.api.repositories.DiscussionTopicRepository;
-import io.github.ust.quantil.patternatlas.api.entities.DiscussionComment;
-import io.github.ust.quantil.patternatlas.api.entities.DiscussionTopic;
-import io.github.ust.quantil.patternatlas.api.rest.model.DiscussionTopicModel;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import io.github.ust.quantil.patternatlas.api.entities.DiscussionComment;
+import io.github.ust.quantil.patternatlas.api.entities.DiscussionTopic;
+import io.github.ust.quantil.patternatlas.api.repositories.DiscussionCommentRepository;
+import io.github.ust.quantil.patternatlas.api.repositories.DiscussionTopicRepository;
+import io.github.ust.quantil.patternatlas.api.rest.model.DiscussionTopicModel;
 
 @Service
 @Validated
 @Transactional
-public class DiscussionServiceImpl implements  DiscussionService{
+public class DiscussionServiceImpl implements DiscussionService {
 
-    private DiscussionTopicRepository discussionTopicRepository;
-    private DiscussionCommentRepository discussionCommentRepository;
+    private final DiscussionTopicRepository discussionTopicRepository;
+    private final DiscussionCommentRepository discussionCommentRepository;
 
-    public DiscussionServiceImpl(DiscussionTopicRepository discussionTopicRepository, DiscussionCommentRepository discussionCommentRepository){
-        this.discussionCommentRepository =  discussionCommentRepository;
+    public DiscussionServiceImpl(DiscussionTopicRepository discussionTopicRepository, DiscussionCommentRepository discussionCommentRepository) {
+        this.discussionCommentRepository = discussionCommentRepository;
         this.discussionTopicRepository = discussionTopicRepository;
     }
 
@@ -34,7 +35,7 @@ public class DiscussionServiceImpl implements  DiscussionService{
 
     @Override
     public void deleteTopicById(UUID id) {
-        for (DiscussionComment discussionComment: this.getTopicById(id).getDiscussionComments()){
+        for (DiscussionComment discussionComment : this.getTopicById(id).getDiscussionComments()) {
             this.discussionCommentRepository.deleteById(discussionComment.getId());
         }
         this.discussionTopicRepository.deleteById(id);
@@ -73,7 +74,7 @@ public class DiscussionServiceImpl implements  DiscussionService{
     @Override
     public List<DiscussionTopicModel> getTopicsAndCommentsByImageId(UUID imageId) {
         List<DiscussionTopicModel> topicModelList = new ArrayList<>();
-        this.discussionTopicRepository.findDiscussionTopicsByImageId(imageId).forEach( topic -> {
+        this.discussionTopicRepository.findDiscussionTopicsByImageId(imageId).forEach(topic -> {
             DiscussionTopicModel topicModel = new DiscussionTopicModel(topic, this.discussionCommentRepository.findDiscussionCommentByDiscussionTopic(this.getTopicById(topic.getId())));
             topicModelList.add(topicModel);
         });
@@ -88,6 +89,4 @@ public class DiscussionServiceImpl implements  DiscussionService{
         });
         return this.discussionTopicRepository.findDiscussionTopicsByImageId(newImageId);
     }
-
-
 }

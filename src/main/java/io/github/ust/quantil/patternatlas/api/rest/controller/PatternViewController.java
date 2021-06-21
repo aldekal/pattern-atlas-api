@@ -1,20 +1,8 @@
 package io.github.ust.quantil.patternatlas.api.rest.controller;
 
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.ust.quantil.patternatlas.api.entities.PatternView;
-import io.github.ust.quantil.patternatlas.api.rest.model.GraphModel;
-import io.github.ust.quantil.patternatlas.api.service.PatternViewService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.apache.commons.text.CaseUtils;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -24,15 +12,41 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import org.apache.commons.text.CaseUtils;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.core.ObjectCodec;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.github.ust.quantil.patternatlas.api.entities.PatternView;
+import io.github.ust.quantil.patternatlas.api.rest.model.GraphModel;
+import io.github.ust.quantil.patternatlas.api.service.PatternViewService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping(value = "/patternViews", produces = "application/hal+json")
 public class PatternViewController {
 
-    private PatternViewService patternViewService;
-    private ObjectCodec objectMapper;
+    private final PatternViewService patternViewService;
+    private final ObjectCodec objectMapper;
 
     public PatternViewController(PatternViewService patternViewService, ObjectMapper objectMapper) {
         this.patternViewService = patternViewService;

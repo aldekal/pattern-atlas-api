@@ -1,9 +1,9 @@
 package io.github.ust.quantil.patternatlas.api.entities.designmodel;
 
-import lombok.Data;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
+
+import lombok.Data;
 
 @Entity
 @Data

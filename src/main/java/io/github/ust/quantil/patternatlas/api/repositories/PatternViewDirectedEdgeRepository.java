@@ -3,11 +3,11 @@ package io.github.ust.quantil.patternatlas.api.repositories;
 import java.util.List;
 import java.util.UUID;
 
-import io.github.ust.quantil.patternatlas.api.entities.PatternViewDirectedEdge;
-import io.github.ust.quantil.patternatlas.api.entities.PatternViewDirectedEdgeId;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+import io.github.ust.quantil.patternatlas.api.entities.PatternViewDirectedEdge;
+import io.github.ust.quantil.patternatlas.api.entities.PatternViewDirectedEdgeId;
 
 @RepositoryRestResource(exported = false)
 public interface PatternViewDirectedEdgeRepository extends JpaRepository<PatternViewDirectedEdge, PatternViewDirectedEdgeId> {

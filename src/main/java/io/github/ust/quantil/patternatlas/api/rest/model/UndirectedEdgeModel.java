@@ -1,15 +1,16 @@
 package io.github.ust.quantil.patternatlas.api.rest.model;
 
 import java.util.UUID;
+import javax.persistence.Column;
 
-import io.github.ust.quantil.patternatlas.api.entities.UndirectedEdge;
+import org.hibernate.annotations.Type;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import javax.persistence.Column;
+
+import io.github.ust.quantil.patternatlas.api.entities.UndirectedEdge;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
 
 @NoArgsConstructor
 @Data

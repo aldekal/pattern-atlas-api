@@ -1,15 +1,15 @@
 package io.github.ust.quantil.patternatlas.api.rest.model;
 
+import java.util.UUID;
+
+import org.springframework.hateoas.server.core.Relation;
+
 import io.github.ust.quantil.patternatlas.api.entities.PatternLanguage;
 import io.github.ust.quantil.patternatlas.api.entities.designmodel.DesignModelPatternGraphData;
 import io.github.ust.quantil.patternatlas.api.entities.designmodel.DesignModelPatternInstance;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.hateoas.server.core.Relation;
-
-import java.util.UUID;
-
 
 @NoArgsConstructor
 @Data
@@ -25,10 +25,8 @@ public class PatternInstanceDTO extends PatternModel {
 
     protected double y;
 
-
     public static PatternInstanceDTO from(DesignModelPatternInstance dmpi) {
         PatternInstanceDTO gpm = new PatternInstanceDTO();
-
 
         gpm.setName(dmpi.getPattern().getName());
         gpm.setId(dmpi.getPatternInstanceId());

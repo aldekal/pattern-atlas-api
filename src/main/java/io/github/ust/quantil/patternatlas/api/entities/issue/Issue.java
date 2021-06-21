@@ -1,16 +1,23 @@
 package io.github.ust.quantil.patternatlas.api.entities.issue;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.github.ust.quantil.patternatlas.api.entities.EntityWithURI;
-import io.github.ust.quantil.patternatlas.api.entities.user.UserEntity;
 import io.github.ust.quantil.patternatlas.api.entities.issue.rating.IssueRating;
+import io.github.ust.quantil.patternatlas.api.entities.user.UserEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.util.*;
 
 @Entity
 @Data
@@ -31,7 +38,6 @@ public class Issue extends EntityWithURI {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<IssueComment> comments = new ArrayList<>();
-
 
     public void addComment(IssueComment comment, UserEntity user) {
         comments.add(comment);
@@ -59,5 +65,4 @@ public class Issue extends EntityWithURI {
     public String toString() {
         return this.getId().toString() + this.getDescription();
     }
-
 }

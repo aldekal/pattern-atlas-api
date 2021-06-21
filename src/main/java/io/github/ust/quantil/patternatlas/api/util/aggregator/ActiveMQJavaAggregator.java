@@ -1,11 +1,11 @@
 package io.github.ust.quantil.patternatlas.api.util.aggregator;
 
+import java.util.Collections;
+
 import io.github.ust.quantil.patternatlas.api.entities.designmodel.AggregationData;
 import io.github.ust.quantil.patternatlas.api.entities.designmodel.ConcreteSolution;
 import io.github.ust.quantil.patternatlas.api.entities.designmodel.DesignModelPatternInstance;
 import io.github.ust.quantil.patternatlas.api.rest.model.FileDTO;
-
-import java.util.Collections;
 
 @AggregatorMetadata(sourceTypes = {"ActiveMQ-Java"}, targetTypes = {"", "ActiveMQ-Java", "ActiveMQ-XML"})
 public class ActiveMQJavaAggregator extends ActiveMQAggregator {
@@ -14,7 +14,6 @@ public class ActiveMQJavaAggregator extends ActiveMQAggregator {
     private static final String MIME_TYPE = "text/x-java";
     private static final String WRAPPER_TEMPLATE = CONCRETE_SOLUTION_REPO + "eip-activemq-java/camel.st";
     private static final String TEMPLATE_KEY = "-template-jdsl";
-
 
     @Override
     public void aggregate(AggregationData aggregationData) {
@@ -45,7 +44,6 @@ public class ActiveMQJavaAggregator extends ActiveMQAggregator {
                 return;
             }
         }
-
 
         // Render template and wrap into camel context
         String renderedCamelContext = renderTemplate(camelContext.toString(), aggregationData.getTemplateContext());

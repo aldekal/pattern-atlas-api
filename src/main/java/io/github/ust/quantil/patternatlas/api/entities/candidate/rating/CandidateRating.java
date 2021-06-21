@@ -1,16 +1,16 @@
 package io.github.ust.quantil.patternatlas.api.entities.candidate.rating;
 
+import java.util.Objects;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
+
 import io.github.ust.quantil.patternatlas.api.entities.candidate.Candidate;
 import io.github.ust.quantil.patternatlas.api.entities.user.UserEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
-import java.util.Objects;
 
 @Entity
 @Data

@@ -3,11 +3,11 @@ package io.github.ust.quantil.patternatlas.api.service;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import io.github.ust.quantil.patternatlas.api.entities.DirectedEdge;
 import io.github.ust.quantil.patternatlas.api.entities.Pattern;
 import io.github.ust.quantil.patternatlas.api.entities.UndirectedEdge;
-
-import org.springframework.transaction.annotation.Transactional;
 
 public interface PatternRelationDescriptorService {
 

@@ -1,11 +1,12 @@
 package io.github.ust.quantil.patternatlas.api.rest.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
-import org.springframework.http.HttpStatus;
-
 import java.time.ZonedDateTime;
 
+import org.springframework.http.HttpStatus;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)

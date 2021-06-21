@@ -1,11 +1,10 @@
 package io.github.ust.quantil.patternatlas.api.rest.model;
 
+import java.util.List;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
-
 
 @Getter
 @Setter
@@ -15,11 +14,9 @@ public class LatexContent {
     private List<String> latexPackages;
     private String output;
 
-    public LatexContent(String content, List<String> latexPackages, String output){
+    public LatexContent(String content, List<String> latexPackages, String output) {
         this.content = content;
         this.latexPackages = latexPackages;
         this.output = output;
     }
-
-
 }

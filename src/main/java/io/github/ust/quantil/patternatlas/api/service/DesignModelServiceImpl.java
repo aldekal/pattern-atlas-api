@@ -30,11 +30,11 @@ import io.github.ust.quantil.patternatlas.api.repositories.UndirectedEdgeReosito
 @Transactional
 public class DesignModelServiceImpl implements DesignModelService {
 
-    private PatternService patternService;
-    private DesignModelRepository designModelRepository;
-    private DesignModelPatternInstanceRepository designModelPatternInstanceRepository;
-    private DesignModelPatternEdgeRepository designModelPatternEdgeRepository;
-    private DesignModelEdgeTypeRepository designModelEdgeTypeRepository;
+    private final PatternService patternService;
+    private final DesignModelRepository designModelRepository;
+    private final DesignModelPatternInstanceRepository designModelPatternInstanceRepository;
+    private final DesignModelPatternEdgeRepository designModelPatternEdgeRepository;
+    private final DesignModelEdgeTypeRepository designModelEdgeTypeRepository;
 
     public DesignModelServiceImpl(PatternService patternService,
                                   PatternRelationDescriptorService patternRelationDescriptorService,

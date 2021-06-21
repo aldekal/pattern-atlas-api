@@ -5,6 +5,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import io.github.ust.quantil.patternatlas.api.entities.DirectedEdge;
 import io.github.ust.quantil.patternatlas.api.entities.Pattern;
 import io.github.ust.quantil.patternatlas.api.entities.UndirectedEdge;
@@ -13,15 +16,12 @@ import io.github.ust.quantil.patternatlas.api.exception.UndirectedEdgeNotFoundEx
 import io.github.ust.quantil.patternatlas.api.repositories.DirectedEdgeRepository;
 import io.github.ust.quantil.patternatlas.api.repositories.UndirectedEdgeReository;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 @Service
 public class PatternRelationDescriptorServiceImpl implements PatternRelationDescriptorService {
 
-    private DirectedEdgeRepository directedEdgeRepository;
+    private final DirectedEdgeRepository directedEdgeRepository;
 
-    private UndirectedEdgeReository undirectedEdgeReository;
+    private final UndirectedEdgeReository undirectedEdgeReository;
 
     public PatternRelationDescriptorServiceImpl(DirectedEdgeRepository directedEdgeRepository,
                                                 UndirectedEdgeReository undirectedEdgeReository) {

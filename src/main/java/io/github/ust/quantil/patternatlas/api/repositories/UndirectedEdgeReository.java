@@ -1,13 +1,14 @@
 package io.github.ust.quantil.patternatlas.api.repositories;
 
-import io.github.ust.quantil.patternatlas.api.entities.Pattern;
-import io.github.ust.quantil.patternatlas.api.entities.UndirectedEdge;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+import io.github.ust.quantil.patternatlas.api.entities.Pattern;
+import io.github.ust.quantil.patternatlas.api.entities.UndirectedEdge;
 
 @RepositoryRestResource(exported = false)
 public interface UndirectedEdgeReository extends CrudRepository<UndirectedEdge, UUID> {
@@ -15,5 +16,4 @@ public interface UndirectedEdgeReository extends CrudRepository<UndirectedEdge, 
     Optional<List<UndirectedEdge>> findByP1(Pattern pattern);
 
     Optional<List<UndirectedEdge>> findByP2(Pattern pattern);
-
 }

@@ -1,17 +1,24 @@
 package io.github.ust.quantil.patternatlas.api.entities;
 
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
+import org.hibernate.annotations.GenericGenerator;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.github.ust.quantil.patternatlas.api.rest.model.Status;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Data
@@ -35,7 +42,7 @@ public class DiscussionTopic {
     private UUID imageId;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "discussionTopic",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "discussionTopic", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<DiscussionComment> discussionComments;
 }
 

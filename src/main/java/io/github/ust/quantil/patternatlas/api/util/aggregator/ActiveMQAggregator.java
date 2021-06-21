@@ -1,18 +1,20 @@
 package io.github.ust.quantil.patternatlas.api.util.aggregator;
 
-import io.github.ust.quantil.patternatlas.api.entities.designmodel.AggregationData;
-import lombok.extern.apachecommons.CommonsLog;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 
+import io.github.ust.quantil.patternatlas.api.entities.designmodel.AggregationData;
+import lombok.extern.apachecommons.CommonsLog;
 
 @CommonsLog
 public abstract class ActiveMQAggregator extends AggregatorImpl {
 
     @Override
     public abstract void aggregate(AggregationData aggregationData);
-
 
     protected static void addInputOutputChannelContext(AggregationData aggregationData) {
 

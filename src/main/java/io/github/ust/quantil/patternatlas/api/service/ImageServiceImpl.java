@@ -1,23 +1,23 @@
 package io.github.ust.quantil.patternatlas.api.service;
 
-import io.github.ust.quantil.patternatlas.api.entities.Image;
-import io.github.ust.quantil.patternatlas.api.repositories.ImageRepository;
+import java.util.UUID;
+
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-
-import java.util.UUID;
+import io.github.ust.quantil.patternatlas.api.entities.Image;
+import io.github.ust.quantil.patternatlas.api.repositories.ImageRepository;
 
 @Service
 @Validated
 @Transactional
-public class ImageServiceImpl implements ImageService{
+public class ImageServiceImpl implements ImageService {
 
-    private ImageRepository imageRepository;
+    private final ImageRepository imageRepository;
 
-    public ImageServiceImpl(ImageRepository imageRepository){
+    public ImageServiceImpl(ImageRepository imageRepository) {
         this.imageRepository = imageRepository;
     }
 

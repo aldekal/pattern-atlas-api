@@ -1,12 +1,17 @@
 package io.github.ust.quantil.patternatlas.api.entities;
 
-import lombok.*;
+import java.util.UUID;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Lob;
 
 import org.hibernate.annotations.GenericGenerator;
 
-
-import javax.persistence.*;
-import java.util.UUID;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Data

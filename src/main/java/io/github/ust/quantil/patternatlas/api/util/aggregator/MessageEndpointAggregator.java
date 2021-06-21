@@ -1,19 +1,18 @@
 package io.github.ust.quantil.patternatlas.api.util.aggregator;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import io.github.ust.quantil.patternatlas.api.entities.designmodel.AggregationData;
 import io.github.ust.quantil.patternatlas.api.entities.designmodel.ConcreteSolution;
 import io.github.ust.quantil.patternatlas.api.entities.designmodel.DesignModelPatternInstance;
 import io.github.ust.quantil.patternatlas.api.rest.model.FileDTO;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 @AggregatorMetadata(sourceTypes = {"MessageEndpoint"}, targetTypes = {"", "AWS-CloudFormation-JSON", "ActiveMQ-XML", "ActiveMQ-Java"})
 public class MessageEndpointAggregator extends ActiveMQAggregator {
 
     private static final String MIME_TYPE = "text/x-java";
-
 
     @Override
     public void aggregate(AggregationData aggregationData) {

@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import io.github.ust.quantil.patternatlas.api.entities.DirectedEdge;
 import io.github.ust.quantil.patternatlas.api.entities.Pattern;
 import io.github.ust.quantil.patternatlas.api.entities.PatternGraphType;
@@ -31,21 +34,18 @@ import io.github.ust.quantil.patternatlas.api.rest.model.AddUndirectedEdgeToView
 import io.github.ust.quantil.patternatlas.api.rest.model.UpdateDirectedEdgeRequest;
 import io.github.ust.quantil.patternatlas.api.rest.model.UpdateUndirectedEdgeRequest;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 @Service
 @Transactional
 public class PatternViewServiceImpl implements PatternViewService {
 
-    private PatternService patternService;
-    private PatternRelationDescriptorService patternRelationDescriptorService;
-    private PatternViewRepository patternViewRepository;
-    private PatternViewPatternRepository patternViewPatternRepository;
-    private PatternViewDirectedEdgeRepository patternViewDirectedEdgeRepository;
-    private PatternViewUndirectedEdgeRepository patternViewUndirectedEdgeRepository;
-    private DirectedEdgeRepository directedEdgeRepository;
-    private UndirectedEdgeReository undirectedEdgeReository;
+    private final PatternService patternService;
+    private final PatternRelationDescriptorService patternRelationDescriptorService;
+    private final PatternViewRepository patternViewRepository;
+    private final PatternViewPatternRepository patternViewPatternRepository;
+    private final PatternViewDirectedEdgeRepository patternViewDirectedEdgeRepository;
+    private final PatternViewUndirectedEdgeRepository patternViewUndirectedEdgeRepository;
+    private final DirectedEdgeRepository directedEdgeRepository;
+    private final UndirectedEdgeReository undirectedEdgeReository;
 
     public PatternViewServiceImpl(PatternService patternService,
                                   PatternRelationDescriptorService patternRelationDescriptorService,
@@ -391,5 +391,4 @@ public class PatternViewServiceImpl implements PatternViewService {
         patternView.setGraph(null);
         this.patternViewRepository.save(patternView);
     }
-
 }

@@ -24,13 +24,13 @@ import io.github.ust.quantil.patternatlas.api.util.RatingHelper;
 @Transactional
 public class CandidateServiceImpl implements CandidateService {
 
-    private CandidateRepository candidateRepository;
-    private CandidateRatingRepository candidateRatingRepository;
-    private CandidateCommentRepository candidateCommentRepository;
-    private CandidateCommentRatingRepository candidateCommentRatingRepository;
-    private PatternLanguageService patternLanguageService;
-    private UserService userService;
-    private RatingHelper ratingHelper;
+    private final CandidateRepository candidateRepository;
+    private final CandidateRatingRepository candidateRatingRepository;
+    private final CandidateCommentRepository candidateCommentRepository;
+    private final CandidateCommentRatingRepository candidateCommentRatingRepository;
+    private final PatternLanguageService patternLanguageService;
+    private final UserService userService;
+    private final RatingHelper ratingHelper;
 
     Logger logger = LoggerFactory.getLogger(IssueServiceImpl.class);
 

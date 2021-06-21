@@ -1,14 +1,14 @@
 package io.github.ust.quantil.patternatlas.api.util.aggregator;
 
-import io.github.ust.quantil.patternatlas.api.entities.designmodel.AggregationData;
-import io.github.ust.quantil.patternatlas.api.entities.designmodel.ConcreteSolution;
-import io.github.ust.quantil.patternatlas.api.entities.designmodel.DesignModelPatternInstance;
-import io.github.ust.quantil.patternatlas.api.rest.model.FileDTO;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import io.github.ust.quantil.patternatlas.api.entities.designmodel.AggregationData;
+import io.github.ust.quantil.patternatlas.api.entities.designmodel.ConcreteSolution;
+import io.github.ust.quantil.patternatlas.api.entities.designmodel.DesignModelPatternInstance;
+import io.github.ust.quantil.patternatlas.api.rest.model.FileDTO;
 
 @AggregatorMetadata(sourceTypes = {"AWS-CloudFormation-JSON"}, targetTypes = {"", "AWS-CloudFormation-JSON"})
 public class AWSCloudFormationJsonAggregator extends ActiveMQAggregator {
@@ -17,10 +17,8 @@ public class AWSCloudFormationJsonAggregator extends ActiveMQAggregator {
     private static final String MIME_TYPE = "application/json";
     private static final String WRAPPER_TEMPLATE = CONCRETE_SOLUTION_REPO + "aws-cloudformation-json/cloudformation.st";
 
-
     @Override
     public void aggregate(AggregationData aggregationData) {
-
 
         DesignModelPatternInstance sourcePattern = aggregationData.getSource();
         ConcreteSolution concreteSolution = sourcePattern.getConcreteSolution();

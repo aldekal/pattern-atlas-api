@@ -1,10 +1,10 @@
 package io.github.ust.quantil.patternatlas.api.rest.model;
 
+import java.util.UUID;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import java.util.UUID;
 
 @NoArgsConstructor
 @Data

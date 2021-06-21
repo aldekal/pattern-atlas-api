@@ -1,14 +1,14 @@
 package io.github.ust.quantil.patternatlas.api.entities.designmodel;
 
-import io.github.ust.quantil.patternatlas.api.entities.UndirectedEdge;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
+
+import io.github.ust.quantil.patternatlas.api.entities.UndirectedEdge;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data

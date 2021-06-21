@@ -1,6 +1,11 @@
 package io.github.ust.quantil.patternatlas.api.service;
 
 import java.util.UUID;
+import javax.validation.Valid;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import io.github.ust.quantil.patternatlas.api.entities.Pattern;
 import io.github.ust.quantil.patternatlas.api.exception.NullPatternException;
@@ -9,17 +14,12 @@ import io.github.ust.quantil.patternatlas.api.exception.PatternNotFoundException
 import io.github.ust.quantil.patternatlas.api.repositories.PatternRepository;
 import io.github.ust.quantil.patternatlas.api.validator.PatternContentConstraint;
 
-import javax.validation.Valid;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
 @Service
 @Validated
 @Transactional
 public class PatternServiceImpl implements PatternService {
 
-    private PatternRepository patternRepository;
+    private final PatternRepository patternRepository;
 
     public PatternServiceImpl(PatternRepository patternRepository) {
         this.patternRepository = patternRepository;

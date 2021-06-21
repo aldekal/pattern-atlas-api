@@ -1,17 +1,19 @@
 package io.github.ust.quantil.patternatlas.api.entities;
 
 import java.util.UUID;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+
+import org.hibernate.annotations.Type;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
 
 @Entity
 @Data
