@@ -9,8 +9,8 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>com.patternatlas</groupId>
-    <artifactId>api</artifactId>
+    <groupId>io.github.ust.quantil.patternatlas</groupId>
+    <artifactId>patternatlas.api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <properties>
