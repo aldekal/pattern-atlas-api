@@ -21,7 +21,7 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
     && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 EXPOSE ${API_PORT}
-COPY --from=builder /tmp/pattern-atlas-api/target/api-0.0.1-SNAPSHOT.jar /var/www/java/api.jar
+COPY --from=builder /tmp/pattern-atlas-api/target/patternatlas.api-1.2.0-SNAPSHOT.jar /var/www/java/api.jar
 
 ADD .docker/application.properties.tpl /var/www/java/application.properties.tpl
 
