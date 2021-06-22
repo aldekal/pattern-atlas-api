@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>com.patternpedia</groupId>
-    <artifactId>api</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <groupId>io.github.patternatlas</groupId>
+    <artifactId>patternatlas.api</artifactId>
+    <version>1.2.0-SNAPSHOT</version>
 
     <properties>
         <java.version>1.8</java.version>
