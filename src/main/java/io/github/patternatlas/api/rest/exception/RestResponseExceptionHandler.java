@@ -19,7 +19,7 @@ public class RestResponseExceptionHandler
     @ExceptionHandler(value = {
             ResourceNotFoundException.class
     })
-    protected ResponseEntity<Object> handleEntityNotFoundExceptions(RuntimeException ex, WebRequest request) {
+    protected ResponseEntity<Object> handleEntityNotFoundExceptions(Exception ex, WebRequest request) {
         ErrorMessageDTO errorMessage = new ErrorMessageDTO(ex.getMessage(), HttpStatus.NOT_FOUND);
         return handleExceptionInternal(ex, errorMessage, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
@@ -27,7 +27,7 @@ public class RestResponseExceptionHandler
     @ExceptionHandler(value = {
             NullPatternSchemaException.class
     })
-    protected ResponseEntity<Object> handleNullPatternSchemaException(RuntimeException ex, WebRequest request) {
+    protected ResponseEntity<Object> handleNullPatternSchemaException(Exception ex, WebRequest request) {
         ErrorMessageDTO errorMessage = new ErrorMessageDTO(ex.getMessage(), HttpStatus.BAD_REQUEST);
         return handleExceptionInternal(ex, errorMessage, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
@@ -35,7 +35,7 @@ public class RestResponseExceptionHandler
     @ExceptionHandler(value = {
             Exception.class
     })
-    protected ResponseEntity<Object> handleStorageExceptions(RuntimeException ex, WebRequest request) {
+    protected ResponseEntity<Object> handleStorageExceptions(Exception ex, WebRequest request) {
         ErrorMessageDTO errorMessage = new ErrorMessageDTO(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         return handleExceptionInternal(ex, errorMessage, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }

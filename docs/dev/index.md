@@ -1,11 +1,11 @@
-# PatternPedia Developer Guide
+# PatternAtlas Developer Guide
 This document provides an index to all development guidelines and background information of the PatternPedia.
 - [ADR](/adr) - Information on Architectural decisions can be found here
 
 ## Quick Develop
 <!---
 ### PatternPediaAuth
-1. Clone the repository `git clone https://github.com/PatternPedia/pattern-pedia-auth.git`.
+1. Clone the repository `git clone https://github.com/PatternAtlas/pattern-pedia-auth.git`.
 2. Navigate to repository directory `cd pattern-pedia-auth/`.
 2. Build the repository 
     - `mvn package -DskipTests`(Windows) (skiping the tests for a faster build), Java 8 required.
@@ -30,11 +30,11 @@ During development default users are
 - Admin: name: `admin@mail` password: `pass` 
 - Member: name: `member@mail` password: `pass` 
 
-### PatternPediaAPI 
+### PatternAtlasAPI 
 --->
-1. Clone the repository `git clone https://github.com/PatternPedia/pattern-pedia-views-backend.git`.
+1. Clone the repository `git clone https://github.com/PatternPedia/pattern-atlas-api.git`.
 2. Build the repository `mvn package -DskipTests` (skiping the tests for a faster build), Java 8 required.
-3. Clone the repository `git clone https://github.com/PatternPedia/pattern-pedia-views-ui.git`.
+3. Clone the repository `git clone https://github.com/PatternPedia/pattern-atlas-ui.git`.
 4. Build the repository `mvn package -DskipTests` (skiping the tests for a faster build), npm is required. (plus yarn, optionally)
 5. <a name="step5"></a>Continue your IDE setup:
     - [IntelliJ Ultimate](IntelliJ/)
