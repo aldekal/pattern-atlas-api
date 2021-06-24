@@ -191,12 +191,11 @@ public class PatternRenderServiceImpl implements PatternRenderService {
     public byte[] renderContentViaAPI(String content, List<String> packages, String output) {
         LatexContent latexContent = new LatexContent(content, packages, output);
         byte[] file = null;
-        String url = null;
         try {
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            url = baseAPIEndpoint + "?content="
+            String url = baseAPIEndpoint + "?content="
                     + URLEncoder.encode(latexContent.getContent(), "UTF-8");
             for (String latexPackage : latexContent.getLatexPackages()
             ) {
