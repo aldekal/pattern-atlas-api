@@ -31,8 +31,8 @@ public class PatternRenderServiceImpl implements PatternRenderService {
     Logger logger = LoggerFactory.getLogger(PatternRenderServiceImpl.class);
 
     public PatternRenderServiceImpl(
-            @Value("${com.patternpedia.api.latexrenderer.hostname}") String hostname,
-            @Value("${com.patternpedia.api.latexrenderer.port}") int port
+            @Value("${io.github.patternatlas.api.latexrenderer.hostname}") String hostname,
+            @Value("${io.github.patternatlas.api.latexrenderer.port}") int port
     ) {
         this.baseAPIEndpoint = String.format("http://%s:%d/renderLatex/", hostname, port);
     }
