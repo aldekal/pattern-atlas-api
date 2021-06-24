@@ -1,6 +1,6 @@
-# PatternPedia
+# PatternAtlas
 
-This is the main index page of PatternPedia.
+This is the main index page of PatternAtlas.
 
 Information for developers is found at the following items:
 
