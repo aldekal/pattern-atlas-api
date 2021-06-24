@@ -1,17 +1,12 @@
 package io.github.patternatlas.api.service;
 
-import java.net.URI;
+import java.net.URLEncoder;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.commons.text.similarity.JaccardSimilarity;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.patternpedia.api.entities.Image;
-import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.rest.model.LatexContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +17,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URLEncoder;
-import java.time.Instant;
-import java.util.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.github.patternatlas.api.entities.Image;
 import io.github.patternatlas.api.entities.Pattern;
 import io.github.patternatlas.api.rest.model.LatexContent;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -40,11 +31,12 @@ public class PatternRenderServiceImpl implements PatternRenderService {
     Logger logger = LoggerFactory.getLogger(PatternRenderServiceImpl.class);
 
     public PatternRenderServiceImpl(
-    @Value("${com.patternpedia.api.latexrenderer.hostname}") String hostname,
-    @Value("${com.patternpedia.api.latexrenderer.port}") int port
+            @Value("${com.patternpedia.api.latexrenderer.hostname}") String hostname,
+            @Value("${com.patternpedia.api.latexrenderer.port}") int port
     ) {
         this.baseAPIEndpoint = String.format("http://%s:%d/renderLatex/", hostname, port);
     }
+
     @Autowired
     private ImageService imageService;
 
@@ -131,12 +123,12 @@ public class PatternRenderServiceImpl implements PatternRenderService {
                     byte[] renderedFile = renderContentViaAPI(renderContent, settings, "svg");
                     String id = saveAndUploadFile(renderedFile, "svg");
                     jsonString = jsonString.replace(jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 14), " " + id + " ");
-                    if(countQuantikz < oldContentOccurances.size()){
-                          this.discussionService.updateTopicsByImageId(UUID.fromString(oldSVGOccurances.get(countQuantikz).substring(5, oldSVGOccurances.get(countQuantikz).length() - 6)), UUID.fromString(id.substring(5, id.length() - 6)));
+                    if (countQuantikz < oldContentOccurances.size()) {
+                        this.discussionService.updateTopicsByImageId(UUID.fromString(oldSVGOccurances.get(countQuantikz).substring(5, oldSVGOccurances.get(countQuantikz).length() - 6)), UUID.fromString(id.substring(5, id.length() - 6)));
                     }
                 }
-                countQuantikz++ ;
-            }else {
+                countQuantikz++;
+            } else {
                 break;
             }
         }
@@ -167,12 +159,12 @@ public class PatternRenderServiceImpl implements PatternRenderService {
                     byte[] renderedFile = renderContentViaAPI(renderContent, settings, "svg");
                     String id = saveAndUploadFile(renderedFile, "svg");
                     jsonString = jsonString.replace(jsonString.substring(occuranceStartEnd[0], occuranceStartEnd[1] + 4), " " + id + " ");
-                    if(countQcircuit < oldContentOccurances.size()){
-                            this.discussionService.updateTopicsByImageId(UUID.fromString(oldSVGOccurances.get(countQcircuit).substring(5, oldSVGOccurances.get(countQcircuit).length() - 6)), UUID.fromString(id.substring(5, id.length() - 6)));
+                    if (countQcircuit < oldContentOccurances.size()) {
+                        this.discussionService.updateTopicsByImageId(UUID.fromString(oldSVGOccurances.get(countQcircuit).substring(5, oldSVGOccurances.get(countQcircuit).length() - 6)), UUID.fromString(id.substring(5, id.length() - 6)));
                     }
                 }
-                countQcircuit++ ;
-            }else {
+                countQcircuit++;
+            } else {
                 break;
             }
         }
@@ -187,7 +179,7 @@ public class PatternRenderServiceImpl implements PatternRenderService {
     }
 
     public Integer[] getNextOccurance(String content, String begin, String end) {
-        return new Integer[]{content.indexOf(begin, 0), content.indexOf(end, 0)};
+        return new Integer[] {content.indexOf(begin, 0), content.indexOf(end, 0)};
     }
 
     /**
@@ -200,19 +192,19 @@ public class PatternRenderServiceImpl implements PatternRenderService {
         LatexContent latexContent = new LatexContent(content, packages, output);
         byte[] file = null;
         String url = null;
-        try{
+        try {
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             url = baseAPIEndpoint + "?content="
                     + URLEncoder.encode(latexContent.getContent(), "UTF-8");
-            for(String latexPackage : latexContent.getLatexPackages()
-                 ) {
-                url +=  "&packages=" + URLEncoder.encode(latexPackage, "UTF-8");
+            for (String latexPackage : latexContent.getLatexPackages()
+            ) {
+                url += "&packages=" + URLEncoder.encode(latexPackage, "UTF-8");
             }
-            ResponseEntity<byte[]> result = restTemplate.getForEntity( url, byte[].class);
+            ResponseEntity<byte[]> result = restTemplate.getForEntity(url, byte[].class);
             file = result.getBody();
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("could not render LaTeX: " + e.getMessage());
             return null;
         }
