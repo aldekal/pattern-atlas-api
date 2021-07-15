@@ -1,12 +1,13 @@
-package com.patternpedia.api.rest.controller;
-
-import com.patternpedia.api.entities.DirectedEdge;
-import com.patternpedia.api.entities.UndirectedEdge;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import org.springframework.hateoas.Link;
+package io.github.patternatlas.api.rest.controller;
 
 import java.util.List;
+
+import org.springframework.hateoas.Link;
+
+import io.github.patternatlas.api.entities.DirectedEdge;
+import io.github.patternatlas.api.entities.UndirectedEdge;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 @Data
 @AllArgsConstructor

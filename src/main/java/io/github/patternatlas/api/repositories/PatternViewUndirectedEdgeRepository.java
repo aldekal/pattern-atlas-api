@@ -1,14 +1,14 @@
-package com.patternpedia.api.repositories;
+package io.github.patternatlas.api.repositories;
 
 import java.util.List;
 import java.util.UUID;
 
-import com.patternpedia.api.entities.PatternViewDirectedEdge;
-import com.patternpedia.api.entities.PatternViewUndirectedEdge;
-import com.patternpedia.api.entities.PatternViewUndirectedEdgeId;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+import io.github.patternatlas.api.entities.PatternViewDirectedEdge;
+import io.github.patternatlas.api.entities.PatternViewUndirectedEdge;
+import io.github.patternatlas.api.entities.PatternViewUndirectedEdgeId;
 
 @RepositoryRestResource(exported = false)
 public interface PatternViewUndirectedEdgeRepository extends JpaRepository<PatternViewUndirectedEdge, PatternViewUndirectedEdgeId> {

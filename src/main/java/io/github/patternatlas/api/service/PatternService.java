@@ -1,11 +1,10 @@
-package com.patternpedia.api.service;
+package io.github.patternatlas.api.service;
 
 import java.util.UUID;
-
-import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.validator.PatternContentConstraint;
-
 import javax.validation.Valid;
+
+import io.github.patternatlas.api.entities.Pattern;
+import io.github.patternatlas.api.validator.PatternContentConstraint;
 
 public interface PatternService {
 

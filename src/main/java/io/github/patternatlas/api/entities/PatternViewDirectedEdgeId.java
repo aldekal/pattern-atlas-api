@@ -1,9 +1,9 @@
-package com.patternpedia.api.entities;
+package io.github.patternatlas.api.entities;
 
 import java.io.Serializable;
 import java.util.UUID;
-
 import javax.persistence.Embeddable;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -1,10 +1,13 @@
-package com.patternpedia.api.entities.issue.comment;
+package io.github.patternatlas.api.entities.issue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.patternpedia.api.entities.issue.Issue;
-import com.patternpedia.api.entities.shared.Comment;
-import com.patternpedia.api.entities.user.UserEntity;
+
+import io.github.patternatlas.api.entities.issue.Issue;
+import io.github.patternatlas.api.entities.shared.Comment;
+import io.github.patternatlas.api.entities.user.UserEntity;
+import io.github.patternatlas.api.entities.issue.comment.IssueCommentRating;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

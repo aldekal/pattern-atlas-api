@@ -1,4 +1,4 @@
-package com.patternpedia.api.rest.model;
+package io.github.patternatlas.api.rest.model;
 
 import java.util.UUID;
 
@@ -23,7 +23,7 @@ public class CreateDirectedEdgeRequest {
     }
 
     public static class CreateDirectedEdgeRequestBuilder {
-        private CreateDirectedEdgeRequest createDirectedEdgeRequest;
+        private final CreateDirectedEdgeRequest createDirectedEdgeRequest;
 
         public CreateDirectedEdgeRequestBuilder(UUID sourcePatternId, UUID targetPatternId) {
             this.createDirectedEdgeRequest = new CreateDirectedEdgeRequest(sourcePatternId, targetPatternId);

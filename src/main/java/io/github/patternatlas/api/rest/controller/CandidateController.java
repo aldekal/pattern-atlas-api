@@ -1,21 +1,26 @@
-package com.patternpedia.api.rest.controller;
+package io.github.patternatlas.api.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.patternpedia.api.config.Authority;
-import com.patternpedia.api.rest.model.candidate.CandidateModel;
-import com.patternpedia.api.rest.model.candidate.CandidateModelRequest;
-import com.patternpedia.api.rest.model.issue.IssueModel;
-import com.patternpedia.api.rest.model.shared.*;
-import com.patternpedia.api.service.CandidateService;
-import com.patternpedia.api.service.PatternLanguageService;
+
+import io.github.patternatlas.api.config.Authority;
+import io.github.patternatlas.api.rest.model.candidate.CandidateModel;
+import io.github.patternatlas.api.rest.model.candidate.CandidateModelRequest;
+import io.github.patternatlas.api.rest.model.issue.IssueModel;
+import io.github.patternatlas.api.rest.model.shared.*;
+import io.github.patternatlas.api.service.CandidateService;
+import io.github.patternatlas.api.service.PatternLanguageService;
+
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;

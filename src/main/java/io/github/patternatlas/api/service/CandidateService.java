@@ -1,13 +1,14 @@
-package com.patternpedia.api.service;
+package io.github.patternatlas.api.service;
 
-import com.patternpedia.api.entities.candidate.Candidate;
-import com.patternpedia.api.entities.candidate.author.CandidateAuthor;
-import com.patternpedia.api.entities.candidate.comment.CandidateComment;
-import com.patternpedia.api.entities.candidate.comment.CandidateCommentRating;
-import com.patternpedia.api.entities.candidate.evidence.CandidateEvidence;
-import com.patternpedia.api.entities.candidate.evidence.CandidateEvidenceRating;
-import com.patternpedia.api.rest.model.candidate.CandidateModelRequest;
-import com.patternpedia.api.rest.model.shared.*;
+import io.github.patternatlas.api.entities.candidate.Candidate;
+import io.github.patternatlas.api.entities.candidate.author.CandidateAuthor;
+import io.github.patternatlas.api.entities.candidate.comment.CandidateComment;
+import io.github.patternatlas.api.entities.candidate.comment.CandidateCommentRating;
+import io.github.patternatlas.api.entities.candidate.evidence.CandidateEvidence;
+import io.github.patternatlas.api.entities.candidate.evidence.CandidateEvidenceRating;
+import io.github.patternatlas.api.rest.model.candidate.CandidateModelRequest;
+import io.github.patternatlas.api.rest.model.shared.*;
+
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;

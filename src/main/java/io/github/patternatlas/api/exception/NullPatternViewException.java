@@ -1,4 +1,4 @@
-package com.patternpedia.api.exception;
+package io.github.patternatlas.api.exception;
 
 public class NullPatternViewException extends RuntimeException {
 

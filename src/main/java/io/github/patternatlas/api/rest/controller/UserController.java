@@ -1,21 +1,25 @@
-package com.patternpedia.api.rest.controller;
+package io.github.patternatlas.api.rest.controller;
 
-import com.patternpedia.api.config.Authority;
-import com.patternpedia.api.rest.model.user.*;
+import io.github.patternatlas.api.config.Authority;
+import io.github.patternatlas.api.rest.model.user.*;
+
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.patternpedia.api.service.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.patternpedia.api.service.UserService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.UUID;

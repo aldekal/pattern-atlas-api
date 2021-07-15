@@ -1,8 +1,9 @@
-package com.patternpedia.api.repositories;
+package io.github.patternatlas.api.repositories;
 
-import com.patternpedia.api.entities.issue.Issue;
-import com.patternpedia.api.entities.issue.IssueRating;
-import com.patternpedia.api.entities.shared.CompositeKey;
+import io.github.patternatlas.api.entities.issue.Issue;
+import io.github.patternatlas.api.entities.issue.IssueRating;
+import io.github.patternatlas.api.entities.shared.CompositeKey;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 

@@ -1,51 +1,51 @@
-package com.patternpedia.api.service;
+package io.github.patternatlas.api.service;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.patternpedia.api.entities.DirectedEdge;
-import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.entities.PatternGraphType;
-import com.patternpedia.api.entities.PatternView;
-import com.patternpedia.api.entities.PatternViewDirectedEdge;
-import com.patternpedia.api.entities.PatternViewDirectedEdgeId;
-import com.patternpedia.api.entities.PatternViewPattern;
-import com.patternpedia.api.entities.PatternViewPatternId;
-import com.patternpedia.api.entities.PatternViewUndirectedEdge;
-import com.patternpedia.api.entities.PatternViewUndirectedEdgeId;
-import com.patternpedia.api.entities.UndirectedEdge;
-import com.patternpedia.api.exception.DirectedEdgeNotFoundException;
-import com.patternpedia.api.exception.NullPatternViewException;
-import com.patternpedia.api.exception.PatternNotFoundException;
-import com.patternpedia.api.exception.PatternViewNotFoundException;
-import com.patternpedia.api.exception.UndirectedEdgeNotFoundException;
-import com.patternpedia.api.repositories.DirectedEdgeRepository;
-import com.patternpedia.api.repositories.PatternViewDirectedEdgeRepository;
-import com.patternpedia.api.repositories.PatternViewPatternRepository;
-import com.patternpedia.api.repositories.PatternViewRepository;
-import com.patternpedia.api.repositories.PatternViewUndirectedEdgeRepository;
-import com.patternpedia.api.repositories.UndirectedEdgeReository;
-import com.patternpedia.api.rest.model.AddDirectedEdgeToViewRequest;
-import com.patternpedia.api.rest.model.AddUndirectedEdgeToViewRequest;
-import com.patternpedia.api.rest.model.UpdateDirectedEdgeRequest;
-import com.patternpedia.api.rest.model.UpdateUndirectedEdgeRequest;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import io.github.patternatlas.api.entities.DirectedEdge;
+import io.github.patternatlas.api.entities.Pattern;
+import io.github.patternatlas.api.entities.PatternGraphType;
+import io.github.patternatlas.api.entities.PatternView;
+import io.github.patternatlas.api.entities.PatternViewDirectedEdge;
+import io.github.patternatlas.api.entities.PatternViewDirectedEdgeId;
+import io.github.patternatlas.api.entities.PatternViewPattern;
+import io.github.patternatlas.api.entities.PatternViewPatternId;
+import io.github.patternatlas.api.entities.PatternViewUndirectedEdge;
+import io.github.patternatlas.api.entities.PatternViewUndirectedEdgeId;
+import io.github.patternatlas.api.entities.UndirectedEdge;
+import io.github.patternatlas.api.exception.DirectedEdgeNotFoundException;
+import io.github.patternatlas.api.exception.NullPatternViewException;
+import io.github.patternatlas.api.exception.PatternNotFoundException;
+import io.github.patternatlas.api.exception.PatternViewNotFoundException;
+import io.github.patternatlas.api.exception.UndirectedEdgeNotFoundException;
+import io.github.patternatlas.api.repositories.DirectedEdgeRepository;
+import io.github.patternatlas.api.repositories.PatternViewDirectedEdgeRepository;
+import io.github.patternatlas.api.repositories.PatternViewPatternRepository;
+import io.github.patternatlas.api.repositories.PatternViewRepository;
+import io.github.patternatlas.api.repositories.PatternViewUndirectedEdgeRepository;
+import io.github.patternatlas.api.repositories.UndirectedEdgeReository;
+import io.github.patternatlas.api.rest.model.AddDirectedEdgeToViewRequest;
+import io.github.patternatlas.api.rest.model.AddUndirectedEdgeToViewRequest;
+import io.github.patternatlas.api.rest.model.UpdateDirectedEdgeRequest;
+import io.github.patternatlas.api.rest.model.UpdateUndirectedEdgeRequest;
 
 @Service
 @Transactional
 public class PatternViewServiceImpl implements PatternViewService {
 
-    private PatternService patternService;
-    private PatternRelationDescriptorService patternRelationDescriptorService;
-    private PatternViewRepository patternViewRepository;
-    private PatternViewPatternRepository patternViewPatternRepository;
-    private PatternViewDirectedEdgeRepository patternViewDirectedEdgeRepository;
-    private PatternViewUndirectedEdgeRepository patternViewUndirectedEdgeRepository;
-    private DirectedEdgeRepository directedEdgeRepository;
-    private UndirectedEdgeReository undirectedEdgeReository;
+    private final PatternService patternService;
+    private final PatternRelationDescriptorService patternRelationDescriptorService;
+    private final PatternViewRepository patternViewRepository;
+    private final PatternViewPatternRepository patternViewPatternRepository;
+    private final PatternViewDirectedEdgeRepository patternViewDirectedEdgeRepository;
+    private final PatternViewUndirectedEdgeRepository patternViewUndirectedEdgeRepository;
+    private final DirectedEdgeRepository directedEdgeRepository;
+    private final UndirectedEdgeReository undirectedEdgeReository;
 
     public PatternViewServiceImpl(PatternService patternService,
                                   PatternRelationDescriptorService patternRelationDescriptorService,
@@ -391,5 +391,4 @@ public class PatternViewServiceImpl implements PatternViewService {
         patternView.setGraph(null);
         this.patternViewRepository.save(patternView);
     }
-
 }

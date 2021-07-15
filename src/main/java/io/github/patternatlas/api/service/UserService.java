@@ -1,12 +1,12 @@
-package com.patternpedia.api.service;
+package io.github.patternatlas.api.service;
 
-import com.patternpedia.api.entities.user.role.Privilege;
-import com.patternpedia.api.entities.user.role.Role;
-import com.patternpedia.api.entities.user.UserEntity;
-import com.patternpedia.api.rest.model.user.RoleModel;
-import com.patternpedia.api.rest.model.user.RoleModelRequest;
-import com.patternpedia.api.rest.model.user.UserModel;
-import com.patternpedia.api.rest.model.user.UserModelRequest;
+import io.github.patternatlas.api.entities.user.role.Privilege;
+import io.github.patternatlas.api.entities.user.role.Role;
+import io.github.patternatlas.api.entities.user.UserEntity;
+import io.github.patternatlas.api.rest.model.user.RoleModel;
+import io.github.patternatlas.api.rest.model.user.RoleModelRequest;
+import io.github.patternatlas.api.rest.model.user.UserModel;
+import io.github.patternatlas.api.rest.model.user.UserModelRequest;
 
 import java.util.List;
 import java.util.UUID;

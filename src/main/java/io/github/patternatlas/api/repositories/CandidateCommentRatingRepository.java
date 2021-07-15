@@ -1,7 +1,8 @@
-package com.patternpedia.api.repositories;
+package io.github.patternatlas.api.repositories;
 
-import com.patternpedia.api.entities.candidate.comment.CandidateCommentRating;
-import com.patternpedia.api.entities.shared.CompositeKey;
+import io.github.patternatlas.api.entities.candidate.comment.CandidateCommentRating;
+import io.github.patternatlas.api.entities.shared.CompositeKey;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 

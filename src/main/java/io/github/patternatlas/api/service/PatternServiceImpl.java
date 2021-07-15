@@ -1,25 +1,25 @@
-package com.patternpedia.api.service;
+package io.github.patternatlas.api.service;
 
 import java.util.UUID;
-
-import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.exception.NullPatternException;
-import com.patternpedia.api.exception.NullPatternLanguageException;
-import com.patternpedia.api.exception.PatternNotFoundException;
-import com.patternpedia.api.repositories.PatternRepository;
-import com.patternpedia.api.validator.PatternContentConstraint;
-
 import javax.validation.Valid;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+
+import io.github.patternatlas.api.entities.Pattern;
+import io.github.patternatlas.api.exception.NullPatternException;
+import io.github.patternatlas.api.exception.NullPatternLanguageException;
+import io.github.patternatlas.api.exception.PatternNotFoundException;
+import io.github.patternatlas.api.repositories.PatternRepository;
+import io.github.patternatlas.api.validator.PatternContentConstraint;
 
 @Service
 @Validated
 @Transactional
 public class PatternServiceImpl implements PatternService {
 
-    private PatternRepository patternRepository;
+    private final PatternRepository patternRepository;
 
     public PatternServiceImpl(PatternRepository patternRepository) {
         this.patternRepository = patternRepository;

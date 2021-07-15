@@ -33,3 +33,11 @@ build/
 
 ### MacOS File System ###
 **/.DS_STORE
+
+### TexRendering ###
+*.png
+*.tex
+*.pdf
+*.log
+*.aux
+*.svg

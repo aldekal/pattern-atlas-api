@@ -1,25 +1,27 @@
-package com.patternpedia.api.entities;
+package io.github.patternatlas.api.entities;
 
 import java.util.Objects;
 import java.util.UUID;
-
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 @MappedSuperclass
 @Data
 @NoArgsConstructor
-@TypeDefs( {
-        @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
-})
+@TypeDefs({
+                  @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
+          })
 public abstract class EntityWithURI {
 
     @Id

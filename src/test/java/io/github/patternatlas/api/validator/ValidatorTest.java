@@ -1,6 +1,10 @@
-package com.patternpedia.api.validator;
+package io.github.patternatlas.api.validator;
 
-import com.patternpedia.api.entities.Pattern;
+import static org.junit.Assert.assertFalse;
+
+import java.util.Set;
+import javax.validation.ConstraintViolation;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,11 +15,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.SpringConstraintValidatorFactory;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.validation.ConstraintViolation;
-import java.util.Set;
-
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertFalse;
+import io.github.patternatlas.api.entities.Pattern;
 
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -46,5 +46,4 @@ public class ValidatorTest {
 
         assertFalse(violations.isEmpty());
     }
-
 }

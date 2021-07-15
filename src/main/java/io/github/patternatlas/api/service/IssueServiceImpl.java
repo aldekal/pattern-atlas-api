@@ -1,20 +1,21 @@
-package com.patternpedia.api.service;
+package io.github.patternatlas.api.service;
 
-import com.patternpedia.api.entities.issue.IssueRating;
-import com.patternpedia.api.entities.issue.comment.IssueComment;
-import com.patternpedia.api.entities.issue.Issue;
-import com.patternpedia.api.entities.issue.author.IssueAuthor;
-import com.patternpedia.api.entities.issue.comment.IssueCommentRating;
-import com.patternpedia.api.entities.issue.evidence.IssueEvidence;
-import com.patternpedia.api.entities.issue.evidence.IssueEvidenceRating;
-import com.patternpedia.api.entities.shared.AuthorConstant;
-import com.patternpedia.api.entities.user.UserEntity;
-import com.patternpedia.api.repositories.*;
-import com.patternpedia.api.rest.model.issue.IssueModelRequest;
-import com.patternpedia.api.rest.model.shared.AuthorModelRequest;
-import com.patternpedia.api.rest.model.shared.CommentModel;
-import com.patternpedia.api.rest.model.shared.EvidenceModel;
-import com.patternpedia.api.rest.model.shared.RatingModelRequest;
+import io.github.patternatlas.api.entities.issue.IssueRating;
+import io.github.patternatlas.api.entities.issue.comment.IssueComment;
+import io.github.patternatlas.api.entities.issue.Issue;
+import io.github.patternatlas.api.entities.issue.author.IssueAuthor;
+import io.github.patternatlas.api.entities.issue.comment.IssueCommentRating;
+import io.github.patternatlas.api.entities.issue.evidence.IssueEvidence;
+import io.github.patternatlas.api.entities.issue.evidence.IssueEvidenceRating;
+import io.github.patternatlas.api.entities.shared.AuthorConstant;
+import io.github.patternatlas.api.entities.user.UserEntity;
+import io.github.patternatlas.api.repositories.*;
+import io.github.patternatlas.api.rest.model.issue.IssueModelRequest;
+import io.github.patternatlas.api.rest.model.shared.AuthorModelRequest;
+import io.github.patternatlas.api.rest.model.shared.CommentModel;
+import io.github.patternatlas.api.rest.model.shared.EvidenceModel;
+import io.github.patternatlas.api.rest.model.shared.RatingModelRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;

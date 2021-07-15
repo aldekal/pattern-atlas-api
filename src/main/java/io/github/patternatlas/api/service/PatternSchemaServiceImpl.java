@@ -1,27 +1,27 @@
-package com.patternpedia.api.service;
+package io.github.patternatlas.api.service;
+
+import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 import java.util.UUID;
 
-import com.patternpedia.api.entities.PatternSchema;
-import com.patternpedia.api.entities.PatternSectionSchema;
-import com.patternpedia.api.exception.NullPatternSchemaException;
-import com.patternpedia.api.exception.PatternSchemaNotFoundException;
-import com.patternpedia.api.repositories.PatternSchemaRepository;
-import com.patternpedia.api.repositories.PatternSectionSchemaRepository;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static java.util.stream.Collectors.toList;
+import io.github.patternatlas.api.entities.PatternSchema;
+import io.github.patternatlas.api.entities.PatternSectionSchema;
+import io.github.patternatlas.api.exception.NullPatternSchemaException;
+import io.github.patternatlas.api.exception.PatternSchemaNotFoundException;
+import io.github.patternatlas.api.repositories.PatternSchemaRepository;
+import io.github.patternatlas.api.repositories.PatternSectionSchemaRepository;
 
 @Service
 @Transactional
 public class PatternSchemaServiceImpl implements PatternSchemaService {
 
-    private PatternSchemaRepository patternSchemaRepository;
+    private final PatternSchemaRepository patternSchemaRepository;
 
-    private PatternSectionSchemaRepository patternSectionSchemaRepository;
+    private final PatternSectionSchemaRepository patternSectionSchemaRepository;
 
     public PatternSchemaServiceImpl(PatternSchemaRepository patternSchemaRepository,
                                     PatternSectionSchemaRepository patternSectionSchemaRepository) {

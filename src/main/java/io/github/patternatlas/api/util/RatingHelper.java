@@ -1,6 +1,6 @@
-package com.patternpedia.api.util;
+package io.github.patternatlas.api.util;
 
-import com.patternpedia.api.entities.user.UserEntity;
+import io.github.patternatlas.api.entities.user.UserEntity;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -16,7 +16,6 @@ public class RatingHelper {
                 log.info(String.format("User %s rated up", user.getId()));
                 return 1;
             }
-
         } else if (rating.equals("down")) {
             if (oldRating == -1) {
                 log.info(String.format("User %s deleted down", user.getId()));

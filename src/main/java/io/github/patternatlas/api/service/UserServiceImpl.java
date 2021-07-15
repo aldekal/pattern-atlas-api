@@ -1,14 +1,15 @@
-package com.patternpedia.api.service;
+package io.github.patternatlas.api.service;
 
-import com.patternpedia.api.entities.user.role.RoleConstant;
-import com.patternpedia.api.entities.user.role.Privilege;
-import com.patternpedia.api.entities.user.role.Role;
-import com.patternpedia.api.entities.user.UserEntity;
-import com.patternpedia.api.exception.*;
-import com.patternpedia.api.repositories.PrivilegeRepository;
-import com.patternpedia.api.repositories.RoleRepository;
-import com.patternpedia.api.repositories.UserRepository;
-import com.patternpedia.api.rest.model.user.*;
+import io.github.patternatlas.api.entities.user.role.RoleConstant;
+import io.github.patternatlas.api.entities.user.role.Privilege;
+import io.github.patternatlas.api.entities.user.role.Role;
+import io.github.patternatlas.api.entities.user.UserEntity;
+import io.github.patternatlas.api.exception.*;
+import io.github.patternatlas.api.repositories.PrivilegeRepository;
+import io.github.patternatlas.api.repositories.RoleRepository;
+import io.github.patternatlas.api.repositories.UserRepository;
+import io.github.patternatlas.api.rest.model.user.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;

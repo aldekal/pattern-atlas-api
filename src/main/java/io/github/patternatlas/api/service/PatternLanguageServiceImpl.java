@@ -1,38 +1,42 @@
-package com.patternpedia.api.service;
+package io.github.patternatlas.api.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import com.patternpedia.api.entities.*;
-import com.patternpedia.api.exception.DirectedEdgeNotFoundException;
-import com.patternpedia.api.exception.NullPatternException;
-import com.patternpedia.api.exception.NullPatternLanguageException;
-import com.patternpedia.api.exception.NullPatternSchemaException;
-import com.patternpedia.api.exception.PatternLanguageNotFoundException;
-import com.patternpedia.api.exception.PatternNotFoundException;
-import com.patternpedia.api.exception.UndirectedEdgeNotFoundException;
-import com.patternpedia.api.repositories.PatternLanguageRepository;
-import com.patternpedia.api.rest.model.CreateDirectedEdgeRequest;
-import com.patternpedia.api.rest.model.CreateUndirectedEdgeRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+
+import io.github.patternatlas.api.entities.DirectedEdge;
+import io.github.patternatlas.api.entities.Pattern;
+import io.github.patternatlas.api.entities.PatternGraphType;
+import io.github.patternatlas.api.entities.PatternLanguage;
+import io.github.patternatlas.api.entities.PatternSchema;
+import io.github.patternatlas.api.exception.DirectedEdgeNotFoundException;
+import io.github.patternatlas.api.exception.NullPatternException;
+import io.github.patternatlas.api.exception.NullPatternLanguageException;
+import io.github.patternatlas.api.exception.NullPatternSchemaException;
+import io.github.patternatlas.api.exception.PatternLanguageNotFoundException;
+import io.github.patternatlas.api.exception.PatternNotFoundException;
+import io.github.patternatlas.api.exception.UndirectedEdgeNotFoundException;
+import io.github.patternatlas.api.repositories.PatternLanguageRepository;
+import io.github.patternatlas.api.rest.model.CreateDirectedEdgeRequest;
+import io.github.patternatlas.api.rest.model.CreateUndirectedEdgeRequest;
+import io.github.patternatlas.api.entities.UndirectedEdge;
 
 @Service
 @Transactional
 public class PatternLanguageServiceImpl implements PatternLanguageService {
 
-    private PatternSchemaService patternSchemaService;
-    private PatternService patternService;
-    private PatternRelationDescriptorService patternRelationDescriptorService;
-    private PatternViewService patternViewService;
-    private PatternLanguageRepository patternLanguageRepository;
-    private ObjectMapper objectMapper;
+    private final PatternSchemaService patternSchemaService;
+    private final PatternService patternService;
+    private final PatternRelationDescriptorService patternRelationDescriptorService;
+    private final PatternViewService patternViewService;
+    private final PatternLanguageRepository patternLanguageRepository;
+    private final ObjectMapper objectMapper;
 
     public PatternLanguageServiceImpl(PatternSchemaService patternSchemaService,
                                       PatternService patternService,
@@ -210,7 +214,7 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
         try {
             directedEdges.addAll(this.patternRelationDescriptorService.findDirectedEdgeBySource(pattern));
         } catch (DirectedEdgeNotFoundException ex) {
-                // no handling required, if ex is thrown there are no edges
+            // no handling required, if ex is thrown there are no edges
         }
         try {
             directedEdges.addAll(this.patternRelationDescriptorService.findDirectedEdgeByTarget(pattern));
@@ -223,8 +227,7 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
         try {
             List<UndirectedEdge> undirectedEdges = this.patternRelationDescriptorService.findUndirectedEdgeByPattern(pattern);
             this.patternRelationDescriptorService.deleteAllUndirectedEdges(undirectedEdges);
-        }
-        catch (UndirectedEdgeNotFoundException ex) {
+        } catch (UndirectedEdgeNotFoundException ex) {
             // no handling required, if ex is thrown there are no edges
         }
 

@@ -1,15 +1,15 @@
-package com.patternpedia.api.entities.issue;
+package io.github.patternatlas.api.entities.issue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.patternpedia.api.entities.EntityWithURI;
-import com.patternpedia.api.entities.issue.author.IssueAuthor;
-import com.patternpedia.api.entities.issue.comment.IssueComment;
-import com.patternpedia.api.entities.issue.evidence.IssueEvidence;
-import com.patternpedia.api.rest.model.issue.IssueModelRequest;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+
+import io.github.patternatlas.api.entities.EntityWithURI;
+import io.github.patternatlas.api.entities.issue.author.IssueAuthor;
+import io.github.patternatlas.api.entities.issue.comment.IssueComment;
+import io.github.patternatlas.api.entities.issue.evidence.IssueEvidence;
+import io.github.patternatlas.api.rest.model.issue.IssueModelRequest;
+
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.*;

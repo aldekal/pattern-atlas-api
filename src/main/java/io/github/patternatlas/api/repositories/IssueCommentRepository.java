@@ -1,10 +1,11 @@
-package com.patternpedia.api.repositories;
+package io.github.patternatlas.api.repositories;
 
-import com.patternpedia.api.entities.issue.comment.IssueComment;
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-import java.util.UUID;
+import io.github.patternatlas.api.entities.issue.comment.IssueComment;
 
 @RepositoryRestResource(exported = false)
 public interface IssueCommentRepository extends JpaRepository<IssueComment, UUID> {

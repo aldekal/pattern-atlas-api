@@ -1,4 +1,4 @@
-package com.patternpedia.api.rest.model;
+package io.github.patternatlas.api.rest.model;
 
 import java.util.UUID;
 

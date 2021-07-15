@@ -1,11 +1,13 @@
-package com.patternpedia.api.entities.issue;
+package io.github.patternatlas.api.entities.issue;
 
-import com.patternpedia.api.entities.shared.CompositeKey;
-import com.patternpedia.api.entities.user.UserEntity;
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.Objects;
+
+import io.github.patternatlas.api.entities.user.UserEntity;
+import io.github.patternatlas.api.entities.issue.Issue;
+import io.github.patternatlas.api.entities.shared.CompositeKey;
 
 @Entity
 @Data

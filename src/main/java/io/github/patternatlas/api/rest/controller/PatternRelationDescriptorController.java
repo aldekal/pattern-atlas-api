@@ -1,44 +1,53 @@
-package com.patternpedia.api.rest.controller;
+package io.github.patternatlas.api.rest.controller;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.patternpedia.api.entities.DirectedEdge;
-import com.patternpedia.api.entities.UndirectedEdge;
-import com.patternpedia.api.rest.model.AddDirectedEdgeToViewRequest;
-import com.patternpedia.api.rest.model.AddUndirectedEdgeToViewRequest;
-import com.patternpedia.api.rest.model.CreateDirectedEdgeRequest;
-import com.patternpedia.api.rest.model.CreateUndirectedEdgeRequest;
-import com.patternpedia.api.rest.model.DirectedEdgeModel;
-import com.patternpedia.api.rest.model.UndirectedEdgeModel;
-import com.patternpedia.api.rest.model.UpdateDirectedEdgeRequest;
-import com.patternpedia.api.rest.model.UpdateUndirectedEdgeRequest;
-import com.patternpedia.api.service.PatternLanguageService;
-import com.patternpedia.api.service.PatternViewService;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import io.github.patternatlas.api.rest.model.AddDirectedEdgeToViewRequest;
+import io.github.patternatlas.api.rest.model.AddUndirectedEdgeToViewRequest;
+import io.github.patternatlas.api.rest.model.CreateDirectedEdgeRequest;
+import io.github.patternatlas.api.rest.model.CreateUndirectedEdgeRequest;
+import io.github.patternatlas.api.rest.model.DirectedEdgeModel;
+import io.github.patternatlas.api.rest.model.UndirectedEdgeModel;
+import io.github.patternatlas.api.rest.model.UpdateDirectedEdgeRequest;
+import io.github.patternatlas.api.rest.model.UpdateUndirectedEdgeRequest;
+import io.github.patternatlas.api.entities.DirectedEdge;
+import io.github.patternatlas.api.entities.UndirectedEdge;
+import io.github.patternatlas.api.service.PatternLanguageService;
+import io.github.patternatlas.api.service.PatternViewService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping(value = "/", produces = "application/hal+json")
 public class PatternRelationDescriptorController {
 
-    private PatternLanguageService patternLanguageService;
-    private PatternViewService patternViewService;
+    private final PatternLanguageService patternLanguageService;
+    private final PatternViewService patternViewService;
 
     public PatternRelationDescriptorController(PatternLanguageService patternLanguageService,
                                                PatternViewService patternViewService) {
@@ -365,7 +374,7 @@ public class PatternRelationDescriptorController {
         if (request.isNewEdge()) {
             UndirectedEdge undirectedEdge = this.patternViewService.createUndirectedEdgeAndAddToPatternView(patternViewId, request);
             return ResponseEntity.created(linkTo(methodOn(PatternRelationDescriptorController.class)
-                    .getUndirectedEdgeOfPatternViewById(patternViewId, undirectedEdge.getId())).toUri()).build();
+                    .getUndirectedEdgeOfPatternViewById(patternViewId, undirectedEdge.getId())).toUri()).body(undirectedEdge);
         } else {
             this.patternViewService.addUndirectedEdgeToPatternView(patternViewId, request.getUndirectedEdgeId());
             return ResponseEntity.created(linkTo(methodOn(PatternRelationDescriptorController.class)

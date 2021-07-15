@@ -1,4 +1,4 @@
-package com.patternpedia.api.util;
+package io.github.patternatlas.api.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

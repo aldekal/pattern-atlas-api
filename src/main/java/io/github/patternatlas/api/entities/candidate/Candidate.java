@@ -1,18 +1,21 @@
-package com.patternpedia.api.entities.candidate;
+package io.github.patternatlas.api.entities.candidate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.patternpedia.api.entities.EntityWithURI;
-import com.patternpedia.api.entities.PatternLanguage;
-import com.patternpedia.api.entities.candidate.author.CandidateAuthor;
-import com.patternpedia.api.entities.candidate.comment.CandidateComment;
-import com.patternpedia.api.entities.candidate.evidence.CandidateEvidence;
-import com.patternpedia.api.entities.issue.evidence.IssueEvidence;
-import com.patternpedia.api.rest.model.candidate.CandidateModelRequest;
+
+import io.github.patternatlas.api.entities.EntityWithURI;
+import io.github.patternatlas.api.entities.PatternLanguage;
+import io.github.patternatlas.api.entities.candidate.author.CandidateAuthor;
+import io.github.patternatlas.api.entities.candidate.comment.CandidateComment;
+import io.github.patternatlas.api.entities.candidate.evidence.CandidateEvidence;
+import io.github.patternatlas.api.entities.issue.evidence.IssueEvidence;
+import io.github.patternatlas.api.rest.model.candidate.CandidateModelRequest;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;

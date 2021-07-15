@@ -1,27 +1,27 @@
-package com.patternpedia.api.service;
+package io.github.patternatlas.api.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import com.patternpedia.api.entities.DirectedEdge;
-import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.entities.UndirectedEdge;
-import com.patternpedia.api.exception.DirectedEdgeNotFoundException;
-import com.patternpedia.api.exception.UndirectedEdgeNotFoundException;
-import com.patternpedia.api.repositories.DirectedEdgeRepository;
-import com.patternpedia.api.repositories.UndirectedEdgeReository;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import io.github.patternatlas.api.entities.DirectedEdge;
+import io.github.patternatlas.api.entities.Pattern;
+import io.github.patternatlas.api.entities.UndirectedEdge;
+import io.github.patternatlas.api.exception.DirectedEdgeNotFoundException;
+import io.github.patternatlas.api.exception.UndirectedEdgeNotFoundException;
+import io.github.patternatlas.api.repositories.DirectedEdgeRepository;
+import io.github.patternatlas.api.repositories.UndirectedEdgeReository;
 
 @Service
 public class PatternRelationDescriptorServiceImpl implements PatternRelationDescriptorService {
 
-    private DirectedEdgeRepository directedEdgeRepository;
+    private final DirectedEdgeRepository directedEdgeRepository;
 
-    private UndirectedEdgeReository undirectedEdgeReository;
+    private final UndirectedEdgeReository undirectedEdgeReository;
 
     public PatternRelationDescriptorServiceImpl(DirectedEdgeRepository directedEdgeRepository,
                                                 UndirectedEdgeReository undirectedEdgeReository) {

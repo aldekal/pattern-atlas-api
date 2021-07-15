@@ -1,16 +1,18 @@
-package com.patternpedia.api.entities.issue.comment;
+package io.github.patternatlas.api.entities.issue.comment;
 
-import com.patternpedia.api.entities.shared.CompositeKey;
-import com.patternpedia.api.entities.user.UserEntity;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-
+import java.util.Objects;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
-import java.util.Objects;
+
+import io.github.patternatlas.api.entities.user.UserEntity;
+import io.github.patternatlas.api.entities.issue.IssueComment;
+import com.patternpedia.api.entities.shared.CompositeKey;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data

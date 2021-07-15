@@ -1,4 +1,4 @@
-package com.patternpedia.api.entities;
+package io.github.patternatlas.api.entities;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;

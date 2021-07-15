@@ -1,15 +1,15 @@
-package com.patternpedia.api.entities;
+package io.github.patternatlas.api.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
-import com.patternpedia.api.entities.EntityWithURI;
+import org.hibernate.annotations.Type;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
 
 import java.util.Objects;
 

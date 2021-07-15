@@ -1,15 +1,15 @@
-package com.patternpedia.api.exception;
+package io.github.patternatlas.api.exception;
 
 import java.util.UUID;
 
-import com.patternpedia.api.entities.PatternGraphType;
-import com.patternpedia.api.entities.PatternLanguage;
-import com.patternpedia.api.entities.PatternView;
-
-import lombok.NoArgsConstructor;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import io.github.patternatlas.api.entities.PatternGraphType;
+import io.github.patternatlas.api.entities.PatternLanguage;
+import io.github.patternatlas.api.entities.PatternView;
+import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @ResponseStatus(HttpStatus.NOT_FOUND)

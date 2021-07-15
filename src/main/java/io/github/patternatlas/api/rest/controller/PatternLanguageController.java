@@ -1,4 +1,8 @@
-package com.patternpedia.api.rest.controller;
+package io.github.patternatlas.api.rest.controller;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -9,18 +13,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.patternpedia.api.entities.PatternLanguage;
-import com.patternpedia.api.entities.PatternSchema;
-import com.patternpedia.api.rest.model.PatternLanguageGraphModel;
-import com.patternpedia.api.rest.model.PatternLanguageModel;
-import com.patternpedia.api.rest.model.shared.PatternLanguageSchemaModel;
-import com.patternpedia.api.rest.model.shared.PatternSchemaModel;
-import com.patternpedia.api.service.PatternLanguageService;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.commons.text.CaseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -29,20 +21,41 @@ import org.springframework.hateoas.Link;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.github.patternatlas.api.rest.model.GraphModel;
+import io.github.patternatlas.api.entities.PatternLanguage;
+import io.github.patternatlas.api.entities.PatternSchema;
+import io.github.patternatlas.api.rest.model.PatternLanguageModel;
+import io.github.patternatlas.api.rest.model.shared.PatternSchemaModel;
+import io.github.patternatlas.api.rest.model.PatternLanguageGraphModel;
+import io.github.patternatlas.api.rest.model.shared.PatternLanguageSchemaModel;
+import io.github.patternatlas.api.service.PatternLanguageService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping(value = "/patternLanguages", produces = "application/hal+json")
 public class PatternLanguageController {
 
-    private PatternLanguageService patternLanguageService;
+    private final PatternLanguageService patternLanguageService;
 
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     @Autowired
     public PatternLanguageController(PatternLanguageService patternLanguageService,
@@ -80,7 +93,7 @@ public class PatternLanguageController {
         return links;
     }
 
-    @Operation(operationId = "getAllPatternLanguageModels",  responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all pattern languages")
+    @Operation(operationId = "getAllPatternLanguageModels", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all pattern languages")
     @GetMapping(value = "")
     CollectionModel<EntityModel<PatternLanguageModel>> getAllPatternLanguages() {
         List<EntityModel<PatternLanguageModel>> patternLanguageModels = this.patternLanguageService.getPatternLanguages()
@@ -173,7 +186,7 @@ public class PatternLanguageController {
     HttpEntity<EntityModel<Object>> getPatternLanguageGraph(@PathVariable UUID patternLanguageId) {
         Object graph = this.patternLanguageService.getGraphOfPatternLanguage(patternLanguageId);
 
-        PatternLanguageGraphModel model = new PatternLanguageGraphModel();
+        GraphModel model = new GraphModel();
         if (null == graph) {
             model.setGraph(this.objectMapper.createArrayNode());
         } else {

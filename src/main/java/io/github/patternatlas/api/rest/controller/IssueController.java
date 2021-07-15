@@ -1,14 +1,18 @@
-package com.patternpedia.api.rest.controller;
+package io.github.patternatlas.api.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.patternpedia.api.rest.model.issue.IssueModelRequest;
-import com.patternpedia.api.rest.model.shared.*;
-import com.patternpedia.api.rest.model.issue.IssueModel;
-import com.patternpedia.api.service.*;
+
+import io.github.patternatlas.api.rest.model.issue.IssueModelRequest;
+import io.github.patternatlas.api.rest.model.shared.*;
+import io.github.patternatlas.api.rest.model.issue.IssueModel;
+import io.github.patternatlas.api.service.*;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;

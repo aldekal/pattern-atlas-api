@@ -1,17 +1,18 @@
-package com.patternpedia.api.service;
+package io.github.patternatlas.api.service;
 
 import java.util.List;
 import java.util.UUID;
 
-import com.patternpedia.api.entities.DirectedEdge;
-import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.entities.PatternView;
-import com.patternpedia.api.entities.UndirectedEdge;
-import com.patternpedia.api.rest.model.AddDirectedEdgeToViewRequest;
-import com.patternpedia.api.rest.model.AddUndirectedEdgeToViewRequest;
-import com.patternpedia.api.rest.model.UpdateDirectedEdgeRequest;
-import com.patternpedia.api.rest.model.UpdateUndirectedEdgeRequest;
 import org.springframework.transaction.annotation.Transactional;
+
+import io.github.patternatlas.api.entities.DirectedEdge;
+import io.github.patternatlas.api.entities.Pattern;
+import io.github.patternatlas.api.entities.PatternView;
+import io.github.patternatlas.api.entities.UndirectedEdge;
+import io.github.patternatlas.api.rest.model.AddDirectedEdgeToViewRequest;
+import io.github.patternatlas.api.rest.model.AddUndirectedEdgeToViewRequest;
+import io.github.patternatlas.api.rest.model.UpdateDirectedEdgeRequest;
+import io.github.patternatlas.api.rest.model.UpdateUndirectedEdgeRequest;
 
 public interface PatternViewService {
 

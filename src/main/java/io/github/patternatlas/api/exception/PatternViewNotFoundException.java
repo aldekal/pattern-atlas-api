@@ -1,10 +1,10 @@
-package com.patternpedia.api.exception;
+package io.github.patternatlas.api.exception;
 
 import java.util.UUID;
 
-import com.patternpedia.api.entities.PatternView;
-
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+
+import io.github.patternatlas.api.entities.PatternView;
 
 public class PatternViewNotFoundException extends ResourceNotFoundException {
 

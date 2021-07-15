@@ -1,32 +1,41 @@
-package com.patternpedia.api.entities.user;
+package io.github.patternatlas.api.entities.user;
+
+import java.io.Serializable;
+import java.util.*;
+import javax.persistence.*;
+
+import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.patternpedia.api.entities.candidate.CandidateRating;
-import com.patternpedia.api.entities.candidate.comment.CandidateComment;
-import com.patternpedia.api.entities.candidate.author.CandidateAuthor;
-import com.patternpedia.api.entities.candidate.evidence.CandidateEvidence;
-import com.patternpedia.api.entities.issue.comment.IssueComment;
-import com.patternpedia.api.entities.issue.author.IssueAuthor;
-import com.patternpedia.api.entities.issue.IssueRating;
-import com.patternpedia.api.entities.issue.evidence.IssueEvidence;
-import com.patternpedia.api.entities.user.role.Role;
-import com.patternpedia.api.rest.model.user.UserModel;
+
+import io.github.patternatlas.api.entities.candidate.CandidateRating;
+import io.github.patternatlas.api.entities.candidate.comment.CandidateComment;
+import io.github.patternatlas.api.entities.candidate.author.CandidateAuthor;
+import io.github.patternatlas.api.entities.candidate.evidence.CandidateEvidence;
+import io.github.patternatlas.api.entities.issue.comment.IssueComment;
+import io.github.patternatlas.api.entities.issue.author.IssueAuthor;
+import io.github.patternatlas.api.entities.issue.IssueRating;
+import io.github.patternatlas.api.entities.issue.evidence.IssueEvidence;
+import io.github.patternatlas.api.entities.user.role.Role;
+import io.github.patternatlas.api.rest.model.user.UserModel;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.hibernate.annotations.NaturalId;
 
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.*;
+import org.hibernate.annotations.NaturalId;
 
 @Entity
 @Data
 @NoArgsConstructor
 public class UserEntity implements Serializable{
 
-    /** User fields*/
+    /**
+     * User fields
+     */
     @Id
     @GeneratedValue(generator = "pg-uuid")
     private UUID id;
@@ -47,7 +56,9 @@ public class UserEntity implements Serializable{
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    /** Issue fields*/
+    /**
+     * Issue fields
+     */
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<IssueAuthor> issues = new HashSet<>();

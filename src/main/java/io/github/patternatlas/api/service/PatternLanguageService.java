@@ -1,14 +1,18 @@
-package com.patternpedia.api.service;
+package io.github.patternatlas.api.service;
 
 import java.util.List;
 import java.util.UUID;
 
-import com.patternpedia.api.entities.*;
-import com.patternpedia.api.exception.UndirectedEdgeNotFoundException;
-import com.patternpedia.api.rest.model.CreateDirectedEdgeRequest;
-import com.patternpedia.api.rest.model.CreateUndirectedEdgeRequest;
-
 import org.springframework.transaction.annotation.Transactional;
+
+import io.github.patternatlas.api.entities.DirectedEdge;
+import io.github.patternatlas.api.entities.Pattern;
+import io.github.patternatlas.api.entities.PatternLanguage;
+import io.github.patternatlas.api.entities.PatternSchema;
+import io.github.patternatlas.api.exception.UndirectedEdgeNotFoundException;
+import io.github.patternatlas.api.rest.model.CreateDirectedEdgeRequest;
+import io.github.patternatlas.api.rest.model.CreateUndirectedEdgeRequest;
+import io.github.patternatlas.api.entities.UndirectedEdge;
 
 public interface PatternLanguageService {
 

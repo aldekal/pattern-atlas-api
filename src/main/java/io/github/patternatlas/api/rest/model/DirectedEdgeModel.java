@@ -1,15 +1,16 @@
-package com.patternpedia.api.rest.model;
+package io.github.patternatlas.api.rest.model;
 
 import java.util.UUID;
+import javax.persistence.Column;
 
-import com.patternpedia.api.entities.DirectedEdge;
+import org.hibernate.annotations.Type;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import javax.persistence.Column;
+
+import io.github.patternatlas.api.entities.DirectedEdge;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
 
 @NoArgsConstructor
 @Data

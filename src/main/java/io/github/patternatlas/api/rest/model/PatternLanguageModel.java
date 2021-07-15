@@ -1,9 +1,9 @@
-package com.patternpedia.api.rest.model;
+package io.github.patternatlas.api.rest.model;
 
 import java.net.URL;
 import java.util.UUID;
 
-import com.patternpedia.api.entities.PatternLanguage;
+import io.github.patternatlas.api.entities.PatternLanguage;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

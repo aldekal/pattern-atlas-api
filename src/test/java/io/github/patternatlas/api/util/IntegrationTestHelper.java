@@ -1,4 +1,8 @@
-package com.patternpedia.api.util;
+package io.github.patternatlas.api.util;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -7,28 +11,35 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import com.patternpedia.api.entities.*;
-import com.patternpedia.api.repositories.DirectedEdgeRepository;
-import com.patternpedia.api.repositories.PatternLanguageRepository;
-import com.patternpedia.api.repositories.PatternRepository;
-import com.patternpedia.api.repositories.PatternSchemaRepository;
-import com.patternpedia.api.repositories.PatternSectionSchemaRepository;
-import com.patternpedia.api.repositories.PatternViewDirectedEdgeRepository;
-import com.patternpedia.api.repositories.PatternViewPatternRepository;
-import com.patternpedia.api.repositories.PatternViewRepository;
-import com.patternpedia.api.repositories.UndirectedEdgeReository;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import io.github.patternatlas.api.entities.DiscussionComment;
+import io.github.patternatlas.api.entities.DiscussionTopic;
+import io.github.patternatlas.api.entities.Image;
+import io.github.patternatlas.api.entities.Pattern;
+import io.github.patternatlas.api.entities.PatternLanguage;
+import io.github.patternatlas.api.entities.PatternSchema;
+import io.github.patternatlas.api.entities.PatternSectionSchema;
+import io.github.patternatlas.api.entities.PatternView;
+import io.github.patternatlas.api.repositories.DirectedEdgeRepository;
+import io.github.patternatlas.api.repositories.DiscussionCommentRepository;
+import io.github.patternatlas.api.repositories.DiscussionTopicRepository;
+import io.github.patternatlas.api.repositories.ImageRepository;
+import io.github.patternatlas.api.repositories.PatternLanguageRepository;
+import io.github.patternatlas.api.repositories.PatternRepository;
+import io.github.patternatlas.api.repositories.PatternSchemaRepository;
+import io.github.patternatlas.api.repositories.PatternSectionSchemaRepository;
+import io.github.patternatlas.api.repositories.PatternViewDirectedEdgeRepository;
+import io.github.patternatlas.api.repositories.PatternViewPatternRepository;
+import io.github.patternatlas.api.repositories.PatternViewRepository;
+import io.github.patternatlas.api.repositories.UndirectedEdgeReository;
 
 @Service
 public class IntegrationTestHelper {
@@ -55,6 +66,12 @@ public class IntegrationTestHelper {
     private ObjectMapper objectMapper;
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private ImageRepository imageRepository;
+    @Autowired
+    private DiscussionCommentRepository discussionCommentRepository;
+    @Autowired
+    private DiscussionTopicRepository discussionTopicRepository;
 
     public void cleanUpRepos() {
         System.out.println("Cleaning up...");
@@ -85,6 +102,15 @@ public class IntegrationTestHelper {
 
         this.patternLanguageRepository.deleteAll();
         System.out.println("Cleaned up patternLanguageRepository");
+
+        this.imageRepository.deleteAll();
+        System.out.println("Cleaned up imageRepository");
+
+        this.discussionCommentRepository.deleteAll();
+        System.out.println("Cleaned up discussionCommentRepository");
+
+        this.discussionTopicRepository.deleteAll();
+        System.out.println("Cleaned up discussionTopicRepository");
     }
 
     public ObjectNode getDefaultPatternContent() {
@@ -216,5 +242,31 @@ public class IntegrationTestHelper {
         ).andExpect(status().isOk()).andReturn();
 
         return this.objectMapper.readValue(getPatternResponse.getResponse().getContentAsByteArray(), Pattern.class);
+    }
+
+    public Image getDefaultImage() {
+        Image image = new Image();
+        image.setId(UUID.randomUUID());
+        image.setFileName("testImage");
+        image.setFileType("testType");
+        image.setData("testFile".getBytes());
+        return image;
+    }
+
+    public DiscussionTopic getDefaultDiscussionTopic() {
+        DiscussionTopic discussionTopic = new DiscussionTopic();
+        discussionTopic.setId(UUID.randomUUID());
+        discussionTopic.setTitle("TestTopic");
+        discussionTopic.setDescription("Testdescription");
+        discussionTopic.setImageId(this.getDefaultImage().getId());
+        return discussionTopic;
+    }
+
+    public DiscussionComment getDefaultDiscussionComment() {
+        DiscussionComment discussionComment = new DiscussionComment();
+        discussionComment.setId(UUID.randomUUID());
+        discussionComment.setText("TestText");
+        discussionComment.setDiscussionTopic(this.getDefaultDiscussionTopic());
+        return discussionComment;
     }
 }

@@ -1,12 +1,12 @@
-package com.patternpedia.api.exception;
+package io.github.patternatlas.api.exception;
 
 import java.util.UUID;
 
-import com.patternpedia.api.entities.PatternGraphType;
-import com.patternpedia.api.entities.PatternLanguage;
-import com.patternpedia.api.entities.PatternView;
-
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+
+import io.github.patternatlas.api.entities.PatternGraphType;
+import io.github.patternatlas.api.entities.PatternLanguage;
+import io.github.patternatlas.api.entities.PatternView;
 
 public class UndirectedEdgeNotFoundException extends ResourceNotFoundException {
     public UndirectedEdgeNotFoundException(String message) {

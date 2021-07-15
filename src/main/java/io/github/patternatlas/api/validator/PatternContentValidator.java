@@ -1,23 +1,23 @@
-package com.patternpedia.api.validator;
+package io.github.patternatlas.api.validator;
 
 import java.util.Iterator;
 import java.util.Map;
-
-import com.patternpedia.api.entities.Pattern;
-import com.patternpedia.api.entities.PatternSchema;
-import com.patternpedia.api.entities.PatternSectionSchema;
-import com.patternpedia.api.service.PatternLanguageService;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+
+import io.github.patternatlas.api.entities.Pattern;
+import io.github.patternatlas.api.entities.PatternSchema;
+import io.github.patternatlas.api.entities.PatternSectionSchema;
+import io.github.patternatlas.api.service.PatternLanguageService;
 
 public class PatternContentValidator implements ConstraintValidator<PatternContentConstraint, Pattern> {
 
-    private ObjectMapper objectMapper;
-    private PatternLanguageService patternLanguageService;
+    private final ObjectMapper objectMapper;
+    private final PatternLanguageService patternLanguageService;
 
     public PatternContentValidator(ObjectMapper objectMapper,
                                    PatternLanguageService patternLanguageService) {
