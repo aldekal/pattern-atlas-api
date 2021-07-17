@@ -1,8 +1,9 @@
-package com.patternpedia.api.rest.model.shared;
+package io.github.patternatlas.api.rest.model.shared;
 
-import com.patternpedia.api.entities.candidate.author.CandidateAuthor;
-import com.patternpedia.api.entities.issue.author.IssueAuthor;
-import com.patternpedia.api.entities.user.UserEntity;
+import io.github.patternatlas.api.entities.candidate.author.CandidateAuthor;
+import io.github.patternatlas.api.entities.issue.author.IssueAuthor;
+import io.github.patternatlas.api.entities.user.UserEntity;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

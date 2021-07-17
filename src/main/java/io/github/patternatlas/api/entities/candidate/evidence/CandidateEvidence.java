@@ -1,11 +1,13 @@
-package com.patternpedia.api.entities.candidate.evidence;
+package io.github.patternatlas.api.entities.candidate.evidence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.patternpedia.api.entities.candidate.Candidate;
-import com.patternpedia.api.entities.issue.evidence.IssueEvidence;
-import com.patternpedia.api.entities.shared.Evidence;
-import com.patternpedia.api.entities.user.UserEntity;
+
+import io.github.patternatlas.api.entities.candidate.Candidate;
+import io.github.patternatlas.api.entities.issue.evidence.IssueEvidence;
+import io.github.patternatlas.api.entities.shared.Evidence;
+import io.github.patternatlas.api.entities.user.UserEntity;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

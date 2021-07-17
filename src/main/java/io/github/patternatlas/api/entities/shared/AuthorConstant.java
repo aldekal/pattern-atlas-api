@@ -1,4 +1,4 @@
-package com.patternpedia.api.entities.shared;
+package io.github.patternatlas.api.entities.shared;
 
 public interface AuthorConstant {
     String OWNER        = "OWNER";

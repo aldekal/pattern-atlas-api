@@ -1,7 +1,8 @@
-package com.patternpedia.api.repositories;
+package io.github.patternatlas.api.repositories;
 
-import com.patternpedia.api.entities.issue.comment.IssueComment;
-import com.patternpedia.api.entities.issue.evidence.IssueEvidence;
+import io.github.patternatlas.api.entities.issue.comment.IssueComment;
+import io.github.patternatlas.api.entities.issue.evidence.IssueEvidence;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

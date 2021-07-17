@@ -1,4 +1,4 @@
-package com.patternpedia.api.rest.model.shared;
+package io.github.patternatlas.api.rest.model.shared;
 
 public enum RatingType {
     READABILITY,

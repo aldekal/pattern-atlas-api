@@ -1,4 +1,4 @@
-package com.patternpedia.api.integration;
+package io.github.patternatlas.api.integration;
 
 public class IssueControllerTest {
 }

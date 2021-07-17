@@ -1,6 +1,7 @@
-package com.patternpedia.api.rest.model.issue;
+package io.github.patternatlas.api.rest.model.issue;
 
-import com.patternpedia.api.rest.model.shared.AuthorModel;
+import io.github.patternatlas.api.rest.model.shared.AuthorModel;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

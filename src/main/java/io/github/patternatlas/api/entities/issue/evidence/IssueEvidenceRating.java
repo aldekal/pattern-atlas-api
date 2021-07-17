@@ -1,10 +1,11 @@
-package com.patternpedia.api.entities.issue.evidence;
+package io.github.patternatlas.api.entities.issue.evidence;
 
-import com.patternpedia.api.entities.issue.Issue;
-import com.patternpedia.api.entities.issue.comment.IssueComment;
-import com.patternpedia.api.entities.issue.comment.IssueCommentRating;
-import com.patternpedia.api.entities.shared.CompositeKey;
-import com.patternpedia.api.entities.user.UserEntity;
+import io.github.patternatlas.api.entities.issue.Issue;
+import io.github.patternatlas.api.entities.issue.comment.IssueComment;
+import io.github.patternatlas.api.entities.issue.comment.IssueCommentRating;
+import io.github.patternatlas.api.entities.shared.CompositeKey;
+import io.github.patternatlas.api.entities.user.UserEntity;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

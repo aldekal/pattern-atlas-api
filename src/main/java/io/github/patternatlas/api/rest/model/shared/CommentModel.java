@@ -1,10 +1,11 @@
-package com.patternpedia.api.rest.model.shared;
+package io.github.patternatlas.api.rest.model.shared;
 
-import com.patternpedia.api.entities.candidate.comment.CandidateComment;
-import com.patternpedia.api.entities.candidate.comment.CandidateCommentRating;
-import com.patternpedia.api.entities.issue.IssueRating;
-import com.patternpedia.api.entities.issue.comment.IssueComment;
-import com.patternpedia.api.entities.issue.comment.IssueCommentRating;
+import io.github.patternatlas.api.entities.candidate.comment.CandidateComment;
+import io.github.patternatlas.api.entities.candidate.comment.CandidateCommentRating;
+import io.github.patternatlas.api.entities.issue.IssueRating;
+import io.github.patternatlas.api.entities.issue.comment.IssueComment;
+import io.github.patternatlas.api.entities.issue.comment.IssueCommentRating;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

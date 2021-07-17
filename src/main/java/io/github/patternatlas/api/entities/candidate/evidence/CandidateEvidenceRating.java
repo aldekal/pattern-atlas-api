@@ -1,7 +1,8 @@
-package com.patternpedia.api.entities.candidate.evidence;
+package io.github.patternatlas.api.entities.candidate.evidence;
 
-import com.patternpedia.api.entities.shared.CompositeKey;
-import com.patternpedia.api.entities.user.UserEntity;
+import io.github.patternatlas.api.entities.shared.CompositeKey;
+import io.github.patternatlas.api.entities.user.UserEntity;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

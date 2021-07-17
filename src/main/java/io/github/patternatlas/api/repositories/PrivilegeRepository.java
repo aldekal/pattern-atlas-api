@@ -1,6 +1,7 @@
-package com.patternpedia.api.repositories;
+package io.github.patternatlas.api.repositories;
 
-import com.patternpedia.api.entities.user.role.Privilege;
+import io.github.patternatlas.api.entities.user.role.Privilege;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

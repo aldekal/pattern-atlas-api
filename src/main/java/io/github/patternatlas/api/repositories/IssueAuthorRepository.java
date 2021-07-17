@@ -1,7 +1,8 @@
-package com.patternpedia.api.repositories;
+package io.github.patternatlas.api.repositories;
 
-import com.patternpedia.api.entities.issue.author.IssueAuthor;
-import com.patternpedia.api.entities.shared.CompositeKey;
+import io.github.patternatlas.api.entities.issue.author.IssueAuthor;
+import io.github.patternatlas.api.entities.shared.CompositeKey;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface IssueAuthorRepository extends JpaRepository<IssueAuthor, CompositeKey> {

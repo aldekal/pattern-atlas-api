@@ -1,6 +1,7 @@
-package com.patternpedia.api.rest.model.user;
+package io.github.patternatlas.api.rest.model.user;
 
-import com.patternpedia.api.entities.user.role.Role;
+import io.github.patternatlas.api.entities.user.role.Role;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

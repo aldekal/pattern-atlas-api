@@ -1,4 +1,4 @@
-package com.patternpedia.api.rest.model.user;
+package io.github.patternatlas.api.rest.model.user;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -1,12 +1,14 @@
-package com.patternpedia.api.rest.controller;
+package io.github.patternatlas.api.rest.controller;
 
-import com.patternpedia.api.entities.shared.AuthorConstant;
-import com.patternpedia.api.rest.model.candidate.CandidateModel;
-import com.patternpedia.api.rest.model.issue.IssueModel;
-import com.patternpedia.api.rest.model.shared.AuthorModel;
-import com.patternpedia.api.service.UserService;
+import io.github.patternatlas.api.entities.shared.AuthorConstant;
+import io.github.patternatlas.api.rest.model.candidate.CandidateModel;
+import io.github.patternatlas.api.rest.model.issue.IssueModel;
+import io.github.patternatlas.api.rest.model.shared.AuthorModel;
+import io.github.patternatlas.api.service.UserService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;

@@ -1,13 +1,14 @@
-package com.patternpedia.api.rest.model.shared;
+package io.github.patternatlas.api.rest.model.shared;
 
-import com.patternpedia.api.entities.candidate.comment.CandidateComment;
-import com.patternpedia.api.entities.candidate.comment.CandidateCommentRating;
-import com.patternpedia.api.entities.candidate.evidence.CandidateEvidence;
-import com.patternpedia.api.entities.candidate.evidence.CandidateEvidenceRating;
-import com.patternpedia.api.entities.issue.comment.IssueComment;
-import com.patternpedia.api.entities.issue.comment.IssueCommentRating;
-import com.patternpedia.api.entities.issue.evidence.IssueEvidence;
-import com.patternpedia.api.entities.issue.evidence.IssueEvidenceRating;
+import io.github.patternatlas.api.entities.candidate.comment.CandidateComment;
+import io.github.patternatlas.api.entities.candidate.comment.CandidateCommentRating;
+import io.github.patternatlas.api.entities.candidate.evidence.CandidateEvidence;
+import io.github.patternatlas.api.entities.candidate.evidence.CandidateEvidenceRating;
+import io.github.patternatlas.api.entities.issue.comment.IssueComment;
+import io.github.patternatlas.api.entities.issue.comment.IssueCommentRating;
+import io.github.patternatlas.api.entities.issue.evidence.IssueEvidence;
+import io.github.patternatlas.api.entities.issue.evidence.IssueEvidenceRating;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

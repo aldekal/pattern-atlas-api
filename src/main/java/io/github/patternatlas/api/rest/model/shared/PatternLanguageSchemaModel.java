@@ -1,6 +1,7 @@
-package com.patternpedia.api.rest.model.shared;
+package io.github.patternatlas.api.rest.model.shared;
 
-import com.patternpedia.api.entities.PatternLanguage;
+import io.github.patternatlas.api.entities.PatternLanguage;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
