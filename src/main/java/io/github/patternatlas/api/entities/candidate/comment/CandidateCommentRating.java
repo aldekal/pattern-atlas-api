@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
-import io.github.patternatlas.api.entities.candidate.CandidateComment;
+import io.github.patternatlas.api.entities.candidate.comment.CandidateComment;
 import io.github.patternatlas.api.entities.user.UserEntity;
 import io.github.patternatlas.api.entities.shared.CompositeKey;
 

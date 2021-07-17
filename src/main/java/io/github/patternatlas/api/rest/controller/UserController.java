@@ -2,6 +2,7 @@ package io.github.patternatlas.api.rest.controller;
 
 import io.github.patternatlas.api.config.Authority;
 import io.github.patternatlas.api.rest.model.user.*;
+import io.github.patternatlas.api.service.UserService;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -16,7 +17,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.patternpedia.api.service.UserService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -7,8 +7,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
 import io.github.patternatlas.api.entities.user.UserEntity;
-import io.github.patternatlas.api.entities.issue.IssueComment;
-import com.patternpedia.api.entities.shared.CompositeKey;
+import io.github.patternatlas.api.entities.issue.comment.IssueComment;
+import io.github.patternatlas.api.entities.shared.CompositeKey;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

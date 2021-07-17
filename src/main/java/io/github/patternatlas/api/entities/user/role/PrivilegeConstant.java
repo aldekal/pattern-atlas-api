@@ -1,4 +1,4 @@
-package com.patternpedia.api.entities.user.role;
+package io.github.patternatlas.api.entities.user.role;
 
 public class PrivilegeConstant {
     /** ISSUE */

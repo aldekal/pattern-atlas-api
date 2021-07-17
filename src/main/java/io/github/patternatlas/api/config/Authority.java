@@ -1,4 +1,4 @@
-package com.patternpedia.api.config;
+package io.github.patternatlas.api.config;
 
 public interface Authority {
     /** ISSUE */

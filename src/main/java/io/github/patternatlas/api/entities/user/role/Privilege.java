@@ -1,4 +1,4 @@
-package com.patternpedia.api.entities.user.role;
+package io.github.patternatlas.api.entities.user.role;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

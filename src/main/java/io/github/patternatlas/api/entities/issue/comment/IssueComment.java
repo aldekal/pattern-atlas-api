@@ -1,4 +1,4 @@
-package io.github.patternatlas.api.entities.issue;
+package io.github.patternatlas.api.entities.issue.comment;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
