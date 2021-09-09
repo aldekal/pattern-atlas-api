@@ -41,6 +41,8 @@ public class CandidateComment extends Comment implements Serializable {
     @OneToMany(mappedBy = "candidateComment", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CandidateCommentRating> userRating = new HashSet<>();
 
+    private int rating = 0;
+
     public CandidateComment(String text, Candidate candidate, UserEntity user) {
         super(text);
         this.candidate = candidate;

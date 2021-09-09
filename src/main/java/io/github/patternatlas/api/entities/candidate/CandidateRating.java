@@ -34,6 +34,8 @@ public class CandidateRating {
     @EqualsAndHashCode.Include
     private UserEntity user;
 
+    private int rating;
+
     private int readability;
     private int understandability;
     private int appropriateness;

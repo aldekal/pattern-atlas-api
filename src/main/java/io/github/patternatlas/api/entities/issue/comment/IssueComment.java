@@ -37,6 +37,8 @@ public class IssueComment extends Comment implements Serializable {
     @OneToMany(mappedBy = "issueComment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<IssueCommentRating> userRating = new ArrayList<>();
 
+    private int rating = 0;
+
     public IssueComment(String text, Issue issue, UserEntity user) {
         super(text);
         this.issue = issue;

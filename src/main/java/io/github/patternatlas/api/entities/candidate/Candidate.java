@@ -42,6 +42,8 @@ public class Candidate extends EntityWithURI {
 
     private String version = "0.1.0";
 
+    private int rating;
+
     @JsonIgnore
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CandidateAuthor> authors = new ArrayList<>();
@@ -65,6 +67,7 @@ public class Candidate extends EntityWithURI {
         this.setIconUrl(candidateModelRequest.getIconUrl());
         this.setContent(candidateModelRequest.getContent());
         this.setVersion(candidateModelRequest.getVersion());
+        this.setRating(candidateModelRequest.getRating());
     }
 
     public void updateCandidate(CandidateModelRequest candidateModelRequest) {
@@ -74,6 +77,7 @@ public class Candidate extends EntityWithURI {
         this.setIconUrl(candidateModelRequest.getIconUrl());
         this.setContent(candidateModelRequest.getContent());
         this.setVersion(candidateModelRequest.getVersion());
+        this.setRating(candidateModelRequest.getRating());
     }
 
     public String toString() {

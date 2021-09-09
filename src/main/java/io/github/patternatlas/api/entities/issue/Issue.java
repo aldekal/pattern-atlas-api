@@ -24,6 +24,8 @@ public class Issue extends EntityWithURI {
 
     private String version = "0.1.0";
 
+    private int rating;
+
     @JsonIgnore
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<IssueAuthor> authors = new ArrayList<>();
@@ -45,6 +47,7 @@ public class Issue extends EntityWithURI {
         this.setName(issueModelRequest.getName());
         this.setDescription(issueModelRequest.getDescription());
         this.setVersion(issueModelRequest.getVersion());
+        this.setRating(issueModelRequest.getRating());
     }
 
     public void updateIssue(IssueModelRequest issueModelRequest) {
@@ -52,6 +55,7 @@ public class Issue extends EntityWithURI {
         this.setName(issueModelRequest.getName());
         this.setDescription(issueModelRequest.getDescription());
         this.setVersion(issueModelRequest.getVersion());
+        this.setRating(issueModelRequest.getRating());
     }
 
     public String toString() {

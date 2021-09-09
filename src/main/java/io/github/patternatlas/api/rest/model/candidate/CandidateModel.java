@@ -30,6 +30,7 @@ public class CandidateModel {
     private String patternLanguageName;
     private Object content;
     private String version;
+    private int rating;
     // RESPONSE
     private double ratingReadability = 0;
     private double ratingUnderstandability = 0;
