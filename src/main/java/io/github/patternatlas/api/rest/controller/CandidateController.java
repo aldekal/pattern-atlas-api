@@ -57,14 +57,22 @@ public class CandidateController {
     /**
      * GET Methods
      */
-    @Operation(operationId = "getAllCandiates", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all candidates")
+    @Operation(operationId = "getAllCandidates", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all candidates")
     @GetMapping(value = "")
-    CollectionModel<EntityModel<CandidateModel>> all() {
-
-        List<EntityModel<CandidateModel>> candidates = this.candidateService.getAllCandidates()
+    CollectionModel<EntityModel<CandidateModel>> all(@RequestParam(value = "lid", required = false) UUID languageId) {
+        
+        List<EntityModel<CandidateModel>> candidates;
+        if (languageId == null) {
+            candidates = this.candidateService.getAllCandidates()
                 .stream()
                 .map(candidate -> new EntityModel<>(new CandidateModel(candidate)))
                 .collect(Collectors.toList());
+        } else {
+            candidates = this.candidateService.getAllCandidatesByLanguageId(languageId)
+                .stream()
+                .map(candidate -> new EntityModel<>(new CandidateModel(candidate)))
+                .collect(Collectors.toList());
+        }
 
         return new CollectionModel<>(candidates);
     }
@@ -77,7 +85,7 @@ public class CandidateController {
 
     @Operation(operationId = "getCandidateByURI", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Retrieve a single candidate by URI")
     @GetMapping(value = "/?uri={candidateUri}")
-    ResponseEntity<EntityModel<CandidateModel>> getCandidateByUri(@PathVariable String candidateUri) {
+    ResponseEntity<EntityModel<CandidateModel>> getCandidateByUri(@RequestParam("uri") String candidateUri) {
         return ResponseEntity.ok(new EntityModel<>(new CandidateModel(this.candidateService.getCandidateByURI(candidateUri))));
     }
 

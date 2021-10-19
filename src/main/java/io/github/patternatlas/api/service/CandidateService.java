@@ -21,6 +21,8 @@ public interface CandidateService {
 
     List<Candidate> getAllCandidates();
 
+    List<Candidate> getAllCandidatesByLanguageId(UUID languageId);
+
     Candidate getCandidateById(UUID candidateId);
 
     Candidate getCandidateByURI(String uri);

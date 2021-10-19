@@ -131,6 +131,12 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     @Transactional
+    public List<Candidate> getAllCandidatesByLanguageId(UUID languageId) {
+        return this.candidateRepository.findAllByLanguageId(languageId);
+    }
+
+    @Override
+    @Transactional
     public Candidate getCandidateById(UUID candidateId) {
         return this.candidateRepository.findById(candidateId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Candidate with ID %s not found!", candidateId)));
