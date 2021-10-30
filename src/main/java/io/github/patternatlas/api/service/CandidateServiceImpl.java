@@ -195,7 +195,7 @@ public class CandidateServiceImpl implements CandidateService {
         } else if (ratingModelMultiRequest.getRatingType().equals(RatingType.UNDERSTANDABILITY)) {
             candidateRating.setUnderstandability(ratingModelMultiRequest.getRating());
 
-        } else if (ratingModelMultiRequest.getRatingType().equals(RatingType.APPROPIATENESS)) {
+        } else if (ratingModelMultiRequest.getRatingType().equals(RatingType.APPROPRIATENESS)) {
             candidateRating.setAppropriateness(ratingModelMultiRequest.getRating());
 
         } else {
