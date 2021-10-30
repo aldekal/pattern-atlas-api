@@ -3,7 +3,7 @@ package io.github.patternatlas.api.config;
 public interface Authority {
     /** ISSUE */
     String ISSUE_READ                               = "hasAuthority('ISSUE_READ')";
-    String ISSUE_CREATE                             = "hasAuthority(ISSUE_CREATE')";
+    String ISSUE_CREATE                             = "hasAuthority('ISSUE_CREATE')";
     String ISSUE_EDIT                               = "hasAuthority('ISSUE_EDIT')";
     String ISSUE_DELETE                             = "hasAuthority('ISSUE_DELETE')";
     String ISSUE_READ_ALL                           = "hasAuthority('ISSUE_READ_ALL')";
@@ -20,7 +20,7 @@ public interface Authority {
     String PATTERN_CANDIDATE_DELETE_ALL             = "hasAuthority('PATTERN_CANDIDATE_DELETE_ALL')";
     String PATTERN_CANDIDATE_TO_PATTERN             = "hasAuthority('PATTERN_CANDIDATE_TO_PATTERN')";
     /** Pattern */
-    String APPROVED_PATTERN_READ                    = "hasAuthority(APPROVED_PATTERN_READ')";
+    String APPROVED_PATTERN_READ                    = "hasAuthority('APPROVED_PATTERN_READ')";
     String APPROVED_PATTERN_CREATE                  = "hasAuthority('APPROVED_PATTERN_CREATE')";
     String APPROVED_PATTERN_EDIT                    = "hasAuthority('APPROVED_PATTERN_EDIT')";
     String APPROVED_PATTERN_DELETE                  = "hasAuthority('APPROVED_PATTERN_DELETE')";
