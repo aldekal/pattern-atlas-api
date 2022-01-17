@@ -31,5 +31,5 @@ ADD .docker/application.properties.tpl /var/www/java/application.properties.tpl
 
 CMD  dockerize -template /var/www/java/application.properties.tpl:/var/www/java/application.properties \
      && cd /var/www/java/ \
-     && if [ $HAL_EXPLORER = "true" ]; then java -jar api.jar; else java -jar api_no_hal_explorer.jar; fi
+     && if [ "$HAL_EXPLORER" = "true" ]; then java -jar api.jar; else java -jar api_no_hal_explorer.jar; fi
 
