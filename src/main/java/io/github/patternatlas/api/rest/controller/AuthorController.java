@@ -48,6 +48,6 @@ public class AuthorController {
     @Operation(operationId = "getAllAuthorRoles", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all author roles")
     @GetMapping(value = "/roles")
     String[] getAllRoles() {
-        return new String[]{AuthorConstant.MEMBER, AuthorConstant.MAINTAINER, AuthorConstant.OWNER};
+        return new String[]{AuthorConstant.HELPER, AuthorConstant.MAINTAINER, AuthorConstant.OWNER};
     }
 }

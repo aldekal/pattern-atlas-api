@@ -6,8 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Collection;
+import java.util.Set;
 import java.util.UUID;
+import java.util.Collection;
 
 @Entity
 @Data
@@ -21,10 +22,15 @@ public class Role {
     @Column(unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Collection<UserEntity> users;
+    @ManyToMany(mappedBy = "roles")
+    private Set<UserEntity> users;
 
     @ManyToMany(cascade = CascadeType.ALL)
+    /*@JoinTable(
+        name = "role_privileges",
+        joinColumns = { @JoinColumn(name = "roles_id") },
+        inverseJoinColumns = { @JoinColumn(name = "privileges_id") }
+    )*/
     private Collection<Privilege> privileges;
 
     public Role(String name) {
@@ -38,6 +44,11 @@ public class Role {
            }
        }
        return false;
+    }
+
+    public void removePrivilege(Privilege privilege) {
+        this.privileges.remove(privilege);
+        privilege.getRoles().remove(this);
     }
 
 }

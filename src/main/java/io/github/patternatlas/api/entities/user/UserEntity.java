@@ -40,8 +40,13 @@ public class UserEntity implements Serializable{
 
     @JsonIgnore
     @ToString.Exclude
-    @ManyToOne()
-    private Role role;
+    @ManyToMany()
+    /*@JoinTable(
+        name = "user_entity_roles",
+        joinColumns = { @JoinColumn(name = "users_id") },
+        inverseJoinColumns = { @JoinColumn(name = "roles_id") }
+    )*/
+    private Set<Role> roles;
 
     @NaturalId(mutable = true)
     @Column(nullable = false, unique = true)
@@ -106,11 +111,11 @@ public class UserEntity implements Serializable{
         this.password = password;
     }
 
-    public UserEntity(String name, String email, String password, Role role) {
+    public UserEntity(String name, String email, String password, Set<Role> roles) {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.role = role;
+        this.roles = roles;
     }
 
     public void updateUserEntity(UserModel userModel) {
@@ -136,5 +141,14 @@ public class UserEntity implements Serializable{
     @Override
     public String toString() {
         return "User: " + this.name;
+    }
+
+    public void removeRole(String roleName) {
+        for (Role role : this.roles) {
+            if (role.getName().contains(roleName)) {
+                this.roles.remove(role);
+                return;
+            }
+        }
     }
 }

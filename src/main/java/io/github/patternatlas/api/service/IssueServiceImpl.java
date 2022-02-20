@@ -9,6 +9,10 @@ import io.github.patternatlas.api.entities.issue.evidence.IssueEvidence;
 import io.github.patternatlas.api.entities.issue.evidence.IssueEvidenceRating;
 import io.github.patternatlas.api.entities.shared.AuthorConstant;
 import io.github.patternatlas.api.entities.user.UserEntity;
+import io.github.patternatlas.api.entities.user.role.Privilege;
+import io.github.patternatlas.api.entities.user.role.PrivilegeConstant;
+import io.github.patternatlas.api.entities.user.role.Role;
+import io.github.patternatlas.api.entities.user.role.RoleConstant;
 import io.github.patternatlas.api.repositories.*;
 import io.github.patternatlas.api.rest.model.issue.IssueModelRequest;
 import io.github.patternatlas.api.rest.model.shared.AuthorModelRequest;
@@ -39,6 +43,8 @@ public class IssueServiceImpl implements IssueService {
     private IssueEvidenceRepository issueEvidenceRepository;
     private IssueEvidenceRatingRepository issueEvidenceRatingRepository;
     private UserService userService;
+    private RoleService roleService;
+    private PrivilegeService privilegeService;
 
     Logger logger = LoggerFactory.getLogger(IssueServiceImpl.class);
 
@@ -50,7 +56,9 @@ public class IssueServiceImpl implements IssueService {
             IssueCommentRatingRepository issueCommentRatingRepository,
             IssueEvidenceRepository issueEvidenceRepository,
             IssueEvidenceRatingRepository issueEvidenceRatingRepository,
-            UserService userService
+            UserService userService,
+            RoleService roleService,
+            PrivilegeService privilegeService
     ) {
         this.issueRepository = issueRepository;
         this.issueRatingRepository = issueRatingRepository;
@@ -60,6 +68,8 @@ public class IssueServiceImpl implements IssueService {
         this.issueEvidenceRepository = issueEvidenceRepository;
         this.issueEvidenceRatingRepository = issueEvidenceRatingRepository;
         this.userService = userService;
+        this.roleService = roleService;
+        this.privilegeService = privilegeService;
     }
 
     @Override
@@ -83,7 +93,28 @@ public class IssueServiceImpl implements IssueService {
             throw new EntityExistsException(String.format("Issue uri %s already exist!", issueModelRequest.getUri()));
 
         Issue newIssue = this.issueRepository.save(issue);
-        newIssue.getAuthors().add(new IssueAuthor(newIssue, this.userService.getUserById(userId), AuthorConstant.OWNER));
+        UserEntity user = this.userService.getUserById(userId);
+
+        Privilege readIssuePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.ISSUE_READ + '_' + newIssue.getId());
+        Privilege updateIssuePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.ISSUE_EDIT + '_' + newIssue.getId());
+        Privilege deleteIssuePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.ISSUE_DELETE + '_' + newIssue.getId());
+        Privilege commentIssuePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.ISSUE_COMMENT + '_' + newIssue.getId());
+        Privilege voteIssuePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.ISSUE_VOTE + '_' + newIssue.getId());
+        Privilege evidenceIssuePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.ISSUE_EVIDENCE + '_' + newIssue.getId());
+        Privilege toPatternCandidate = this.privilegeService.createPrivilege(PrivilegeConstant.ISSUE_TO_PATTERN_CANDIDATE + '_' + newIssue.getId());
+
+        Role helper = this.roleService.createRole(RoleConstant.HELPER + "_ISSUE_" + newIssue.getId(), Arrays.asList(
+            readIssuePrivilege, updateIssuePrivilege
+        ));
+        Role maintainer = this.roleService.createRole(RoleConstant.MAINTAINER + "_ISSUE_" + newIssue.getId(), Arrays.asList(
+            readIssuePrivilege, updateIssuePrivilege, deleteIssuePrivilege
+        ));
+        Role owner = this.roleService.createRole(RoleConstant.OWNER + "_ISSUE_" + newIssue.getId(), Arrays.asList(
+            readIssuePrivilege, updateIssuePrivilege, deleteIssuePrivilege
+        ));
+
+        newIssue.getAuthors().add(new IssueAuthor(newIssue, user, AuthorConstant.OWNER));
+        user.getRoles().add(owner);
         return this.issueRepository.save(newIssue);
     }
 
@@ -142,9 +173,11 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     @Transactional
-    public void deleteIssue(UUID IssueId) {
-        this.getIssueById(IssueId);
-        this.issueRepository.deleteById(IssueId);
+    public void deleteIssue(UUID issueId) {
+        this.roleService.deleteAllRolesByResourceId(issueId);
+        this.privilegeService.deleteAllPrivilegesByResourceId(issueId);
+        //this.getIssueById(issueId);
+        this.issueRepository.deleteById(issueId);
     }
 
     public boolean authorPermissions(UUID issueId, UUID userId) {
@@ -153,7 +186,7 @@ public class IssueServiceImpl implements IssueService {
         Issue issue = this.getIssueById(issueId);
         for (IssueAuthor author : issue.getAuthors()) {
             if (author.getUser().getId() == userId) {
-                if (author.getRole().equals(AuthorConstant.OWNER)  || author.getRole().equals(AuthorConstant.MAINTAINER) ) {
+                if (author.getRole().equals(AuthorConstant.OWNER) || author.getRole().equals(AuthorConstant.MAINTAINER) ) {
                     return true;
                 }
             }

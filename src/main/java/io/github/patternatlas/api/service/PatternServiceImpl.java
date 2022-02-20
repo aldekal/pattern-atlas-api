@@ -3,6 +3,8 @@ package io.github.patternatlas.api.service;
 import java.util.UUID;
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -20,6 +22,8 @@ import io.github.patternatlas.api.validator.PatternContentConstraint;
 public class PatternServiceImpl implements PatternService {
 
     private final PatternRepository patternRepository;
+
+    Logger logger = LoggerFactory.getLogger(PatternServiceImpl.class);
 
     public PatternServiceImpl(PatternRepository patternRepository) {
         this.patternRepository = patternRepository;

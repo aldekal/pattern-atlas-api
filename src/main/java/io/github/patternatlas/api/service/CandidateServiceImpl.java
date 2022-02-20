@@ -12,7 +12,10 @@ import io.github.patternatlas.api.entities.issue.author.IssueAuthor;
 import io.github.patternatlas.api.entities.issue.evidence.IssueEvidence;
 import io.github.patternatlas.api.entities.shared.AuthorConstant;
 import io.github.patternatlas.api.entities.user.UserEntity;
+import io.github.patternatlas.api.entities.user.role.Privilege;
 import io.github.patternatlas.api.entities.user.role.PrivilegeConstant;
+import io.github.patternatlas.api.entities.user.role.Role;
+import io.github.patternatlas.api.entities.user.role.RoleConstant;
 import io.github.patternatlas.api.repositories.*;
 import io.github.patternatlas.api.rest.model.candidate.CandidateModelRequest;
 import io.github.patternatlas.api.rest.model.shared.*;
@@ -27,8 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Transactional
@@ -43,9 +45,11 @@ public class CandidateServiceImpl implements CandidateService {
     private CandidateEvidenceRatingRepository candidateEvidenceRatingRepository;
     private PatternLanguageService patternLanguageService;
     private UserService userService;
+    private RoleService roleService;
+    private PrivilegeService privilegeService;
     private IssueService issueService;
 
-    Logger logger = LoggerFactory.getLogger(IssueServiceImpl.class);
+    Logger logger = LoggerFactory.getLogger(CandidateServiceImpl.class);
 
     public CandidateServiceImpl(
             CandidateRepository candidateRepository,
@@ -57,6 +61,8 @@ public class CandidateServiceImpl implements CandidateService {
             CandidateEvidenceRatingRepository candidateEvidenceRatingRepository,
             PatternLanguageService patternLanguageService,
             UserService userService,
+            RoleService roleService,
+            PrivilegeService privilegeService,
             IssueService issueService
     ) {
         this.candidateRepository = candidateRepository;
@@ -68,6 +74,8 @@ public class CandidateServiceImpl implements CandidateService {
         this.candidateEvidenceRatingRepository = candidateEvidenceRatingRepository;
         this.patternLanguageService = patternLanguageService;
         this.userService = userService;
+        this.roleService = roleService;
+        this.privilegeService = privilegeService;
         this.issueService = issueService;
     }
 
@@ -93,8 +101,27 @@ public class CandidateServiceImpl implements CandidateService {
             throw new EntityExistsException(String.format("Candidate uri %s already exist!", candidateModelRequest.getUri()));
 
         // ISSUE TO PATTERN
-        if (user.getRole().checkPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_CREATE) || this.issueService.authorPermissions(candidateModelRequest.getIssueId(), userId)) {
+        if (user.getRoles().stream().anyMatch(role -> role.checkPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_CREATE)) || this.issueService.authorPermissions(candidateModelRequest.getIssueId(), userId)) {
             Candidate newCandidate = this.candidateRepository.save(candidate);
+            
+            Privilege readCandidatePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_READ + '_' + newCandidate.getId());
+            Privilege updateCandidatePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_EDIT + '_' + newCandidate.getId());
+            Privilege deleteCandidatePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_DELETE + '_' + newCandidate.getId());
+            Privilege commentCandidatePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_COMMENT + '_' + newCandidate.getId());
+            Privilege voteCandidatePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_VOTE + '_' + newCandidate.getId());
+            Privilege evidenceCandidatePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_EVIDENCE + '_' + newCandidate.getId());
+            Privilege toApprovedPattern = this.privilegeService.createPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_TO_PATTERN + '_' + newCandidate.getId());
+
+            Role helper = this.roleService.createRole(RoleConstant.HELPER + "_PATTERN_CANDIDATE_" + newCandidate.getId(), Arrays.asList(
+                readCandidatePrivilege, updateCandidatePrivilege
+            ));
+            Role maintainer = this.roleService.createRole(RoleConstant.MAINTAINER + "_PATTERN_CANDIDATE_" + newCandidate.getId(), Arrays.asList(
+                readCandidatePrivilege, updateCandidatePrivilege, deleteCandidatePrivilege
+            ));
+            Role owner = this.roleService.createRole(RoleConstant.OWNER + "_PATTERN_CANDIDATE_" + newCandidate.getId(), Arrays.asList(
+                readCandidatePrivilege, updateCandidatePrivilege, deleteCandidatePrivilege
+            ));
+
             if (candidateModelRequest.getIssueId() != null) {
                 logger.info("Issue to Candidate request");
                 Issue issue = this.issueService.getIssueById(candidateModelRequest.getIssueId());
@@ -107,10 +134,32 @@ public class CandidateServiceImpl implements CandidateService {
             // ADD author
             if (candidateModelRequest.getAuthors() != null) {
                 for (AuthorModel authorModel : candidateModelRequest.getAuthors()) {
-                    newCandidate.getAuthors().add(new CandidateAuthor(newCandidate, this.userService.getUserById(authorModel.getUserId()), authorModel.getAuthorRole()));
+                    newCandidate.getAuthors().add(new CandidateAuthor(newCandidate, this.userService.getUserById(authorModel.getUserId()), authorModel.getAuthorRole() + "_PATTERN_CANDIDATE_" + newCandidate.getId()));
+                    UserEntity u = this.userService.getUserById(authorModel.getUserId());
+                    switch (authorModel.getAuthorRole()) {
+                        case AuthorConstant.HELPER:
+                            user.getRoles().add(helper);
+                            this.userService.saveUser(u);
+                            break;
+                        case AuthorConstant.MAINTAINER:
+                            user.getRoles().add(maintainer);
+                            this.userService.saveUser(u);
+                            break;
+                        case AuthorConstant.OWNER:
+                            if (null != u.getRoles()) {
+                                u.getRoles().add(owner);
+                            } else {
+                                u.setRoles(new HashSet<>(Arrays.asList(owner)));
+                            }
+                            this.userService.saveUser(u);
+                            break;
+                        default:
+                            throw new IllegalArgumentException("Invalid author role: " + authorModel.getAuthorRole());
+                    }
                 }
             } else {
                 newCandidate.getAuthors().add(new CandidateAuthor(newCandidate, this.userService.getUserById(userId), AuthorConstant.OWNER));
+                user.getRoles().add(owner);
             }
 
             // ADD pattern language
@@ -158,7 +207,7 @@ public class CandidateServiceImpl implements CandidateService {
         Candidate candidate = this.getCandidateById(candidateId);
         UserEntity user = this.userService.getUserById(userId);
 
-        if (user.getRole().checkPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_EDIT_ALL) || this.authorPermissions(candidateModelRequest.getId(), userId)) {
+        if (user.getRoles().stream().anyMatch(role -> role.checkPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_EDIT_ALL)) || this.authorPermissions(candidateModelRequest.getId(), userId)) {
             // UPDATE issue fields
             if (this.candidateRepository.existsByUri(candidateModelRequest.getUri())) {
                 Candidate candidateByURI = this.getCandidateByURI(candidateModelRequest.getUri());
@@ -219,7 +268,10 @@ public class CandidateServiceImpl implements CandidateService {
     public void deleteCandidate(UUID candidateId, UUID userId) {
         UserEntity user = this.userService.getUserById(userId);
 
-        if (user.getRole().checkPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_DELETE_ALL) || this.authorPermissions(candidateId, userId)) {
+        if (user.getRoles().stream().anyMatch(role -> role.checkPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_DELETE_ALL)) || this.authorPermissions(candidateId, userId)) {
+            this.roleService.deleteAllRolesByResourceId(candidateId);
+            this.privilegeService.deleteAllPrivilegesByResourceId(candidateId);
+            user.removeRole(candidateId.toString());
             this.candidateRepository.deleteById(candidateId);
         } else {
             throw new RuntimeException("You don't have the permission");

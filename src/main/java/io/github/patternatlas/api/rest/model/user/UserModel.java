@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class UserModel {
 
     private UUID id;
-    private String role;
+    private List<String> roles;
     private String email;
     private String name;
     private List<IssueModel> issues;
@@ -40,7 +40,7 @@ public class UserModel {
 
     public UserModel(UserEntity user) {
         this.id = user.getId();
-        this.role = user.getRole().getName();
+        this.roles = user.getRoles().stream().map(role -> role.getName()).collect(Collectors.toList());
         this.email = user.getEmail();
         this.name = user.getName();
         // ISSUE

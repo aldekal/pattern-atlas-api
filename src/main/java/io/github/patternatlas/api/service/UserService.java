@@ -1,5 +1,6 @@
 package io.github.patternatlas.api.service;
 
+import io.github.patternatlas.api.entities.candidate.Candidate;
 import io.github.patternatlas.api.entities.user.role.Privilege;
 import io.github.patternatlas.api.entities.user.role.Role;
 import io.github.patternatlas.api.entities.user.UserEntity;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
-
+    UserEntity saveUser(UserEntity user);
     UserEntity createUser(UserModelRequest userModelRequest);
     List<UserEntity> getAllUsers();
     UserEntity getUserById(UUID UserId);

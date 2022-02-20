@@ -1,5 +1,6 @@
 package io.github.patternatlas.api.service;
 
+import io.github.patternatlas.api.entities.candidate.Candidate;
 import io.github.patternatlas.api.entities.user.role.RoleConstant;
 import io.github.patternatlas.api.entities.user.role.Privilege;
 import io.github.patternatlas.api.entities.user.role.Role;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -43,6 +45,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    public UserEntity saveUser(UserEntity user) {
+        return this.userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
     public UserEntity createUser(UserModelRequest userModelRequest) {
         if (null == userModelRequest)
             throw new RuntimeException("User to update is null!");
@@ -51,11 +59,14 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Password is null");
 
         UserEntity user = new UserEntity(userModelRequest,  passwordEncoder.encode(userModelRequest.getPassword()));
-        if (this.roleRepository.findByName(userModelRequest.getRole()) != null) {
-            user.setRole(this.roleRepository.findByName(userModelRequest.getRole()));
-        } else {
-            user.setRole(this.roleRepository.findByName(RoleConstant.MEMBER));
-        }
+        userModelRequest.getRoles().stream().forEach(role -> {
+            if (this.roleRepository.findByName(role) != null) {
+                user.getRoles().add(this.roleRepository.findByName(role));
+            } else {
+                user.getRoles().add(this.roleRepository.findByName(RoleConstant.MEMBER));
+            }
+        });
+        
         return this.userRepository.save(user);
     }
 
@@ -77,14 +88,18 @@ public class UserServiceImpl implements UserService {
     public UserEntity updateUser(UUID userId, UserModelRequest userModelRequest) {
         if (userModelRequest == null)
             throw new RuntimeException("User to update is null!");
-        if (!this.roleRepository.existsByName(userModelRequest.getRole()))
-            throw new ResourceNotFoundException(String.format("User Role %s not found!", userModelRequest.getRole()));
+        userModelRequest.getRoles().stream().forEach(role -> {
+            if (!this.roleRepository.existsByName(role))
+                throw new ResourceNotFoundException(String.format("User Role %s not found!", role));
+        });
 
         UserEntity user = this.getUserById(userId);
-        if (!user.getRole().getName().equals(userModelRequest.getRole()))
-            user.setRole(this.roleRepository.findByName(userModelRequest.getRole()));
+        userModelRequest.getRoles().stream().forEach(role -> {
+            if (!user.getRoles().stream().map(r -> r.getName()).collect(Collectors.toList()).contains(role))
+                user.getRoles().add(this.roleRepository.findByName(role));
+        });
         if (userModelRequest.getOldPassword() != null || userModelRequest.getPassword() != null) {
-            if (!passwordEncoder.matches(userModelRequest.getOldPassword(), user.getPassword()) && !user.getRole().getName().equals(RoleConstant.ADMIN))
+            if (!passwordEncoder.matches(userModelRequest.getOldPassword(), user.getPassword()) && !user.getRoles().stream().map(role -> role.getName()).collect(Collectors.toList()).contains(RoleConstant.ADMIN))
                 throw new ResourceNotFoundException(String.format("Password ERROR"));
             user.setPassword(passwordEncoder.encode(userModelRequest.getPassword()));
         }
