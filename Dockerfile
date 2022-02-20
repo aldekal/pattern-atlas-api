@@ -14,7 +14,7 @@ ENV JDBC_DATABASE_URL localhost
 ENV JDBC_DATABASE_USERNAME postgres
 ENV JDBC_DATABASE_PASSWORD postgres
 ENV JDBC_DATABASE_NAME postgres
-ENV JDBC_DATABASE_PORT 5432
+ENV JDBC_DATABASE_PORT 5060
 
 RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
