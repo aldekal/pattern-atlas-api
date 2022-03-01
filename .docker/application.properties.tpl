@@ -15,3 +15,4 @@ spring.jpa.properties.hibernate.show_sql=true
 spring.jpa.properties.hibernate.format_sql=true
 spring.jpa.properties.hibernate.use_sql_comments=true
 spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true
+spring.liquibase.enabled={{default .Env.PATTERN_ATLAS_FETCH_INITIAL_DATA "false"}}
