@@ -46,8 +46,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Transactional
-    public void deleteAllRolesByResourceId(UUID resourceId) {
-        this.roleRepository.deleteAllByResourceId(resourceId);
+    public void deleteAllRolesByResourceId(UUID entityId) {
+        this.roleRepository.deleteAllFromEntity(entityId);
     }
 
 }

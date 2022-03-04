@@ -11,6 +11,6 @@ public interface RoleService {
     /** CRUD  */
     Role createRole(String name, Collection<Privilege> privileges);
 
-    void deleteAllRolesByResourceId(UUID resourceId);
+    void deleteAllRolesByResourceId(UUID entityId);
     
 }

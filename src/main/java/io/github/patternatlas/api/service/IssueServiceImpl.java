@@ -104,13 +104,16 @@ public class IssueServiceImpl implements IssueService {
         Privilege toPatternCandidate = this.privilegeService.createPrivilege(PrivilegeConstant.ISSUE_TO_PATTERN_CANDIDATE + '_' + newIssue.getId());
 
         Role helper = this.roleService.createRole(RoleConstant.HELPER + "_ISSUE_" + newIssue.getId(), Arrays.asList(
-            readIssuePrivilege, updateIssuePrivilege
+            readIssuePrivilege, 
+            commentIssuePrivilege, voteIssuePrivilege, evidenceIssuePrivilege
         ));
         Role maintainer = this.roleService.createRole(RoleConstant.MAINTAINER + "_ISSUE_" + newIssue.getId(), Arrays.asList(
-            readIssuePrivilege, updateIssuePrivilege, deleteIssuePrivilege
+            readIssuePrivilege, updateIssuePrivilege, 
+            commentIssuePrivilege, voteIssuePrivilege, evidenceIssuePrivilege
         ));
         Role owner = this.roleService.createRole(RoleConstant.OWNER + "_ISSUE_" + newIssue.getId(), Arrays.asList(
-            readIssuePrivilege, updateIssuePrivilege, deleteIssuePrivilege
+            readIssuePrivilege, updateIssuePrivilege, deleteIssuePrivilege, toPatternCandidate,
+            commentIssuePrivilege, voteIssuePrivilege, evidenceIssuePrivilege
         ));
 
         newIssue.getAuthors().add(new IssueAuthor(newIssue, user, AuthorConstant.OWNER));

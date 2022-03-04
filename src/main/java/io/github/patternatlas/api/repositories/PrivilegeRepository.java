@@ -16,7 +16,13 @@ public interface PrivilegeRepository extends JpaRepository<Privilege, UUID> {
 
     public Optional<Privilege> findByName(String name);
 
+    @Query(value = "SELECT * FROM privilege p WHERE p.name like '%ALL' OR p.name like '%CREATE'", nativeQuery = true)
+    public List<Privilege> findAllPlatformPrivileges();
+
+    @Query(value = "SELECT * FROM privilege p WHERE p.name like %:entityId", nativeQuery = true)
+    public List<Privilege> findAllFromEntity(@Param("entityId") UUID entityId);
+
     @Modifying
-    @Query(value = "DELETE FROM privilege p WHERE p.name like %:resourceId", nativeQuery = true)
-    public void deleteAllByResourceId(@Param("resourceId") UUID resourceId);
+    @Query(value = "DELETE FROM privilege p WHERE p.name like %:entityId", nativeQuery = true)
+    public void deleteAllFromEntity(@Param("entityId") UUID entityId);
 }

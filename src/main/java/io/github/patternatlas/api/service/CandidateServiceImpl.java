@@ -113,13 +113,16 @@ public class CandidateServiceImpl implements CandidateService {
             Privilege toApprovedPattern = this.privilegeService.createPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_TO_PATTERN + '_' + newCandidate.getId());
 
             Role helper = this.roleService.createRole(RoleConstant.HELPER + "_PATTERN_CANDIDATE_" + newCandidate.getId(), Arrays.asList(
-                readCandidatePrivilege, updateCandidatePrivilege
+                readCandidatePrivilege, 
+                commentCandidatePrivilege, voteCandidatePrivilege, evidenceCandidatePrivilege
             ));
             Role maintainer = this.roleService.createRole(RoleConstant.MAINTAINER + "_PATTERN_CANDIDATE_" + newCandidate.getId(), Arrays.asList(
-                readCandidatePrivilege, updateCandidatePrivilege, deleteCandidatePrivilege
+                readCandidatePrivilege, updateCandidatePrivilege, 
+                commentCandidatePrivilege, voteCandidatePrivilege, evidenceCandidatePrivilege
             ));
             Role owner = this.roleService.createRole(RoleConstant.OWNER + "_PATTERN_CANDIDATE_" + newCandidate.getId(), Arrays.asList(
-                readCandidatePrivilege, updateCandidatePrivilege, deleteCandidatePrivilege
+                readCandidatePrivilege, updateCandidatePrivilege, deleteCandidatePrivilege, toApprovedPattern, 
+                commentCandidatePrivilege, voteCandidatePrivilege, evidenceCandidatePrivilege
             ));
 
             if (candidateModelRequest.getIssueId() != null) {

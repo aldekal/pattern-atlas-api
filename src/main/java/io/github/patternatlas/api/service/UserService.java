@@ -22,6 +22,10 @@ public interface UserService {
 
     /** Role */
     List<Role> getAllRoles();
-    List<Privilege> getAllPrivileges();
+    List<Role> getAllPlatformRoles();
+    List<Role> getAllAuthorRoles();
+    List<Role> getAllRolesFromEntity(UUID entityId);
+    List<Privilege> getAllPlatformPrivileges();
+    List<Privilege> getAllPrivilegesFromEntity(UUID entityId);
     Role updateRole(UUID roleId, UUID privilegeId, RoleModelRequest roleModelRequest);
 }

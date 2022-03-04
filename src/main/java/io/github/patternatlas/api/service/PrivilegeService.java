@@ -9,5 +9,5 @@ public interface PrivilegeService {
     /** CRUD  */
     Privilege createPrivilege(String name);
 
-    void deleteAllPrivilegesByResourceId(UUID resourceId);
+    void deleteAllPrivilegesByResourceId(UUID entityId);
 }

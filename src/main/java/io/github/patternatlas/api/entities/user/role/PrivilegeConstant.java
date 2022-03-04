@@ -58,8 +58,4 @@ public class PrivilegeConstant {
     public static final String USER_EDIT_ALL                            = "USER_EDIT_ALL";
     public static final String USER_DELETE_ALL                          = "USER_DELETE_ALL";
     public static final String USER_ALL                                 = "USER_ALL";
-    /** GENERAL */
-    public static final String COMMENT                                  = "COMMENT";
-    public static final String VOTE                                     = "VOTE";
-    public static final String EVIDENCE                                 = "EVIDENCE";
 }

@@ -44,8 +44,8 @@ public class PrivilegeServiceImpl implements PrivilegeService {
 
     @Override
     @Transactional
-    public void deleteAllPrivilegesByResourceId(UUID resourceId) {
-        this.privilegeRepository.deleteAllByResourceId(resourceId);
+    public void deleteAllPrivilegesByResourceId(UUID entityId) {
+        this.privilegeRepository.deleteAllFromEntity(entityId);
     }
 
 }

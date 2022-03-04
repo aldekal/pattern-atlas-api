@@ -73,13 +73,49 @@ public class UserController {
         return new CollectionModel<>(roles);
     }
 
+    @GetMapping(value = "/roles/platform")
+    CollectionModel<EntityModel<RoleModel>>  getAllPlatformRoles() {
+        List<EntityModel<RoleModel>> roles = this.userService.getAllPlatformRoles()
+                .stream()
+                .map(role -> new EntityModel<>(new RoleModel(role)))
+                .collect(Collectors.toList());
+        return new CollectionModel<>(roles);
+    }
+
+    @GetMapping(value = "/roles/authors")
+    CollectionModel<EntityModel<RoleModel>>  getAllAuthorRoles() {
+        List<EntityModel<RoleModel>> roles = this.userService.getAllAuthorRoles()
+                .stream()
+                .map(role -> new EntityModel<>(new RoleModel(role)))
+                .collect(Collectors.toList());
+        return new CollectionModel<>(roles);
+    }
+
+    @GetMapping(value = "/roles/{entityId}")
+    CollectionModel<EntityModel<RoleModel>>  getAllRolesFromEntity(@PathVariable UUID entityId) {
+        List<EntityModel<RoleModel>> roles = this.userService.getAllRolesFromEntity(entityId)
+                .stream()
+                .map(role -> new EntityModel<>(new RoleModel(role)))
+                .collect(Collectors.toList());
+        return new CollectionModel<>(roles);
+    }
+
     @GetMapping(value = "/roles/privileges")
-    CollectionModel<EntityModel<PrivilegeModel>>  getAllPrivileges() {
-        List<EntityModel<PrivilegeModel>> roles = this.userService.getAllPrivileges()
+    CollectionModel<EntityModel<PrivilegeModel>>  getAllPlatformPrivileges() {
+        List<EntityModel<PrivilegeModel>> privileges = this.userService.getAllPlatformPrivileges()
                 .stream()
                 .map(privilege -> new EntityModel<>(new PrivilegeModel(privilege)))
                 .collect(Collectors.toList());
-        return new CollectionModel<>(roles);
+        return new CollectionModel<>(privileges);
+    }
+
+    @GetMapping(value = "/roles/privileges/{entityId}")
+    CollectionModel<EntityModel<PrivilegeModel>>  getAllPrivilegesFromEntity(@PathVariable UUID entityId) {
+        List<EntityModel<PrivilegeModel>> privileges = this.userService.getAllPrivilegesFromEntity(entityId)
+                .stream()
+                .map(privilege -> new EntityModel<>(new PrivilegeModel(privilege)))
+                .collect(Collectors.toList());
+        return new CollectionModel<>(privileges);
     }
 
     /**

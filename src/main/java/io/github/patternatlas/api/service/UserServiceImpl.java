@@ -126,8 +126,32 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Privilege> getAllPrivileges() {
-        return this.privilegeRepository.findAll();
+    public List<Role> getAllPlatformRoles() {
+        return this.roleRepository.findAllRolesByNames(Arrays.asList("ADMIN", "MEMBER", "EXPERT", "LIBRARIAN"));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Role> getAllAuthorRoles() {
+        return this.roleRepository.findAllRolesByNames(Arrays.asList("HELPER", "MAINTAINER", "OWNER"));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Role> getAllRolesFromEntity(UUID entityId) {
+        return this.roleRepository.findAllFromEntity(entityId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Privilege> getAllPlatformPrivileges() {
+        return this.privilegeRepository.findAllPlatformPrivileges();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Privilege> getAllPrivilegesFromEntity(UUID entityId) {
+        return this.privilegeRepository.findAllFromEntity(entityId);
     }
 
     @Override
