@@ -19,6 +19,18 @@
         <spring-oauth2.version>2.5.0</spring-oauth2.version>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>HAL_EXPLORER</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.springframework.data</groupId>
+                    <artifactId>spring-data-rest-hal-explorer</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
     <dependencies>
 
         <dependency>
@@ -51,6 +63,8 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-rest-hal-explorer</artifactId>
+            <version>3.6.0</version>
+            <type>pom</type>
         </dependency>
 
         <dependency>
@@ -89,6 +103,13 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
+        </dependency>
+
+        <!-- Liquibase migration -->
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>4.8.0</version>
         </dependency>
 
         <!-- Apache Commons (String Library) -->

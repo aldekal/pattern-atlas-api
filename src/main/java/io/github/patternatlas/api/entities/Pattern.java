@@ -26,6 +26,8 @@ public class Pattern extends EntityWithURI {
 
     private String iconUrl;
 
+    private String paperRef;
+
     @JsonIgnore
     @ToString.Exclude
     @ManyToOne

@@ -36,16 +36,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.github.patternatlas.api.exception.DirectedEdgeNotFoundException;
-import io.github.patternatlas.api.exception.UndirectedEdgeNotFoundException;
-import io.github.patternatlas.api.rest.model.PatternRenderedContentModel;
 import io.github.patternatlas.api.entities.DirectedEdge;
 import io.github.patternatlas.api.entities.Pattern;
 import io.github.patternatlas.api.entities.PatternLanguage;
 import io.github.patternatlas.api.entities.PatternViewPattern;
 import io.github.patternatlas.api.entities.UndirectedEdge;
+import io.github.patternatlas.api.exception.DirectedEdgeNotFoundException;
+import io.github.patternatlas.api.exception.UndirectedEdgeNotFoundException;
 import io.github.patternatlas.api.rest.model.PatternContentModel;
 import io.github.patternatlas.api.rest.model.PatternModel;
+import io.github.patternatlas.api.rest.model.PatternRenderedContentModel;
 import io.github.patternatlas.api.service.PatternLanguageService;
 import io.github.patternatlas.api.service.PatternRelationDescriptorService;
 import io.github.patternatlas.api.service.PatternRenderService;
@@ -402,6 +402,7 @@ public class PatternController {
             persistedVersion.setRenderedContent(pattern.getContent());
         }
         persistedVersion.setIconUrl(pattern.getIconUrl());
+        persistedVersion.setPaperRef(pattern.getPaperRef());
         persistedVersion.setContent(pattern.getContent());
         persistedVersion.setName(pattern.getName());
 
