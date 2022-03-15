@@ -105,10 +105,8 @@ public class UserEntity implements Serializable{
 //    private List<CandidateComment> candidateComments = new ArrayList<>();
 
     public UserEntity(UserModel userModel, String password) {
+        this(userModel.getName(), userModel.getEmail(), password, null);
         this.id = userModel.getId();
-        this.name = userModel.getName();
-        this.email = userModel.getEmail();
-        this.password = password;
     }
 
     public UserEntity(String name, String email, String password, Set<Role> roles) {
@@ -116,6 +114,10 @@ public class UserEntity implements Serializable{
         this.email = email;
         this.password = password;
         this.roles = roles;
+
+        if(this.roles == null) {
+            this.roles = new HashSet<>();
+        }
     }
 
     public void updateUserEntity(UserModel userModel) {

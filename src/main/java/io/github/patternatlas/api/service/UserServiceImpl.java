@@ -58,14 +58,23 @@ public class UserServiceImpl implements UserService {
         if (userModelRequest.getPassword() == null)
             throw new RuntimeException("Password is null");
 
+
         UserEntity user = new UserEntity(userModelRequest,  passwordEncoder.encode(userModelRequest.getPassword()));
-        userModelRequest.getRoles().stream().forEach(role -> {
-            if (this.roleRepository.findByName(role) != null) {
-                user.getRoles().add(this.roleRepository.findByName(role));
-            } else {
-                user.getRoles().add(this.roleRepository.findByName(RoleConstant.MEMBER));
+        if(userModelRequest.getRoles() != null) {
+            userModelRequest.getRoles().stream().forEach(role -> {
+                if (this.roleRepository.findByName(role) != null) {
+                    user.getRoles().add(this.roleRepository.findByName(role));
+                }
+            });
+        } else {
+            // It could be that the UI only sends one singular role (not a set):
+            if(userModelRequest.getRole() != null) {
+                user.getRoles().add(this.roleRepository.findByName(userModelRequest.getRole()));
             }
-        });
+        }
+
+        // Default: Add member role
+        user.getRoles().add(this.roleRepository.findByName(RoleConstant.MEMBER));
         
         return this.userRepository.save(user);
     }
