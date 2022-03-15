@@ -64,17 +64,21 @@ public class UserServiceImpl implements UserService {
             userModelRequest.getRoles().stream().forEach(role -> {
                 if (this.roleRepository.findByName(role) != null) {
                     user.getRoles().add(this.roleRepository.findByName(role));
+                } else {
+                    user.getRoles().add(this.roleRepository.findByName(RoleConstant.MEMBER));
                 }
             });
         } else {
             // It could be that the UI only sends one singular role (not a set):
             if(userModelRequest.getRole() != null) {
-                user.getRoles().add(this.roleRepository.findByName(userModelRequest.getRole()));
+                if (this.roleRepository.findByName(userModelRequest.getRole()) != null) {
+                    user.getRoles().add(this.roleRepository.findByName(userModelRequest.getRole()));
+                } else {
+                    user.getRoles().add(this.roleRepository.findByName(RoleConstant.MEMBER));
+                }
             }
         }
 
-        // Default: Add member role
-        user.getRoles().add(this.roleRepository.findByName(RoleConstant.MEMBER));
         
         return this.userRepository.save(user);
     }
