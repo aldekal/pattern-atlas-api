@@ -28,7 +28,7 @@ ENV JDBC_DATABASE_URL host.docker.internal
 ENV JDBC_DATABASE_USERNAME postgres
 ENV JDBC_DATABASE_PASSWORD postgres
 
-# seperate user for database initialization (should have read-permissions)
+# seperate user for database initialization (should have write-permissions)
 ENV DB_INIT_USER postgres
 ENV DB_INIT_PASSWORD postgres
 
