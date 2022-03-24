@@ -27,6 +27,11 @@ ENV API_PORT 1977
 ENV JDBC_DATABASE_URL host.docker.internal
 ENV JDBC_DATABASE_USERNAME postgres
 ENV JDBC_DATABASE_PASSWORD postgres
+
+# seperate user for database initialization (should have write-permissions)
+ENV DB_INIT_USER postgres
+ENV DB_INIT_PASSWORD postgres
+
 ENV JDBC_DATABASE_NAME postgres
 ENV JDBC_DATABASE_PORT 5060
 ENV HAL_EXPLORER true
