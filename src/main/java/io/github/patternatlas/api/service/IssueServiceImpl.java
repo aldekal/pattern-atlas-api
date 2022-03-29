@@ -207,6 +207,14 @@ public class IssueServiceImpl implements IssueService {
         UserEntity user = userService.getUserById(authorModelRequest.getUserId());
         IssueAuthor issueAuthor = new IssueAuthor(issue, user, authorModelRequest.getAuthorRole());
         issueAuthor = this.issueAuthorRepository.save(issueAuthor);
+
+        // Save roles associated with the author
+        // Get requested role
+        List<Role> authorRoles = this.roleService.findAllFromEntityForAuthorType(issue.getId(), authorModelRequest.getAuthorRole());
+        user.getRoles().addAll(authorRoles);
+        this.userService.saveUser(user);
+
+
         return issueAuthor.getIssue();
     }
 

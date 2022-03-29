@@ -22,6 +22,9 @@ public interface RoleRepository extends JpaRepository<Role, UUID> {
     @Query(value = "SELECT * FROM role r WHERE r.name like %:entityId", nativeQuery = true)
     public List<Role> findAllFromEntity(@Param("entityId") UUID entityId);
 
+    @Query(value = "SELECT * from role r where r.name like %:entityId and r.name like :authorRole%", nativeQuery = true)
+    public List<Role> findAllFromEntityForAuthorType(@Param("entityId") UUID entityId, @Param("authorRole") String authorRole);
+
     @Modifying
     @Query(value = "DELETE FROM role r WHERE r.name like %:entityId", nativeQuery = true)
     public void deleteAllFromEntity(@Param("entityId") UUID entityId);

@@ -18,7 +18,7 @@ public interface Authority {
     String ISSUE_DELETE_COMBINED                    = "hasAnyAuthority(@authorityService.formatResourceAuthorities('ISSUE_DELETE', #issueId))";
     String ISSUE_READ_COMBINED                      = "hasAnyAuthority(@authorityService.formatResourceAuthorities('ISSUE_READ', #issueId))";
     String ISSUE_READ_COMBINED_URI                  = "hasAnyAuthority(@authorityService.formatResourceAuthorities('ISSUE_READ', " +
-            "@issueService.getIssueByURI(#issueUri).id)";
+            "@issueService.getIssueByURI(#issueUri).id))";
     /** CANDIDATE */
     String PATTERN_CANDIDATE_READ                   = "hasAuthority('PATTERN_CANDIDATE_READ')";
     String PATTERN_CANDIDATE_CREATE                 = "hasAuthority('PATTERN_CANDIDATE_CREATE')";

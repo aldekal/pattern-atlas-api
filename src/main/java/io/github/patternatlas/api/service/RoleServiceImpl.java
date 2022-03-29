@@ -6,6 +6,7 @@ import io.github.patternatlas.api.repositories.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,4 +51,8 @@ public class RoleServiceImpl implements RoleService {
         this.roleRepository.deleteAllFromEntity(entityId);
     }
 
+    @Override
+    public List<Role> findAllFromEntityForAuthorType(UUID entityId, String authorRole) {
+        return this.roleRepository.findAllFromEntityForAuthorType(entityId, authorRole);
+    }
 }
