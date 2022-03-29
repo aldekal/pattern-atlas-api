@@ -18,7 +18,6 @@ public class AuthorityService {
      */
     public List<String> formatResourceAuthorities(String baseAuthority, UUID resource){
         List<String> authorities = Arrays.asList(baseAuthority + "_ALL", baseAuthority + "_" + resource.toString());
-        System.out.println("Returning auth. list: " + authorities.toString());
         return authorities;
     }
 }
