@@ -1,6 +1,7 @@
 package io.github.patternatlas.api.config;
 
 public interface Authority {
+
     /** ISSUE */
     String ISSUE_READ                               = "hasAuthority('ISSUE_READ')";
     String ISSUE_CREATE                             = "hasAuthority('ISSUE_CREATE')";
@@ -10,6 +11,14 @@ public interface Authority {
     String ISSUE_EDIT_ALL                           = "hasAuthority('ISSUE_EDIT_ALL')";
     String ISSUE_DELETE_ALL                         = "hasAuthority('ISSUE_DELETE_ALL')";
     String ISSUE_TO_PATTERN_CANDIDATE               = "hasAuthority('ISSUE_TO_PATTERN_CANDIDATE')";
+    String ISSUE_EDIT_COMBINED                      = "hasAnyAuthority(@authorityService.formatResourceAuthorities('ISSUE_EDIT', #issueId))";
+    String ISSUE_EVIDENCE_COMBINED                  = "hasAnyAuthority(@authorityService.formatResourceAuthorities('ISSUE_EVIDENCE', #issueId))";
+    String ISSUE_COMMENT_COMBINED                   = "hasAnyAuthority(@authorityService.formatResourceAuthorities('ISSUE_COMMENT', #issueId))";
+    String ISSUE_VOTE_COMBINED                      = "hasAnyAuthority(@authorityService.formatResourceAuthorities('ISSUE_VOTE', #issueId))";
+    String ISSUE_DELETE_COMBINED                    = "hasAnyAuthority(@authorityService.formatResourceAuthorities('ISSUE_DELETE', #issueId))";
+    String ISSUE_READ_COMBINED                      = "hasAnyAuthority(@authorityService.formatResourceAuthorities('ISSUE_READ', #issueId))";
+    String ISSUE_READ_COMBINED_URI                  = "hasAnyAuthority(@authorityService.formatResourceAuthorities('ISSUE_READ', " +
+            "@issueService.getIssueByURI(#issueUri).id)";
     /** CANDIDATE */
     String PATTERN_CANDIDATE_READ                   = "hasAuthority('PATTERN_CANDIDATE_READ')";
     String PATTERN_CANDIDATE_CREATE                 = "hasAuthority('PATTERN_CANDIDATE_CREATE')";
