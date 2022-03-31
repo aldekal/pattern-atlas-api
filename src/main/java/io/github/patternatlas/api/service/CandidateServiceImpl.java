@@ -306,6 +306,13 @@ public class CandidateServiceImpl implements CandidateService {
         UserEntity user = this.userService.getUserById(authorModelRequest.getUserId());
         CandidateAuthor candidateAuthor = new CandidateAuthor(candidate, user, authorModelRequest.getAuthorRole());
         candidateAuthor = this.candidateAuthorRepository.save(candidateAuthor);
+
+        // Save roles associated with author
+        List<Role> authorRoles = this.roleService.findAllFromEntityForAuthorType(candidate.getId(),
+                authorModelRequest.getAuthorRole());
+        user.getRoles().addAll(authorRoles);
+        this.userService.saveUser(user);
+
         return candidateAuthor.getCandidate();
     }
 

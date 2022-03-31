@@ -210,7 +210,8 @@ public class IssueServiceImpl implements IssueService {
 
         // Save roles associated with the author
         // Get requested role
-        List<Role> authorRoles = this.roleService.findAllFromEntityForAuthorType(issue.getId(), authorModelRequest.getAuthorRole());
+        List<Role> authorRoles = this.roleService.findAllFromEntityForAuthorType(issue.getId(),
+                authorModelRequest.getAuthorRole());
         user.getRoles().addAll(authorRoles);
         this.userService.saveUser(user);
 
