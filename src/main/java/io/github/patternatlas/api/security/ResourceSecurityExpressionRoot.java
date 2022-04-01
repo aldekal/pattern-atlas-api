@@ -29,16 +29,18 @@ public class ResourceSecurityExpressionRoot extends SecurityExpressionRoot imple
         this.userService = userService;
     }
 
+    /**
+     * Checks global permission for user.
+     * Will only check for the exact permission (e.g. ISSUE_CREATE)
+     * @param permissionType type of the permission (ISSUE_CREATE)
+     * @return true if user has permission
+     */
+    public boolean hasGlobalPermission(String permissionType) {
+        UUID userId = UUID.fromString(this.getAuthentication().getName()); // Supplied through JWT id field
 
-    private boolean checkAuthority(Collection<Role> userRoles, String authority) {
-        for(Role role : userRoles) {
-            for(Privilege privilege : role.getPrivileges()) {
-                if(privilege.getName().equals(authority)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return this.userService.hasAnyPrivilege(
+                userId,
+                permissionType);
     }
 
     /**

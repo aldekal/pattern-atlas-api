@@ -86,7 +86,7 @@ public class IssueController {
      */
     @Operation(operationId = "createIssue", responses = {@ApiResponse(responseCode = "201")}, description = "Create an issue")
     @PostMapping(value = "")
-    @PreAuthorize(value = "hasAuthority(@PC.ISSUE_CREATE)")
+    @PreAuthorize(value = "hasGlobalPermission(@PC.ISSUE_CREATE)")
     @ResponseStatus(HttpStatus.CREATED)
     ResponseEntity<EntityModel<IssueModel>> newIssue(@RequestBody IssueModelRequest issueModelRequest, Principal principal) {
         return ResponseEntity.ok(new EntityModel<>(new IssueModel(this.issueService.createIssue(issueModelRequest, UUID.fromString(principal.getName())))));

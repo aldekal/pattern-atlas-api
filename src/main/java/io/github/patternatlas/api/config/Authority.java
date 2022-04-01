@@ -5,23 +5,6 @@ public interface Authority {
     // TODO will be phased out - after all authority checks are changed to hasResourcePermission, this file should not be
     // needed anymore
 
-    /** CANDIDATE */
-    String PATTERN_CANDIDATE_READ                   = "hasAuthority('PATTERN_CANDIDATE_READ')";
-    String PATTERN_CANDIDATE_CREATE                 = "hasAuthority('PATTERN_CANDIDATE_CREATE')";
-    String PATTERN_CANDIDATE_EDIT                   = "hasAuthority('PATTERN_CANDIDATE_EDIT')";
-    String PATTERN_CANDIDATE_DELETE                 = "hasAuthority('PATTERN_CANDIDATE_DELETE')";
-    String PATTERN_CANDIDATE_READ_ALL               = "hasAuthority('PATTERN_CANDIDATE_READ_ALL')";
-    String PATTERN_CANDIDATE_EDIT_ALL               = "hasAuthority('PATTERN_CANDIDATE_EDIT_ALL')";
-    String PATTERN_CANDIDATE_DELETE_ALL             = "hasAuthority('PATTERN_CANDIDATE_DELETE_ALL')";
-    String PATTERN_CANDIDATE_TO_PATTERN             = "hasAuthority('PATTERN_CANDIDATE_TO_PATTERN')";
-    String PATTERN_CANDIDATE_EDIT_COMBINED          = "hasAnyAuthority(@authorityService.formatResourceAuthorities('PATTERN_CANDIDATE_EDIT', #issueId))";
-    String PATTERN_CANDIDATE_EDIT_DELETE          = "hasAnyAuthority(@authorityService.formatResourceAuthorities('PATTERN_CANDIDATE_DELETE', #issueId))";
-    String PATTERN_CANDIDATE_EVIDENCE_COMBINED      = "hasAnyAuthority(@authorityService.formatResourceAuthorities('PATTERN_CANDIDATE_EVIDENCE', #issueId))";
-    String PATTERN_CANDIDATE_VOTE_COMBINED          = "hasAnyAuthority(@authorityService.formatResourceAuthorities('PATTERN_CANDIDATE_VOTE', #issueId))";
-    String PATTERN_CANDIDATE_COMMENT_COMBINED       = "hasAnyAuthority(@authorityService.formatResourceAuthorities('PATTERN_CANDIDATE_COMMENT', #issueId))";
-    String PATTERN_CANDIDATE_READ_COMBINED          = "hasAnyAuthority(@authorityService.formatResourceAuthorities('PATTERN_CANDIDATE_READ', #issueId))";
-    String PATTERN_CANDIDATE_READ_COMBINED_URI      = "hasAnyAuthority(@authorityService.formatResourceAuthorities('PATTERN_CANDIDATE_READ', " +
-            "@issueService.getIssueByURI(#candidateUri).id))";
     /** Pattern */
     String APPROVED_PATTERN_READ                    = "hasAuthority('APPROVED_PATTERN_READ')";
     String APPROVED_PATTERN_CREATE                  = "hasAuthority('APPROVED_PATTERN_CREATE')";
