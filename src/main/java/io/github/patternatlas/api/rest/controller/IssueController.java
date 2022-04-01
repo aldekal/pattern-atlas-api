@@ -94,7 +94,7 @@ public class IssueController {
 
     @Operation(operationId = "createIssueComment", responses = {@ApiResponse(responseCode = "201")}, description = "Create an issue comment")
     @PostMapping(value = "/{issueId}/comments")
-    @PreAuthorize(value = Authority.ISSUE_COMMENT_COMBINED)
+    @PreAuthorize(value = "hasResourcePermission(#issueId, @PC.ISSUE_COMMENT)")
     @ResponseStatus(HttpStatus.CREATED)
     ResponseEntity<EntityModel<IssueModel>> newIssueComment(@PathVariable UUID issueId, Principal principal, @RequestBody CommentModel commentModel) {
         return ResponseEntity.ok(new EntityModel<>(new IssueModel(this.issueService.createComment(issueId, UUID.fromString(principal.getName()), commentModel))));

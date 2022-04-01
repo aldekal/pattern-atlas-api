@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -43,6 +44,12 @@ public class UserController {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.objectMapper = objectMapper;
+    }
+
+    // TODO ENTFERNEN
+    @GetMapping(value="/echo")
+    String echo(Principal user) {
+        return user.toString();
     }
 
     /**

@@ -128,6 +128,16 @@ public class UserServiceImpl implements UserService {
         this.userRepository.deleteById(userId);
     }
 
+    @Override
+    public boolean hasAnyPrivilege(UUID userId, String... permissions) {
+        for(String permission : permissions) {
+            if(this.privilegeRepository.existsPrivilegeForUser(permission, userId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Role && Permission
      */

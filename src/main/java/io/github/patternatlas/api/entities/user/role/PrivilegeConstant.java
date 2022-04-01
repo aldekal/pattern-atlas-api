@@ -1,5 +1,8 @@
 package io.github.patternatlas.api.entities.user.role;
 
+import org.springframework.stereotype.Component;
+
+@Component("PC")
 public class PrivilegeConstant {
     /** ISSUE */
     public static final String ISSUE_READ                               = "ISSUE_READ";

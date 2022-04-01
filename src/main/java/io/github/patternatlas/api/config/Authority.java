@@ -2,6 +2,9 @@ package io.github.patternatlas.api.config;
 
 public interface Authority {
 
+    // TODO will be phased out - after all authority checks are changed to hasResourcePermission, this file should not be
+    // needed anymore
+
     /** ISSUE */
     String ISSUE_READ                               = "hasAuthority('ISSUE_READ')";
     String ISSUE_CREATE                             = "hasAuthority('ISSUE_CREATE')";

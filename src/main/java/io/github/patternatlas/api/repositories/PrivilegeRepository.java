@@ -25,4 +25,11 @@ public interface PrivilegeRepository extends JpaRepository<Privilege, UUID> {
     @Modifying
     @Query(value = "DELETE FROM privilege p WHERE p.name like %:entityId", nativeQuery = true)
     public void deleteAllFromEntity(@Param("entityId") UUID entityId);
+
+    @Query(value = "SELECT case when (count(priv) > 0) then true else false end from Privilege priv " +
+            "LEFT JOIN priv.roles r " +
+            "LEFT JOIN r.users u " +
+            "WHERE u.id = :userId " +
+            "AND priv.name = :privilegeName")
+    boolean existsPrivilegeForUser(@Param("privilegeName") String privilegeName, @Param("userId") UUID userId);
 }

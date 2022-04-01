@@ -20,6 +20,15 @@ public interface UserService {
     UserEntity updateUser(UUID userId, UserModelRequest userModelRequest);
     void deleteUser(UUID UserId);
 
+    /**
+     * Checks if a user has one of the supplied privileges, without querying all
+     * available roles and privileges
+     * @param userId
+     * @param privileges
+     * @return true if one of the privileges is present for the user
+     */
+    boolean hasAnyPrivilege(UUID userId, String ... privileges);
+
     /** Role */
     List<Role> getAllRoles();
     List<Role> getAllPlatformRoles();

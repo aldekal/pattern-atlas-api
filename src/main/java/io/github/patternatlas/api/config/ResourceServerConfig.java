@@ -18,9 +18,6 @@ import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableResourceServer
-// START::Comment for local development without authorization
-@EnableGlobalMethodSecurity(prePostEnabled = true)
-// END::Comment for local development without authorization
 class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     @Override
