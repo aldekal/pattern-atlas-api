@@ -52,10 +52,6 @@ public class ResourceSecurityExpressionRoot extends SecurityExpressionRoot imple
     public boolean hasResourcePermission(UUID resource, String permissionType) {
         UUID userId = UUID.fromString(this.getAuthentication().getName()); // Supplied through JWT id field
 
-        System.out.println("Checking: " + permissionType);
-        System.out.println("for: " + resource);
-        System.out.println("given user: " + this.getAuthentication());
-
         return this.userService.hasAnyPrivilege(
                 userId,
                 permissionType + "_ALL",
