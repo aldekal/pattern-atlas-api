@@ -43,6 +43,13 @@ public class ResourceSecurityExpressionRoot extends SecurityExpressionRoot imple
                 permissionType);
     }
 
+    public UUID loggedInUUID() {
+        if(this.getAuthentication() != null) {
+            return UUID.fromString(this.getAuthentication().getName());
+        }
+        return null;
+    }
+
     /**
      * Checks permission given the objects UUID.
      * Will check for general version of the permission (e.g. ISSUE_READ_ALL)
