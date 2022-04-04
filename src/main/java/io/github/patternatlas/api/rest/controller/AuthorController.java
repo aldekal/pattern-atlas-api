@@ -13,6 +13,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -36,6 +37,8 @@ public class AuthorController {
      * GET Methods
      */
     @Operation(operationId = "getallUsersAsAuthors", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all authors")
+    @PostFilter(value = "hasGlobalPermission(@PC.USER_READ_ALL) " +
+            "or (hasGlobalPermission(@PC.USER_READ) and filterObject.getContent().id.equals(loggedInUUID()))")
     @GetMapping(value = "")
     CollectionModel<EntityModel<AuthorModel>> getAll() {
         List<EntityModel<AuthorModel>> authors = this.userService.getAllUsers()

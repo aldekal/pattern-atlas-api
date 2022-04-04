@@ -55,8 +55,6 @@ public class UserController {
      */
     @Operation(operationId = "getAllUsers", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all users")
     @GetMapping(value = "")
-    @PostFilter(value = "hasGlobalPermission(@PC.USER_READ_ALL) " +
-            "or (hasGlobalPermission(@PC.USER_READ) and filterObject.getContent().id.equals(loggedInUUID()))")
     CollectionModel<EntityModel<UserModel>> getAll() {
         List<EntityModel<UserModel>> users = this.userService.getAllUsers()
                 .stream()
@@ -67,8 +65,6 @@ public class UserController {
     }
 
     @GetMapping(value = "/{userId}")
-    @PreAuthorize(value = "hasGlobalPermission(@PC.USER_READ_ALL)" +
-            "or (hasGlobalPermission(@PC.USER_READ) and #userId.equals(loggedInUUID()))")
     ResponseEntity<EntityModel<UserModel>> getUserById(@PathVariable UUID userId) {
         return ResponseEntity.ok(EntityModel.of(new UserModel(this.userService.getUserById(userId))));
     }
@@ -133,7 +129,6 @@ public class UserController {
     @Operation(operationId = "createUser", responses = {@ApiResponse(responseCode = "200")}, description = "Create a user")
     @PostMapping(value = "")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize(value = "hasGlobalPermission(@PC.USER_CREATE)")
     ResponseEntity<EntityModel<UserModel>> newUser(@RequestBody UserModelRequest userModelRequest) {
         return ResponseEntity.ok(EntityModel.of(new UserModel(this.userService.createUser(userModelRequest))));
     }
@@ -144,14 +139,12 @@ public class UserController {
     @Operation(operationId = "updateUser", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Update a user")
     @PutMapping(value = "/{userId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @PreAuthorize(value = "hasGlobalPermission(@PC.USER_EDIT_ALL)")
     ResponseEntity<EntityModel<UserModel>> updateUser(@PathVariable UUID userId, @RequestBody UserModelRequest userModelRequest) {
         return ResponseEntity.ok(EntityModel.of(new UserModel(this.userService.updateUser(userId, userModelRequest))));
     }
 
     @PutMapping(value = "/roles/{roleId}/privileges/{privilegeId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @PreAuthorize(value = "hasGlobalPermission(@PC.USER_EDIT_ALL)")
     ResponseEntity<EntityModel<RoleModel>> updateUserRole(@PathVariable UUID roleId, @PathVariable UUID privilegeId, @RequestBody RoleModelRequest roleModelRequest) {
         return ResponseEntity.ok(EntityModel.of(new RoleModel(this.userService.updateRole(roleId, privilegeId, roleModelRequest))));
     }
@@ -161,8 +154,6 @@ public class UserController {
      */
     @Operation(operationId = "deleteUser", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Delete a user")
     @DeleteMapping(value = "/{userId}")
-    @PreAuthorize(value = "hasGlobalPermission(@PC.USER_EDIT_ALL)" +
-            "or (hasGlobalPermission(@PC.USER_READ) and #userId.equals(loggedInUUID()))")
     ResponseEntity<?> deleteUser(@PathVariable UUID userId) {
         this.userService.deleteUser(userId);
         return ResponseEntity.noContent().build();

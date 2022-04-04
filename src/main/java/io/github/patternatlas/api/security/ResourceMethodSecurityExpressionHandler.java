@@ -1,7 +1,6 @@
 package io.github.patternatlas.api.security;
 
 import io.github.patternatlas.api.service.UserService;
-import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.context.ApplicationContext;
 import org.springframework.expression.EvaluationContext;
@@ -13,10 +12,8 @@ import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
 import org.springframework.security.core.Authentication;
 
-import java.util.Collection;
 import java.util.LinkedList;
 
-@Slf4j
 public class ResourceMethodSecurityExpressionHandler extends DefaultMethodSecurityExpressionHandler {
     private ApplicationContext applicationContext;
     private AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();

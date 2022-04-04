@@ -1,20 +1,11 @@
 package io.github.patternatlas.api.security;
 
 
-import io.github.patternatlas.api.entities.user.UserEntity;
-import io.github.patternatlas.api.entities.user.role.Privilege;
-import io.github.patternatlas.api.entities.user.role.Role;
 import io.github.patternatlas.api.service.UserService;
-import org.apache.catalina.User;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
 
 public class ResourceSecurityExpressionRoot extends SecurityExpressionRoot implements MethodSecurityExpressionOperations {
