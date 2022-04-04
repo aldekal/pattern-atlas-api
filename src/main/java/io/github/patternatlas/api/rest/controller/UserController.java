@@ -49,19 +49,6 @@ public class UserController {
         this.objectMapper = objectMapper;
     }
 
-    // TODO Entfernen (only for debug)
-    @GetMapping(value="/whoami")
-    String whoami(Principal user) {
-        UserEntity userEntity = this.userService.getUserById(UUID.fromString(user.getName()));
-        Map<Role, Collection<Privilege>> privs = new HashMap<>();
-        userEntity.getRoles().forEach(
-                role -> privs.put(role, role.getPrivileges())
-        );
-        return user.toString() +
-                " maps to: " + userEntity.toString() + "\n" +
-                "privileges" + privs.toString();
-    }
-
 
     /**
      * GET Methods
