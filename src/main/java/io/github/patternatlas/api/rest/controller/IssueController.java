@@ -56,7 +56,7 @@ public class IssueController {
      */
     @Operation(operationId = "getAllIssues", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all issues")
     @GetMapping(value = "")
-    // TODO: Filter for read permissions
+    @PostFilter("hasResourcePermission(filterObject.getContent().id, @PC.ISSUE_READ)")
     CollectionModel<EntityModel<IssueModel>> getAll() {
         List<EntityModel<IssueModel>> issues = this.issueService.getAllIssues()
                 .stream()
