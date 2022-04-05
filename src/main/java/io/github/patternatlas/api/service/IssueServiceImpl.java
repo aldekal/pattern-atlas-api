@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -226,6 +227,13 @@ public class IssueServiceImpl implements IssueService {
         UserEntity user = this.userService.getUserById(userId);
         IssueAuthor issueAuthor = new IssueAuthor(issue, user);
         if (this.issueAuthorRepository.existsById(issueAuthor.getId())) {
+            List<Role> roles = this.userService.getAllRolesFromEntity(issueId) // find all roles for issue
+                    .stream().filter((role) -> role.getUsers().contains(user)) // filter for roles for current user
+                    .collect(Collectors.toList());
+
+            user.getRoles().removeAll(roles); // delete only those
+
+            this.userService.saveUser(user);
             this.issueAuthorRepository.deleteById(issueAuthor.getId());
         }
         return this.getIssueById(issueId);

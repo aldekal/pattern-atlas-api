@@ -325,7 +325,6 @@ public class CandidateServiceImpl implements CandidateService {
         UserEntity user = this.userService.getUserById(userId);
         CandidateAuthor candidateAuthor = new CandidateAuthor(candidate, user);
         if (this.candidateAuthorRepository.existsById(candidateAuthor.getId())) {
-
             List<Role> roles = this.userService.getAllRolesFromEntity(candidateId) // find all roles for candidate
                     .stream().filter((role) -> role.getUsers().contains(user)) // filter for roles for current user
                     .collect(Collectors.toList());
