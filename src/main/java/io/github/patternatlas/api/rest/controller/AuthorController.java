@@ -36,9 +36,10 @@ public class AuthorController {
     /**
      * GET Methods
      */
+
+    // Only exposes username and ID for author management purposes - every user should be able to set others
+    // as authors, therefore it is not secured
     @Operation(operationId = "getallUsersAsAuthors", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all authors")
-    @PostFilter(value = "hasGlobalPermission(@PC.USER_READ_ALL) " +
-            "or (hasGlobalPermission(@PC.USER_READ) and filterObject.getContent().id.equals(loggedInUUID()))")
     @GetMapping(value = "")
     CollectionModel<EntityModel<AuthorModel>> getAll() {
         List<EntityModel<AuthorModel>> authors = this.userService.getAllUsers()

@@ -21,12 +21,8 @@ public interface UserService {
     @PreAuthorize(value = "hasGlobalPermission(@PC.USER_CREATE)")
     UserEntity createUser(UserModelRequest userModelRequest);
 
-    @PostFilter(value = "hasGlobalPermission(@PC.USER_READ_ALL) " +
-            "or (hasGlobalPermission(@PC.USER_READ) and filterObject.id.equals(loggedInUUID()))")
     List<UserEntity> getAllUsers();
 
-    @PreAuthorize(value = "hasGlobalPermission(@PC.USER_READ_ALL)" +
-            "or (hasGlobalPermission(@PC.USER_READ) and #userId.equals(loggedInUUID()))")
     UserEntity getUserById(UUID UserId);
 
     @PreAuthorize(value = "hasGlobalPermission(@PC.USER_EDIT_ALL)")

@@ -53,8 +53,13 @@ public class UserController {
     /**
      * GET Methods
      */
+
+    // Exposes whole activity of each user (including created issues, candidates...). This should only be
+    // allowed for USER_READ_ALL, or USER_READ if it is for user themselves
     @Operation(operationId = "getAllUsers", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all users")
     @GetMapping(value = "")
+    @PostFilter(value = "hasGlobalPermission(@PC.USER_READ_ALL) or " +
+            "(hasGlobalPermission(@PC.USER_READ) and filterObject.getContent().id.equals(loggedInUUID()))")
     CollectionModel<EntityModel<UserModel>> getAll() {
         List<EntityModel<UserModel>> users = this.userService.getAllUsers()
                 .stream()

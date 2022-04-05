@@ -31,6 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -323,7 +325,15 @@ public class CandidateServiceImpl implements CandidateService {
         UserEntity user = this.userService.getUserById(userId);
         CandidateAuthor candidateAuthor = new CandidateAuthor(candidate, user);
         if (this.candidateAuthorRepository.existsById(candidateAuthor.getId())) {
+
+            List<Role> roles = this.userService.getAllRolesFromEntity(candidateId) // find all roles for candidate
+                    .stream().filter((role) -> role.getUsers().contains(user)) // filter for roles for current user
+                    .collect(Collectors.toList());
+
+            user.getRoles().removeAll(roles); // delete only those
+
             this.candidateAuthorRepository.deleteById(candidateAuthor.getId());
+            this.userService.saveUser(user);
         }
         return this.getCandidateById(candidateId);
     }
