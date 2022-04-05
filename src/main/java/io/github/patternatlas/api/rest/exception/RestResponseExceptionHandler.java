@@ -40,6 +40,7 @@ public class RestResponseExceptionHandler
             Exception.class
     })
     protected ResponseEntity<Object> handleStorageExceptions(Exception ex, WebRequest request) {
+        ex.printStackTrace();
         ErrorMessageDTO errorMessage = new ErrorMessageDTO(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         return handleExceptionInternal(ex, errorMessage, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }

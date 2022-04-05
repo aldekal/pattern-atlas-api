@@ -29,7 +29,3 @@ security:
       jwk:
         key-set-uri: http://localhost:8081/.well-known/jwks.json
 
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-
