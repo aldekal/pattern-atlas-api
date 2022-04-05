@@ -212,26 +212,21 @@ public class CandidateServiceImpl implements CandidateService {
         Candidate candidate = this.getCandidateById(candidateId);
         UserEntity user = this.userService.getUserById(userId);
 
-        if (user.getRoles().stream().anyMatch(role -> role.checkPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_EDIT_ALL)) || this.authorPermissions(candidateModelRequest.getId(), userId)) {
-            // UPDATE issue fields
-            if (this.candidateRepository.existsByUri(candidateModelRequest.getUri())) {
-                Candidate candidateByURI = this.getCandidateByURI(candidateModelRequest.getUri());
-                // NOT uri & name change
-                if (!candidateByURI.getId().equals(candidate.getId())) {
-                    throw new EntityExistsException(String.format("Candidate uri %s already exist!", candidateModelRequest.getUri()));
-                }
+        if (this.candidateRepository.existsByUri(candidateModelRequest.getUri())) {
+            Candidate candidateByURI = this.getCandidateByURI(candidateModelRequest.getUri());
+            // NOT uri & name change
+            if (!candidateByURI.getId().equals(candidate.getId())) {
+                throw new EntityExistsException(String.format("Candidate uri %s already exist!", candidateModelRequest.getUri()));
             }
-            // ADD pattern language
-            if (candidateModelRequest.getPatternLanguageId() != null && this.patternLanguageService.getPatternLanguageById(candidateModelRequest.getPatternLanguageId()) != null)
-                candidate.setPatternLanguage(this.patternLanguageService.getPatternLanguageById(candidateModelRequest.getPatternLanguageId()));
-
-            // UPDATE issue fields
-            candidate.updateCandidate(candidateModelRequest);
-
-            return this.candidateRepository.save(candidate);
-        } else {
-            throw new RuntimeException("You don't have the permission");
         }
+        // ADD pattern language
+        if (candidateModelRequest.getPatternLanguageId() != null && this.patternLanguageService.getPatternLanguageById(candidateModelRequest.getPatternLanguageId()) != null)
+            candidate.setPatternLanguage(this.patternLanguageService.getPatternLanguageById(candidateModelRequest.getPatternLanguageId()));
+
+        // UPDATE issue fields
+        candidate.updateCandidate(candidateModelRequest);
+
+        return this.candidateRepository.save(candidate);
     }
 
     @Override
@@ -273,29 +268,11 @@ public class CandidateServiceImpl implements CandidateService {
     public void deleteCandidate(UUID candidateId, UUID userId) {
         UserEntity user = this.userService.getUserById(userId);
 
-        if (user.getRoles().stream().anyMatch(role -> role.checkPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_DELETE_ALL)) || this.authorPermissions(candidateId, userId)) {
-            this.roleService.deleteAllRolesByResourceId(candidateId);
-            this.privilegeService.deleteAllPrivilegesByResourceId(candidateId);
-            user.removeRole(candidateId.toString());
-            this.candidateRepository.deleteById(candidateId);
-        } else {
-            throw new RuntimeException("You don't have the permission");
-        }
+        this.roleService.deleteAllRolesByResourceId(candidateId);
+        this.privilegeService.deleteAllPrivilegesByResourceId(candidateId);
+        user.removeRole(candidateId.toString());
+        this.candidateRepository.deleteById(candidateId);
 
-    }
-
-    public boolean authorPermissions(UUID candidateId, UUID userId) {
-        if (candidateId == null)
-            return false;
-        Candidate candidate = this.getCandidateById(candidateId);
-        for (CandidateAuthor author : candidate.getAuthors()) {
-            if (author.getUser().getId() == userId) {
-                if (author.getRole().equals(AuthorConstant.OWNER) || author.getRole().equals(AuthorConstant.MAINTAINER)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     /**

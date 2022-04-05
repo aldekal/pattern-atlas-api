@@ -47,8 +47,6 @@ public interface IssueService {
     @PreAuthorize(value = "hasResourcePermission(#issueId, @PC.ISSUE_DELETE)")
     void deleteIssue(UUID issueId);
 
-    boolean authorPermissions(UUID issueId, UUID userId);
-
     /** Author */
     @PreAuthorize(value = "hasResourcePermission(#issueId, @PC.ISSUE_EDIT)")
     Issue saveIssueAuthor(UUID issueId, AuthorModelRequest authorModelRequest);

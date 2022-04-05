@@ -184,20 +184,6 @@ public class IssueServiceImpl implements IssueService {
         this.issueRepository.deleteById(issueId);
     }
 
-    public boolean authorPermissions(UUID issueId, UUID userId) {
-        if (issueId == null)
-            return false;
-        Issue issue = this.getIssueById(issueId);
-        for (IssueAuthor author : issue.getAuthors()) {
-            if (author.getUser().getId() == userId) {
-                if (author.getRole().equals(AuthorConstant.OWNER) || author.getRole().equals(AuthorConstant.MAINTAINER) ) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     /**
      * Author
      */
