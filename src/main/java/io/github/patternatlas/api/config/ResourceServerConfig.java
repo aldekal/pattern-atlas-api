@@ -27,7 +27,6 @@ class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .antMatchers("/**")
                 .and()
                 .authorizeRequests()
-                .antMatchers("/swagger-ui/**").permitAll()
                 // START::Comment for local development with authorization
 //                .antMatchers(HttpMethod.GET, "/**").permitAll()
 //                .antMatchers(HttpMethod.POST, "/**").access("#oauth2.hasScope('write')")
