@@ -103,78 +103,74 @@ public class CandidateServiceImpl implements CandidateService {
             throw new EntityExistsException(String.format("Candidate uri %s already exist!", candidateModelRequest.getUri()));
 
         // ISSUE TO PATTERN
-        if (user.getRoles().stream().anyMatch(role -> role.checkPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_CREATE)) || this.issueService.authorPermissions(candidateModelRequest.getIssueId(), userId)) {
-            Candidate newCandidate = this.candidateRepository.save(candidate);
-            
-            Privilege readCandidatePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_READ + '_' + newCandidate.getId());
-            Privilege updateCandidatePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_EDIT + '_' + newCandidate.getId());
-            Privilege deleteCandidatePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_DELETE + '_' + newCandidate.getId());
-            Privilege commentCandidatePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_COMMENT + '_' + newCandidate.getId());
-            Privilege voteCandidatePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_VOTE + '_' + newCandidate.getId());
-            Privilege evidenceCandidatePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_EVIDENCE + '_' + newCandidate.getId());
-            Privilege toApprovedPattern = this.privilegeService.createPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_TO_PATTERN + '_' + newCandidate.getId());
+        Candidate newCandidate = this.candidateRepository.save(candidate);
 
-            Role helper = this.roleService.createRole(RoleConstant.HELPER + "_PATTERN_CANDIDATE_" + newCandidate.getId(), Arrays.asList(
-                readCandidatePrivilege, 
-                commentCandidatePrivilege, voteCandidatePrivilege, evidenceCandidatePrivilege
-            ));
-            Role maintainer = this.roleService.createRole(RoleConstant.MAINTAINER + "_PATTERN_CANDIDATE_" + newCandidate.getId(), Arrays.asList(
-                readCandidatePrivilege, updateCandidatePrivilege, 
-                commentCandidatePrivilege, voteCandidatePrivilege, evidenceCandidatePrivilege
-            ));
-            Role owner = this.roleService.createRole(RoleConstant.OWNER + "_PATTERN_CANDIDATE_" + newCandidate.getId(), Arrays.asList(
-                readCandidatePrivilege, updateCandidatePrivilege, deleteCandidatePrivilege, toApprovedPattern, 
-                commentCandidatePrivilege, voteCandidatePrivilege, evidenceCandidatePrivilege
-            ));
+        Privilege readCandidatePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_READ + '_' + newCandidate.getId());
+        Privilege updateCandidatePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_EDIT + '_' + newCandidate.getId());
+        Privilege deleteCandidatePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_DELETE + '_' + newCandidate.getId());
+        Privilege commentCandidatePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_COMMENT + '_' + newCandidate.getId());
+        Privilege voteCandidatePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_VOTE + '_' + newCandidate.getId());
+        Privilege evidenceCandidatePrivilege = this.privilegeService.createPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_EVIDENCE + '_' + newCandidate.getId());
+        Privilege toApprovedPattern = this.privilegeService.createPrivilege(PrivilegeConstant.PATTERN_CANDIDATE_TO_PATTERN + '_' + newCandidate.getId());
 
-            if (candidateModelRequest.getIssueId() != null) {
-                logger.info("Issue to Candidate request");
-                Issue issue = this.issueService.getIssueById(candidateModelRequest.getIssueId());
-                for (IssueEvidence issueEvidence: issue.getEvidences()) {
-                    CandidateEvidence evidence = new CandidateEvidence(issueEvidence, newCandidate, user);
-                    newCandidate.getEvidences().add(evidence);
-                }
-                this.issueService.deleteIssue(candidateModelRequest.getIssueId());
+        Role helper = this.roleService.createRole(RoleConstant.HELPER + "_PATTERN_CANDIDATE_" + newCandidate.getId(), Arrays.asList(
+            readCandidatePrivilege,
+            commentCandidatePrivilege, voteCandidatePrivilege, evidenceCandidatePrivilege
+        ));
+        Role maintainer = this.roleService.createRole(RoleConstant.MAINTAINER + "_PATTERN_CANDIDATE_" + newCandidate.getId(), Arrays.asList(
+            readCandidatePrivilege, updateCandidatePrivilege,
+            commentCandidatePrivilege, voteCandidatePrivilege, evidenceCandidatePrivilege
+        ));
+        Role owner = this.roleService.createRole(RoleConstant.OWNER + "_PATTERN_CANDIDATE_" + newCandidate.getId(), Arrays.asList(
+            readCandidatePrivilege, updateCandidatePrivilege, deleteCandidatePrivilege, toApprovedPattern,
+            commentCandidatePrivilege, voteCandidatePrivilege, evidenceCandidatePrivilege
+        ));
+
+        if (candidateModelRequest.getIssueId() != null) {
+            logger.info("Issue to Candidate request");
+            Issue issue = this.issueService.getIssueById(candidateModelRequest.getIssueId());
+            for (IssueEvidence issueEvidence: issue.getEvidences()) {
+                CandidateEvidence evidence = new CandidateEvidence(issueEvidence, newCandidate, user);
+                newCandidate.getEvidences().add(evidence);
             }
-            // ADD author
-            if (candidateModelRequest.getAuthors() != null) {
-                for (AuthorModel authorModel : candidateModelRequest.getAuthors()) {
-                    newCandidate.getAuthors().add(new CandidateAuthor(newCandidate, this.userService.getUserById(authorModel.getUserId()), authorModel.getAuthorRole() + "_PATTERN_CANDIDATE_" + newCandidate.getId()));
-                    UserEntity u = this.userService.getUserById(authorModel.getUserId());
-                    switch (authorModel.getAuthorRole()) {
-                        case AuthorConstant.HELPER:
-                            user.getRoles().add(helper);
-                            this.userService.saveUser(u);
-                            break;
-                        case AuthorConstant.MAINTAINER:
-                            user.getRoles().add(maintainer);
-                            this.userService.saveUser(u);
-                            break;
-                        case AuthorConstant.OWNER:
-                            if (null != u.getRoles()) {
-                                u.getRoles().add(owner);
-                            } else {
-                                u.setRoles(new HashSet<>(Arrays.asList(owner)));
-                            }
-                            this.userService.saveUser(u);
-                            break;
-                        default:
-                            throw new IllegalArgumentException("Invalid author role: " + authorModel.getAuthorRole());
-                    }
-                }
-            } else {
-                newCandidate.getAuthors().add(new CandidateAuthor(newCandidate, this.userService.getUserById(userId), AuthorConstant.OWNER));
-                user.getRoles().add(owner);
-            }
-
-            // ADD pattern language
-            if (candidateModelRequest.getPatternLanguageId() != null && this.patternLanguageService.getPatternLanguageById(candidateModelRequest.getPatternLanguageId()) != null)
-                newCandidate.setPatternLanguage(this.patternLanguageService.getPatternLanguageById(candidateModelRequest.getPatternLanguageId()));
-
-            return this.candidateRepository.save(newCandidate);
-        } else {
-            throw new RuntimeException("You don't have the permission");
+            this.issueService.deleteIssue(candidateModelRequest.getIssueId());
         }
+        // ADD author
+        if (candidateModelRequest.getAuthors() != null) {
+            for (AuthorModel authorModel : candidateModelRequest.getAuthors()) {
+                newCandidate.getAuthors().add(new CandidateAuthor(newCandidate, this.userService.getUserById(authorModel.getUserId()), authorModel.getAuthorRole() + "_PATTERN_CANDIDATE_" + newCandidate.getId()));
+                UserEntity u = this.userService.getUserById(authorModel.getUserId());
+                switch (authorModel.getAuthorRole()) {
+                    case AuthorConstant.HELPER:
+                        user.getRoles().add(helper);
+                        this.userService.saveUser(u);
+                        break;
+                    case AuthorConstant.MAINTAINER:
+                        user.getRoles().add(maintainer);
+                        this.userService.saveUser(u);
+                        break;
+                    case AuthorConstant.OWNER:
+                        if (null != u.getRoles()) {
+                            u.getRoles().add(owner);
+                        } else {
+                            u.setRoles(new HashSet<>(Arrays.asList(owner)));
+                        }
+                        this.userService.saveUser(u);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Invalid author role: " + authorModel.getAuthorRole());
+                }
+            }
+        } else {
+            newCandidate.getAuthors().add(new CandidateAuthor(newCandidate, this.userService.getUserById(userId), AuthorConstant.OWNER));
+            user.getRoles().add(owner);
+        }
+
+        // ADD pattern language
+        if (candidateModelRequest.getPatternLanguageId() != null && this.patternLanguageService.getPatternLanguageById(candidateModelRequest.getPatternLanguageId()) != null)
+            newCandidate.setPatternLanguage(this.patternLanguageService.getPatternLanguageById(candidateModelRequest.getPatternLanguageId()));
+
+        return this.candidateRepository.save(newCandidate);
     }
 
     @Override
