@@ -148,6 +148,13 @@ public class UserController {
         return ResponseEntity.ok(EntityModel.of(new UserModel(this.userService.updateUser(userId, userModelRequest))));
     }
 
+    @Operation(operationId = "updatePlatformRole", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Update platform wide roles for user")
+    @PutMapping(value = "/{userId}/role")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    ResponseEntity<EntityModel<UserModel>> updatePlatformRole(@PathVariable UUID userId, @RequestBody UserModelRequest userModelRequest) {
+        return ResponseEntity.ok(EntityModel.of(new UserModel(this.userService.updatePlatformRole(userId, userModelRequest))));
+    }
+
     @PutMapping(value = "/roles/{roleId}/privileges/{privilegeId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     ResponseEntity<EntityModel<RoleModel>> updateUserRole(@PathVariable UUID roleId, @PathVariable UUID privilegeId, @RequestBody RoleModelRequest roleModelRequest) {

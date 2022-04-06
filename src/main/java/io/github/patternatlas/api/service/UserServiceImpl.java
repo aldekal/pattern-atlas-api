@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -62,21 +63,12 @@ public class UserServiceImpl implements UserService {
         UserEntity user = new UserEntity(userModelRequest,  passwordEncoder.encode(userModelRequest.getPassword()));
         if(userModelRequest.getRoles() != null) {
             userModelRequest.getRoles().stream().forEach(role -> {
-                if (this.roleRepository.findByName(role) != null) {
-                    user.getRoles().add(this.roleRepository.findByName(role));
+                if (this.roleRepository.findByName(role.getName()) != null) {
+                    user.getRoles().add(this.roleRepository.findByName(role.getName()));
                 } else {
                     user.getRoles().add(this.roleRepository.findByName(RoleConstant.MEMBER));
                 }
             });
-        } else {
-            // It could be that the UI only sends one singular role (not a set):
-            if(userModelRequest.getRole() != null) {
-                if (this.roleRepository.findByName(userModelRequest.getRole()) != null) {
-                    user.getRoles().add(this.roleRepository.findByName(userModelRequest.getRole()));
-                } else {
-                    user.getRoles().add(this.roleRepository.findByName(RoleConstant.MEMBER));
-                }
-            }
         }
 
         
@@ -102,14 +94,14 @@ public class UserServiceImpl implements UserService {
         if (userModelRequest == null)
             throw new RuntimeException("User to update is null!");
         userModelRequest.getRoles().stream().forEach(role -> {
-            if (!this.roleRepository.existsByName(role))
+            if (!this.roleRepository.existsByName(role.getName()))
                 throw new ResourceNotFoundException(String.format("User Role %s not found!", role));
         });
 
         UserEntity user = this.getUserById(userId);
         userModelRequest.getRoles().stream().forEach(role -> {
             if (!user.getRoles().stream().map(r -> r.getName()).collect(Collectors.toList()).contains(role))
-                user.getRoles().add(this.roleRepository.findByName(role));
+                user.getRoles().add(this.roleRepository.findByName(role.getName()));
         });
         if (userModelRequest.getOldPassword() != null || userModelRequest.getPassword() != null) {
             if (!passwordEncoder.matches(userModelRequest.getOldPassword(), user.getPassword()) && !user.getRoles().stream().map(role -> role.getName()).collect(Collectors.toList()).contains(RoleConstant.ADMIN))
@@ -126,6 +118,35 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(UUID userId) {
         this.getUserById(userId);
         this.userRepository.deleteById(userId);
+    }
+
+    @Override
+    public UserEntity updatePlatformRole(UUID userId, UserModelRequest userModelRequest) {
+        if (userModelRequest == null)
+            throw new RuntimeException("User to update is null!");
+
+        UserEntity user = this.getUserById(userId);
+        logger.warn("Request: {}", userModelRequest);
+        // Find new supplied platform wide role (should be only one)
+        if(userModelRequest.getRoles() != null) {
+            Optional<RoleModel> requestedRole =
+                    userModelRequest.getRoles().stream()
+                            .filter(role -> RoleConstant.PLATFORM_ROLES.contains(role.getName()))
+                            .findFirst();
+            if(requestedRole.isPresent()) {
+                // Find old existing platform role
+                List<Role> existingRoles = user.getRoles().stream()
+                        .filter(role -> RoleConstant.PLATFORM_ROLES.contains(role.getName()))
+                        .collect(Collectors.toList());
+                if(!existingRoles.isEmpty()) {
+                    user.getRoles().removeAll(existingRoles);
+                    user.getRoles().add(this.roleRepository.findByName(requestedRole.get().getName()));
+                    user = this.saveUser(user);
+                }
+            }
+        }
+
+        return user;
     }
 
     @Override
@@ -150,13 +171,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public List<Role> getAllPlatformRoles() {
-        return this.roleRepository.findAllRolesByNames(Arrays.asList("ADMIN", "MEMBER", "EXPERT", "LIBRARIAN"));
+        return this.roleRepository.findAllRolesByNames(RoleConstant.PLATFORM_ROLES);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Role> getAllAuthorRoles() {
-        return this.roleRepository.findAllRolesByNames(Arrays.asList("HELPER", "MAINTAINER", "OWNER"));
+        return this.roleRepository.findAllRolesByNames(RoleConstant.AUTHOR_ROLES);
     }
 
     @Override

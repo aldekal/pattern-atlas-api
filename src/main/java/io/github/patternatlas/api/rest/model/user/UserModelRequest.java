@@ -11,5 +11,4 @@ public class UserModelRequest extends UserModel {
 
     private String oldPassword;
     private String password;
-    private String role;
 }

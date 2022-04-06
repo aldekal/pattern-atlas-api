@@ -1,5 +1,8 @@
 package io.github.patternatlas.api.entities.user.role;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class RoleConstant {
     public static final String MEMBER = "MEMBER";
     public static final String HELPER = "HELPER";
@@ -9,6 +12,19 @@ public class RoleConstant {
     public static final String LIBRARIAN = "LIBRARIAN";
     public static final String ADMIN = "ADMIN";
     public static final String DEVELOPER = "DEVELOPER";
+
+    public static List<String> PLATFORM_ROLES = Arrays.asList(
+                RoleConstant.ADMIN,
+                RoleConstant.MEMBER,
+                RoleConstant.EXPERT,
+                RoleConstant.LIBRARIAN
+    );
+
+    public static List<String> AUTHOR_ROLES = Arrays.asList(
+                RoleConstant.HELPER,
+                RoleConstant.MAINTAINER,
+                RoleConstant.OWNER
+    );
 
 }
 

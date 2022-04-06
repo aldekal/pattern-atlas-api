@@ -33,6 +33,16 @@ public interface UserService {
     void deleteUser(UUID UserId);
 
     /**
+     * Updates the platform wide roles for a given user (does not change other roles even when they are supplied
+     * in the request).
+     * @param userId
+     * @param userModelRequest
+     * @return
+     */
+    @PreAuthorize(value = "hasGlobalPermission(@PC.USER_EDIT_ALL)")
+    UserEntity updatePlatformRole(UUID userId, UserModelRequest userModelRequest);
+
+    /**
      * Checks if a user has one of the supplied privileges, without querying all
      * available roles and privileges
      * @param userId
