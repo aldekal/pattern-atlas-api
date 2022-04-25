@@ -1,9 +1,5 @@
 package io.github.patternatlas.api.rest.controller;
 
-import io.github.patternatlas.api.config.Authority;
-import io.github.patternatlas.api.entities.user.UserEntity;
-import io.github.patternatlas.api.entities.user.role.Privilege;
-import io.github.patternatlas.api.entities.user.role.Role;
 import io.github.patternatlas.api.rest.model.user.*;
 import io.github.patternatlas.api.service.UserService;
 
@@ -11,7 +7,6 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostFilter;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +20,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -119,9 +113,9 @@ public class UserController {
         return CollectionModel.of(privileges);
     }
 
-    @GetMapping(value = "/roles/default_privileges")
-    CollectionModel<EntityModel<PrivilegeModel>>  getAllDefaultPrivileges() {
-        List<EntityModel<PrivilegeModel>> privileges = this.userService.getAllDefaultPrivileges()
+    @GetMapping(value = "/roles/default_author_privileges")
+    CollectionModel<EntityModel<PrivilegeModel>> getAllDefaultAuthorPrivileges() {
+        List<EntityModel<PrivilegeModel>> privileges = this.userService.getAllDefaultAuthorPrivileges()
                 .stream()
                 .map(privilege -> EntityModel.of(new PrivilegeModel(privilege)))
                 .collect(Collectors.toList());

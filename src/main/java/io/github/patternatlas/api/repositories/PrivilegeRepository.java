@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -20,7 +19,7 @@ public interface PrivilegeRepository extends JpaRepository<Privilege, UUID> {
     public List<Privilege> findAllPlatformPrivileges();
 
     @Query(value = "SELECT * FROM privilege p WHERE (p.name LIKE 'ISSUE%' OR p.name LIKE 'PATTERN_CANDIDATE%' OR p.name LIKE 'APPROVED_PATTERN%') AND p.name NOT LIKE '%ALL' AND p.name NOT LIKE '%CREATE' AND p.name NOT LIKE '%\\_%-%'", nativeQuery = true)
-    public List<Privilege> findAllDefaultPrivileges();
+    public List<Privilege> findAllDefaultAuthorPrivileges();
 
     @Query(value = "SELECT * FROM privilege p WHERE p.name like %:entityId", nativeQuery = true)
     public List<Privilege> findAllFromEntity(@Param("entityId") UUID entityId);

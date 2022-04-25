@@ -1,11 +1,9 @@
 package io.github.patternatlas.api.service;
 
-import io.github.patternatlas.api.entities.candidate.Candidate;
 import io.github.patternatlas.api.entities.user.role.RoleConstant;
 import io.github.patternatlas.api.entities.user.role.Privilege;
 import io.github.patternatlas.api.entities.user.role.Role;
 import io.github.patternatlas.api.entities.user.UserEntity;
-import io.github.patternatlas.api.exception.*;
 import io.github.patternatlas.api.repositories.PrivilegeRepository;
 import io.github.patternatlas.api.repositories.RoleRepository;
 import io.github.patternatlas.api.repositories.UserRepository;
@@ -20,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -194,8 +191,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Privilege> getAllDefaultPrivileges() {
-        return this.privilegeRepository.findAllDefaultPrivileges();
+    public List<Privilege> getAllDefaultAuthorPrivileges() {
+        return this.privilegeRepository.findAllDefaultAuthorPrivileges();
     }
 
     @Override

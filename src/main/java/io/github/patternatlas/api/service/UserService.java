@@ -1,14 +1,10 @@
 package io.github.patternatlas.api.service;
 
-import io.github.patternatlas.api.entities.candidate.Candidate;
 import io.github.patternatlas.api.entities.user.role.Privilege;
 import io.github.patternatlas.api.entities.user.role.Role;
 import io.github.patternatlas.api.entities.user.UserEntity;
-import io.github.patternatlas.api.rest.model.user.RoleModel;
 import io.github.patternatlas.api.rest.model.user.RoleModelRequest;
-import io.github.patternatlas.api.rest.model.user.UserModel;
 import io.github.patternatlas.api.rest.model.user.UserModelRequest;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
@@ -57,7 +53,7 @@ public interface UserService {
     List<Role> getAllAuthorRoles();
     List<Role> getAllRolesFromEntity(UUID entityId);
     List<Privilege> getAllPlatformPrivileges();
-    List<Privilege> getAllDefaultPrivileges();
+    List<Privilege> getAllDefaultAuthorPrivileges();
     List<Privilege> getAllPrivilegesFromEntity(UUID entityId);
 
     @PreAuthorize(value = "hasGlobalPermission(@PC.USER_EDIT_ALL)")
