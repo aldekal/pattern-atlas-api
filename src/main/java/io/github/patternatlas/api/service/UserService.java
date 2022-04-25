@@ -57,6 +57,7 @@ public interface UserService {
     List<Role> getAllAuthorRoles();
     List<Role> getAllRolesFromEntity(UUID entityId);
     List<Privilege> getAllPlatformPrivileges();
+    List<Privilege> getAllDefaultPrivileges();
     List<Privilege> getAllPrivilegesFromEntity(UUID entityId);
 
     @PreAuthorize(value = "hasGlobalPermission(@PC.USER_EDIT_ALL)")

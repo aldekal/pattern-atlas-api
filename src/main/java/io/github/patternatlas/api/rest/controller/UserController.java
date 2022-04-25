@@ -119,6 +119,15 @@ public class UserController {
         return CollectionModel.of(privileges);
     }
 
+    @GetMapping(value = "/roles/default_privileges")
+    CollectionModel<EntityModel<PrivilegeModel>>  getAllDefaultPrivileges() {
+        List<EntityModel<PrivilegeModel>> privileges = this.userService.getAllDefaultPrivileges()
+                .stream()
+                .map(privilege -> EntityModel.of(new PrivilegeModel(privilege)))
+                .collect(Collectors.toList());
+        return CollectionModel.of(privileges);
+    }
+
     @GetMapping(value = "/roles/privileges/{entityId}")
     CollectionModel<EntityModel<PrivilegeModel>>  getAllPrivilegesFromEntity(@PathVariable UUID entityId) {
         List<EntityModel<PrivilegeModel>> privileges = this.userService.getAllPrivilegesFromEntity(entityId)

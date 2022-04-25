@@ -194,6 +194,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<Privilege> getAllDefaultPrivileges() {
+        return this.privilegeRepository.findAllDefaultPrivileges();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<Privilege> getAllPrivilegesFromEntity(UUID entityId) {
         return this.privilegeRepository.findAllFromEntity(entityId);
     }
