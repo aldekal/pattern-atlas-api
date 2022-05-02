@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.UUID;
 import java.util.List;
@@ -23,7 +22,10 @@ public interface RoleRepository extends JpaRepository<Role, UUID> {
     public List<Role> findAllFromEntity(@Param("entityId") UUID entityId);
 
     @Query(value = "SELECT * from role r where r.name like %:entityId and r.name like :authorRole%", nativeQuery = true)
-    public List<Role> findAllFromEntityForAuthorType(@Param("entityId") UUID entityId, @Param("authorRole") String authorRole);
+    public List<Role> findAllFromEntityForAuthorRole(@Param("entityId") UUID entityId, @Param("authorRole") String authorRole);
+
+    @Query(value = "SELECT * from role r where r.name like :authorRole%", nativeQuery = true)
+    public List<Role> findAllForAuthorRole(@Param("authorRole") String authorRole);
 
     @Modifying
     @Query(value = "DELETE FROM role r WHERE r.name like %:entityId", nativeQuery = true)

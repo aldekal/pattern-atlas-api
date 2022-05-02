@@ -218,4 +218,44 @@ public class UserServiceImpl implements UserService {
 
         return this.roleRepository.save(role);
     }
+
+    @Override
+    @Transactional
+    public void updateAllResourceSpecificRoles(UUID authorRoleId, UUID defaultAuthorPrivilegeId, RoleModelRequest roleModelRequest) {
+        Role authorRole = this.roleRepository.findById(authorRoleId).orElseThrow(() -> new ResourceNotFoundException(String.format("Role %s not found!", authorRoleId)));
+        Privilege defaultAuthorPrivilege = this.privilegeRepository.findById(defaultAuthorPrivilegeId).orElseThrow(() -> new ResourceNotFoundException(String.format("Privilege %s not found!", defaultAuthorPrivilegeId)));
+        List<Privilege> privileges = this.privilegeRepository.findAllResourceSpecific(defaultAuthorPrivilege.getName());
+
+        if (roleModelRequest.isCheckboxValue()) {
+            for (Privilege privilege : privileges) {
+                String privilegeName = privilege.getName();
+                String uuidString = privilegeName.substring(privilegeName.length() - 36);
+                UUID resourceId = UUID.fromString(uuidString);
+
+                List<Role> roles = this.roleRepository.findAllFromEntityForAuthorRole(resourceId, authorRole.getName());
+
+                if (roles.size() > 1) {
+                    logger.warn(String.format("Found more than one role %s for resource ID %s", authorRole.getName(), resourceId));
+                }
+
+                if (roles.size() == 0) {
+                    logger.warn(String.format("Could not find role %s for resource ID %s", authorRole.getName(), resourceId));
+                } else {
+                    roles.get(0).addPrivilege(privilege);
+                }
+            }
+        } else {
+            List<Role> authors = this.roleRepository.findAllForAuthorRole(authorRole.getName());
+
+            for (Role author : authors) {
+                Collection<Privilege> privilegesOfAuthor = author.getPrivileges();
+
+                for (Privilege privilege : privileges) {
+                    if (privilegesOfAuthor.contains(privilege)) {
+                        author.removePrivilege(privilege);
+                    }
+                }
+            }
+        }
+    }
 }

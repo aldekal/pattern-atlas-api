@@ -24,6 +24,9 @@ public interface PrivilegeRepository extends JpaRepository<Privilege, UUID> {
     @Query(value = "SELECT * FROM privilege p WHERE p.name like %:entityId", nativeQuery = true)
     public List<Privilege> findAllFromEntity(@Param("entityId") UUID entityId);
 
+    @Query(value = "SELECT * FROM privilege p WHERE p.name like CONCAT(:defaultAuthorPrivilege, '_________-____-____-____-____________')", nativeQuery = true)
+    public List<Privilege> findAllResourceSpecific(@Param("defaultAuthorPrivilege") String defaultAuthorPrivilege);
+
     @Modifying
     @Query(value = "DELETE FROM privilege p WHERE p.name like %:entityId", nativeQuery = true)
     public void deleteAllFromEntity(@Param("entityId") UUID entityId);

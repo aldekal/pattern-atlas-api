@@ -23,7 +23,6 @@ import io.github.patternatlas.api.rest.model.shared.RatingModelRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -197,7 +196,7 @@ public class IssueServiceImpl implements IssueService {
 
         // Save roles associated with the author
         // Get requested role
-        List<Role> authorRoles = this.roleService.findAllFromEntityForAuthorType(issue.getId(),
+        List<Role> authorRoles = this.roleService.findAllFromEntityForAuthorRole(issue.getId(),
                 authorModelRequest.getAuthorRole());
         user.getRoles().addAll(authorRoles);
         this.userService.saveUser(user);

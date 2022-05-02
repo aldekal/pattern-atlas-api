@@ -6,11 +6,8 @@ import io.github.patternatlas.api.repositories.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import io.github.patternatlas.api.service.RoleService;
 
 import java.util.List;
 import java.util.UUID;
@@ -52,7 +49,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<Role> findAllFromEntityForAuthorType(UUID entityId, String authorRole) {
-        return this.roleRepository.findAllFromEntityForAuthorType(entityId, authorRole);
+    public List<Role> findAllFromEntityForAuthorRole(UUID entityId, String authorRole) {
+        return this.roleRepository.findAllFromEntityForAuthorRole(entityId, authorRole);
     }
 }

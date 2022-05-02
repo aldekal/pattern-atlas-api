@@ -58,4 +58,7 @@ public interface UserService {
 
     @PreAuthorize(value = "hasGlobalPermission(@PC.USER_EDIT_ALL)")
     Role updateRole(UUID roleId, UUID privilegeId, RoleModelRequest roleModelRequest);
+
+    @PreAuthorize(value = "hasGlobalPermission(@PC.USER_EDIT_ALL)")
+    void updateAllResourceSpecificRoles(UUID authorRoleId, UUID defaultAuthorPrivilegeId, RoleModelRequest roleModelRequest);
 }

@@ -13,5 +13,5 @@ public interface RoleService {
 
     void deleteAllRolesByResourceId(UUID entityId);
 
-    List<Role> findAllFromEntityForAuthorType(UUID entityId, String authorRole);
+    List<Role> findAllFromEntityForAuthorRole(UUID entityId, String authorRole);
 }

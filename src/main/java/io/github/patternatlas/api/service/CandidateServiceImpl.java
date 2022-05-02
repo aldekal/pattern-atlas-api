@@ -8,7 +8,6 @@ import io.github.patternatlas.api.entities.candidate.comment.CandidateCommentRat
 import io.github.patternatlas.api.entities.candidate.evidence.CandidateEvidence;
 import io.github.patternatlas.api.entities.candidate.evidence.CandidateEvidenceRating;
 import io.github.patternatlas.api.entities.issue.Issue;
-import io.github.patternatlas.api.entities.issue.author.IssueAuthor;
 import io.github.patternatlas.api.entities.issue.evidence.IssueEvidence;
 import io.github.patternatlas.api.entities.shared.AuthorConstant;
 import io.github.patternatlas.api.entities.user.UserEntity;
@@ -19,12 +18,10 @@ import io.github.patternatlas.api.entities.user.role.RoleConstant;
 import io.github.patternatlas.api.repositories.*;
 import io.github.patternatlas.api.rest.model.candidate.CandidateModelRequest;
 import io.github.patternatlas.api.rest.model.shared.*;
-import io.github.patternatlas.api.util.RatingHelper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +29,6 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -283,7 +279,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidateAuthor = this.candidateAuthorRepository.save(candidateAuthor);
 
         // Save roles associated with author
-        List<Role> authorRoles = this.roleService.findAllFromEntityForAuthorType(candidate.getId(),
+        List<Role> authorRoles = this.roleService.findAllFromEntityForAuthorRole(candidate.getId(),
                 authorModelRequest.getAuthorRole());
         user.getRoles().addAll(authorRoles);
         this.userService.saveUser(user);

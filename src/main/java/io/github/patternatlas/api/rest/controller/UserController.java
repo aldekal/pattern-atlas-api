@@ -165,6 +165,24 @@ public class UserController {
     }
 
     /**
+     * This endpoint updates all resource specific roles that are related to the specified author role (HELPER, MAINTAINER or OWNER) according to the value of the specified default author privilege.
+     * e.g. the role is 'HELPER', the default author privilege is 'PATTERN_CANDIDATE_EDIT' and the checkboxValue of roleModelRequest is false. This
+     * means the privilege 'PATTERN_CANDIDATE_EDIT' should be removed from all 'HELPER' roles from all resources. If a resources has
+     * the ID 123, privilege 'PATTERN_CANDIDATE_EDIT_123' will be removed from the role 'HELPER_PATTERN_CANDIDATE_123'
+     *
+     * @param authorRoleId
+     * @param defaultAuthorPrivilegeId
+     * @param roleModelRequest
+     * @return
+     */
+    @Operation(description = "Update all resource specific roles according to the value of the specified default author privilege")
+    @PostMapping(value = "/roles/{authorRoleId}/privileges/{defaultAuthorPrivilegeId}/all_resource_specific")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    void updateAllResourceSpecificAuthorRoles(@PathVariable UUID authorRoleId, @PathVariable UUID defaultAuthorPrivilegeId, @RequestBody RoleModelRequest roleModelRequest) {
+        this.userService.updateAllResourceSpecificRoles(authorRoleId, defaultAuthorPrivilegeId, roleModelRequest);
+    }
+
+    /**
      * DELETE Methods
      */
     @Operation(operationId = "deleteUser", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "404", content = @Content)}, description = "Delete a user")
