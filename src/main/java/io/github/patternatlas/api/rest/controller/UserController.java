@@ -176,7 +176,7 @@ public class UserController {
      * @return
      */
     @Operation(description = "Update all resource specific roles according to the value of the specified default author privilege")
-    @PostMapping(value = "/roles/{authorRoleId}/privileges/{defaultAuthorPrivilegeId}/all_resource_specific")
+    @PutMapping(value = "/roles/{authorRoleId}/privileges/{defaultAuthorPrivilegeId}/all_resource_specific")
     @ResponseStatus(HttpStatus.ACCEPTED)
     void updateAllResourceSpecificAuthorRoles(@PathVariable UUID authorRoleId, @PathVariable UUID defaultAuthorPrivilegeId, @RequestBody RoleModelRequest roleModelRequest) {
         this.userService.updateAllResourceSpecificRoles(authorRoleId, defaultAuthorPrivilegeId, roleModelRequest);
