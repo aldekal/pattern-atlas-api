@@ -61,4 +61,12 @@ public class PrivilegeConstant {
     public static final String USER_EDIT_ALL                            = "USER_EDIT_ALL";
     public static final String USER_DELETE_ALL                          = "USER_DELETE_ALL";
     public static final String USER_ALL                                 = "USER_ALL";
+    /** Pattern View */
+    public static final String PATTERN_VIEW_READ                        = "PATTERN_VIEW_READ";
+    public static final String PATTERN_VIEW_EDIT                        = "PATTERN_VIEW_EDIT";
+    public static final String PATTERN_VIEW_DELETE                      = "PATTERN_VIEW_DELETE";
+    public static final String PATTERN_VIEW_CREATE                      = "PATTERN_VIEW_CREATE";
+    public static final String PATTERN_VIEW_READ_ALL                    = "PATTERN_VIEW_READ_ALL";
+    public static final String PATTERN_VIEW_EDIT_ALL                    = "PATTERN_VIEW_EDIT_ALL";
+    public static final String PATTERN_VIEW_DELETE_ALL                  = "PATTERN_VIEW_DELETE_ALL";
 }

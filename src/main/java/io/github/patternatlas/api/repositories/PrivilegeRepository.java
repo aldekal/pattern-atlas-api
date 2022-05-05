@@ -18,7 +18,7 @@ public interface PrivilegeRepository extends JpaRepository<Privilege, UUID> {
     @Query(value = "SELECT * FROM privilege p WHERE p.name like '%ALL' OR p.name like '%CREATE'", nativeQuery = true)
     public List<Privilege> findAllPlatformPrivileges();
 
-    @Query(value = "SELECT * FROM privilege p WHERE (p.name LIKE 'ISSUE%' OR p.name LIKE 'PATTERN_CANDIDATE%' OR p.name LIKE 'APPROVED_PATTERN%') AND p.name NOT LIKE '%ALL' AND p.name NOT LIKE '%CREATE' AND p.name NOT LIKE '%\\_%-%'", nativeQuery = true)
+    @Query(value = "SELECT * FROM privilege p WHERE (p.name LIKE 'ISSUE%' OR p.name LIKE 'PATTERN_CANDIDATE%' OR p.name LIKE 'APPROVED_PATTERN%' OR p.name LIKE 'PATTERN_VIEW%') AND p.name NOT LIKE '%ALL' AND p.name NOT LIKE '%CREATE' AND p.name NOT LIKE '%\\_%-%'", nativeQuery = true)
     public List<Privilege> findAllDefaultAuthorPrivileges();
 
     @Query(value = "SELECT * FROM privilege p WHERE p.name like %:entityId", nativeQuery = true)
