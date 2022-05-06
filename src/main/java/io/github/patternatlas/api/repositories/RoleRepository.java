@@ -31,4 +31,17 @@ public interface RoleRepository extends JpaRepository<Role, UUID> {
     @Query(value = "DELETE FROM role r WHERE r.name like %:entityId", nativeQuery = true)
     public void deleteAllFromEntity(@Param("entityId") UUID entityId);
 
+    @Query(value = "" +
+            "SELECT CASE\n" +
+            "    WHEN count(r.name) > 0\n" +
+            "    THEN true\n" +
+            "    ELSE false\n" +
+            "END\n" +
+            "FROM role r\n" +
+            "JOIN role_privileges rp on r.id = rp.roles_id\n" +
+            "JOIN privilege p on rp.privileges_id = p.id\n" +
+            "WHERE r.id = :roleId\n" +
+            "AND p.name = :privilegeName",
+            nativeQuery = true)
+    public boolean existsPrivilegeForRole(@Param("privilegeName") String privilegeName, @Param("roleId") UUID roleId);
 }

@@ -1,11 +1,15 @@
 package io.github.patternatlas.api.security;
 
 
+import io.github.patternatlas.api.entities.user.role.RoleConstant;
+import io.github.patternatlas.api.repositories.RoleRepository;
+import io.github.patternatlas.api.service.RoleService;
 import io.github.patternatlas.api.service.UserService;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class ResourceSecurityExpressionRoot extends SecurityExpressionRoot implements MethodSecurityExpressionOperations {
@@ -13,11 +17,17 @@ public class ResourceSecurityExpressionRoot extends SecurityExpressionRoot imple
     private Object filterObject;
     private Object returnObject;
     private UserService userService;
+    private RoleService roleService;
+    private RoleRepository roleRepository;
 
     public ResourceSecurityExpressionRoot(Authentication authentication,
-                                          UserService userService) {
+                                          UserService userService,
+                                          RoleService roleService,
+                                          RoleRepository roleRepository) {
         super(authentication);
         this.userService = userService;
+        this.roleService = roleService;
+        this.roleRepository = roleRepository;
     }
 
     /**
@@ -27,18 +37,30 @@ public class ResourceSecurityExpressionRoot extends SecurityExpressionRoot imple
      * @return true if user has permission
      */
     public boolean hasGlobalPermission(String permissionType) {
-        UUID userId = UUID.fromString(this.getAuthentication().getName()); // Supplied through JWT id field
+        Optional<UUID> userId = loggedInUUID();
 
-        return this.userService.hasAnyPrivilege(
-                userId,
-                permissionType);
+        if (userId.isPresent()) {
+            return this.userService.hasAnyPrivilege(
+                    userId.get(),
+                    permissionType);
+        } else {
+            return this.roleService.hasAnyPrivilege(
+                roleRepository.findByName(RoleConstant.GUEST).getId(),
+                permissionType
+            );
+        }
     }
 
-    public UUID loggedInUUID() {
-        if(this.getAuthentication() != null) {
-            return UUID.fromString(this.getAuthentication().getName());
+    public Optional<UUID> loggedInUUID() {
+        if (this.getAuthentication() == null) {
+            return Optional.empty();
         }
-        return null;
+
+        try {
+            return Optional.of(UUID.fromString(this.getAuthentication().getName())); // Supplied through JWT id field
+        } catch (IllegalArgumentException exception) {
+            return Optional.empty();
+        }
     }
 
     /**
@@ -50,12 +72,20 @@ public class ResourceSecurityExpressionRoot extends SecurityExpressionRoot imple
      * @return true if user has permission
      */
     public boolean hasResourcePermission(UUID resource, String permissionType) {
-        UUID userId = UUID.fromString(this.getAuthentication().getName()); // Supplied through JWT id field
+        Optional<UUID> userId = loggedInUUID();
 
-        return this.userService.hasAnyPrivilege(
-                userId,
-                permissionType + "_ALL",
-                permissionType + "_" + resource.toString());
+        if (userId.isPresent()) {
+            return this.userService.hasAnyPrivilege(
+                    userId.get(),
+                    permissionType + "_ALL",
+                    permissionType + "_" + resource.toString());
+        } else {
+            return this.roleService.hasAnyPrivilege(
+                    roleRepository.findByName(RoleConstant.GUEST).getId(),
+                    permissionType + "_ALL",
+                    permissionType + "_" + resource.toString()
+            );
+        }
     }
 
     public void setUserService(UserService userService) {

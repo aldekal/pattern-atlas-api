@@ -12,12 +12,14 @@ public class RoleConstant {
     public static final String LIBRARIAN = "LIBRARIAN";
     public static final String ADMIN = "ADMIN";
     public static final String DEVELOPER = "DEVELOPER";
+    public static final String GUEST = "GUEST";
 
     public static List<String> PLATFORM_ROLES = Arrays.asList(
                 RoleConstant.ADMIN,
                 RoleConstant.MEMBER,
                 RoleConstant.EXPERT,
-                RoleConstant.LIBRARIAN
+                RoleConstant.LIBRARIAN,
+                RoleConstant.GUEST
     );
 
     public static List<String> AUTHOR_ROLES = Arrays.asList(

@@ -52,4 +52,14 @@ public class RoleServiceImpl implements RoleService {
     public List<Role> findAllFromEntityForAuthorRole(UUID entityId, String authorRole) {
         return this.roleRepository.findAllFromEntityForAuthorRole(entityId, authorRole);
     }
+
+    @Override
+    public boolean hasAnyPrivilege(UUID roleId, String... privileges) {
+        for (String permission : privileges) {
+            if (this.roleRepository.existsPrivilegeForRole(permission, roleId)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

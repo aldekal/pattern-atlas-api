@@ -1,5 +1,7 @@
 package io.github.patternatlas.api.security;
 
+import io.github.patternatlas.api.repositories.RoleRepository;
+import io.github.patternatlas.api.service.RoleService;
 import io.github.patternatlas.api.service.UserService;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.context.ApplicationContext;
@@ -44,7 +46,9 @@ public class ResourceMethodSecurityExpressionHandler extends DefaultMethodSecuri
             Authentication authentication, MethodInvocation invocation) {
         ResourceSecurityExpressionRoot root = new ResourceSecurityExpressionRoot(
                 authentication,
-                this.applicationContext.getBean(UserService.class));
+                this.applicationContext.getBean(UserService.class),
+                this.applicationContext.getBean(RoleService.class),
+                this.applicationContext.getBean(RoleRepository.class));
 
         root.setPermissionEvaluator(getPermissionEvaluator());
         root.setTrustResolver(this.trustResolver);

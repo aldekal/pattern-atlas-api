@@ -14,4 +14,13 @@ public interface RoleService {
     void deleteAllRolesByResourceId(UUID entityId);
 
     List<Role> findAllFromEntityForAuthorRole(UUID entityId, String authorRole);
+
+    /**
+     * Checks if a user has one of the supplied privileges, without querying all
+     * available roles and privileges
+     * @param roleId
+     * @param privileges
+     * @return true if one of the privileges is present for the user
+     */
+    boolean hasAnyPrivilege(UUID roleId, String ... privileges);
 }
