@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,6 +23,7 @@ import io.github.patternatlas.api.entities.DiscussionTopic;
 import io.github.patternatlas.api.service.DiscussionService;
 
 @RestController
+@ConditionalOnExpression(value = "false")  // TODO: check if discussions can be removed completely
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 public class DiscussionController {
 
