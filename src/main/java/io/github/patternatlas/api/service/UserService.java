@@ -26,7 +26,7 @@ public interface UserService {
 
     @PreAuthorize(value = "hasGlobalPermission(@PC.USER_DELETE_ALL)" +
             "or (hasGlobalPermission(@PC.USER_DELETE) and #userId.equals(loggedInUUID()))")
-    void deleteUser(UUID UserId);
+    void deleteUser(UUID userId);
 
     /**
      * Updates the platform wide roles for a given user (does not change other roles even when they are supplied

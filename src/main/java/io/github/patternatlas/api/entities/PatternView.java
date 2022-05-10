@@ -29,10 +29,12 @@ public class PatternView extends PatternGraph {
     private List<PatternViewPattern> patterns = new ArrayList<>();
 
     @JsonIgnore
+    @ToString.Exclude
     @OneToMany(mappedBy = "patternView", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PatternViewDirectedEdge> directedEdges;
 
     @JsonIgnore
+    @ToString.Exclude
     @OneToMany(mappedBy = "patternView", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PatternViewUndirectedEdge> undirectedEdges;
 

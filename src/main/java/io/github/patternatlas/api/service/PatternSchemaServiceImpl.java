@@ -74,7 +74,7 @@ public class PatternSchemaServiceImpl implements PatternSchemaService {
 
     @Override
     @Transactional
-    public void deletePatternSchemaById(UUID id) {
-        this.patternSchemaRepository.deleteById(id);
+    public void deletePatternSchema(PatternSchema schema) {
+        this.patternSchemaRepository.deleteById(schema.getId());
     }
 }

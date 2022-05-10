@@ -36,7 +36,7 @@ public interface PatternLanguageService {
     @PreAuthorize(value = "hasResourcePermission(#patternLanguageId, @PC.PATTERN_LANGUAGE_DELETE)")
     void deletePatternLanguage(UUID patternLanguageId);
 
-    @PreAuthorize(value = "hasResourcePermission(#patternLanguageId, @PC.PATTERN_LANGUAGE_EDIT)")
+    @PreAuthorize(value = "hasResourcePermission(#patternLanguageId, @PC.PATTERN_LANGUAGE_EDIT) && hasGlobalPermission(@PC.APPROVED_PATTERN_CREATE)")
     Pattern createPatternAndAddToPatternLanguage(UUID patternLanguageId, Pattern pattern);
 
     @PreAuthorize(value = "hasResourcePermission(#patternLanguageId, @PC.PATTERN_LANGUAGE_READ)")
@@ -46,7 +46,7 @@ public interface PatternLanguageService {
     @PreAuthorize(value = "hasResourcePermission(#patternLanguageId, @PC.PATTERN_LANGUAGE_READ) && hasResourcePermission(#patternId, @PC.APPROVED_PATTERN_READ)")
     Pattern getPatternOfPatternLanguageById(UUID patternLanguageId, UUID patternId);
 
-    @PreAuthorize(value = "hasResourcePermission(#patternLanguageId, @PC.PATTERN_LANGUAGE_EDIT)")
+    @PreAuthorize(value = "hasResourcePermission(#patternLanguageId, @PC.PATTERN_LANGUAGE_EDIT) && hasResourcePermission(#patternId, @PC.APPROVED_PATTERN_DELETE)")
     void deletePatternOfPatternLanguage(UUID patternLanguageId, UUID patternId);
 
     @PreAuthorize(value = "hasResourcePermission(#patternLanguageId, @PC.PATTERN_LANGUAGE_EDIT)")
