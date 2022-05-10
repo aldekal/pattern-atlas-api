@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserAuthService {
 
     private UserRepository userRepository;
     private RoleRepository roleRepository;
@@ -83,6 +83,25 @@ public class UserServiceImpl implements UserService {
     public UserEntity getUserById(UUID userId) {
         return this.userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("User with ID %s not found!", userId)));
+    }
+
+    @Override
+    public UserEntity createIntialMember(UserModelRequest userModelRequest) {
+        RoleModel memberModel = new RoleModel();
+        memberModel.setName(RoleConstant.MEMBER);
+        userModelRequest.setRoles(Arrays.asList(memberModel));
+        userModelRequest.setPassword(""); // Dummy password since authentication is not performed here
+        userModelRequest.setEmail("");
+
+        UserEntity user = new UserEntity(userModelRequest, "");
+        user.getRoles().add(this.roleRepository.findByName(RoleConstant.MEMBER));
+
+        return this.userRepository.save(user);
+    }
+
+    @Override
+    public boolean userExists(UUID userId) {
+        return this.userRepository.findById(userId).isPresent();
     }
 
     @Override

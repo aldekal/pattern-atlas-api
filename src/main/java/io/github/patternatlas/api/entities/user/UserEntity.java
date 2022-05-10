@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.*;
 import javax.persistence.*;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -35,7 +36,8 @@ public class UserEntity implements Serializable{
      * User fields
      */
     @Id
-    @GeneratedValue(generator = "pg-uuid")
+    @GenericGenerator(name = "UserIdGenerator", strategy = "io.github.patternatlas.api.util.UserIdGenerator")
+    @GeneratedValue(generator = "UserIdGenerator")
     private UUID id;
 
     @JsonIgnore
@@ -48,8 +50,8 @@ public class UserEntity implements Serializable{
     )*/
     private Set<Role> roles;
 
-    @NaturalId(mutable = true)
-    @Column(nullable = false, unique = true)
+    //@NaturalId(mutable = true)
+    @Column(nullable = false, unique = false)
     private String email;
 
     @NaturalId(mutable = true)
