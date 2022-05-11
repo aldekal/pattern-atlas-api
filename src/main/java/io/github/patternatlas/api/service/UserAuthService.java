@@ -11,7 +11,15 @@ import java.util.UUID;
  * Used to query user information to handle authentication.
  */
 public interface UserAuthService {
-    UserEntity createIntialMember(UserModelRequest userModelRequest);
+    UserEntity createInitialMember(UserModelRequest userModelRequest);
+
+    UserEntity createInitialAdmin(UserModelRequest userModelRequest);
 
     boolean userExists(UUID userId);
+
+    /**
+     * Checks if there are users in the db already
+     * @return
+     */
+    boolean hasUsers();
 }

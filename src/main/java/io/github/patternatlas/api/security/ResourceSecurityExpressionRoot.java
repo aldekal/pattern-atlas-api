@@ -13,6 +13,9 @@ import io.github.patternatlas.api.rest.model.user.UserModelRequest;
 import io.github.patternatlas.api.service.RoleService;
 import io.github.patternatlas.api.service.UserAuthService;
 import io.github.patternatlas.api.service.UserService;
+import io.github.patternatlas.api.service.UserServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
@@ -73,8 +76,6 @@ public class ResourceSecurityExpressionRoot extends SecurityExpressionRoot imple
     private void createUser(UUID userId, Authentication authentication) {
         OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) this.getAuthentication().getDetails();
         Jwt jwt = JwtHelper.decode(details.getTokenValue());
-        System.out.println("Token: " + jwt.toString());
-        System.out.println(jwt.getClaims());
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             Map<String, Object> claims = objectMapper.readValue(jwt.getClaims(), Map.class);
@@ -83,19 +84,19 @@ public class ResourceSecurityExpressionRoot extends SecurityExpressionRoot imple
             req.setId(userId);
             req.setName(preferredUsername);
 
-            System.out.println("Creating: " + req.toString());
-
-            UserEntity ent = this.userAuthService.createIntialMember(req);
-            System.out.println("Created: " + ent.toString());
-            System.out.println("Created user id: " + ent.getId());
+            if(this.userAuthService.hasUsers()) {
+                // Create standard member user
+                this.userAuthService.createInitialMember(req);
+            } else {
+                // There are no other users registered => create admin user as first user
+                this.userAuthService.createInitialAdmin(req);
+            }
         } catch (JsonProcessingException e) {
             throw new UserNotFoundException("Cannot infer preferred username from Token");
         }
     }
 
     public Optional<UUID> loggedInUUID() {
-
-
         if (this.getAuthentication() == null) {
             return Optional.empty();
         }

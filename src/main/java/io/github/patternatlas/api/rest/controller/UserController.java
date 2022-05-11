@@ -1,5 +1,6 @@
 package io.github.patternatlas.api.rest.controller;
 
+import io.github.patternatlas.api.entities.user.UserEntity;
 import io.github.patternatlas.api.rest.model.user.*;
 import io.github.patternatlas.api.service.UserService;
 
@@ -20,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -66,6 +68,27 @@ public class UserController {
     @GetMapping(value = "/{userId}")
     ResponseEntity<EntityModel<UserModel>> getUserById(@PathVariable UUID userId) {
         return ResponseEntity.ok(EntityModel.of(new UserModel(this.userService.getUserById(userId))));
+    }
+
+    /**
+     * Extended userinfo endpoint replaces endpoint in auth server.
+     * @param principal
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "/userinfo")
+    @ResponseBody
+    public Map<String, Object> user(Principal principal) {
+        if (principal != null) {
+            UUID id = UUID.fromString(principal.getName());
+            UserEntity user = this.userService.getUserById(id);
+            Map<String, Object> model = new HashMap<String, Object>();
+            model.put("name", user.getName());
+            model.put("id", user.getId());
+            model.put("role", user.getRoles().stream().map(role -> role.getName()).collect(Collectors.toList()));
+            model.put("privileges", user.getRoles().stream().flatMap(role -> role.getPrivileges().stream()).map(privilege -> privilege.getName()).collect(Collectors.toList()));
+            return model;
+        }
+        return null;
     }
 
     @GetMapping(value = "/roles")

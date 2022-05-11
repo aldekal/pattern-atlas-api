@@ -85,23 +85,34 @@ public class UserServiceImpl implements UserService, UserAuthService {
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("User with ID %s not found!", userId)));
     }
 
-    @Override
-    public UserEntity createIntialMember(UserModelRequest userModelRequest) {
-        RoleModel memberModel = new RoleModel();
-        memberModel.setName(RoleConstant.MEMBER);
-        userModelRequest.setRoles(Arrays.asList(memberModel));
-        userModelRequest.setPassword(""); // Dummy password since authentication is not performed here
-        userModelRequest.setEmail("");
-
+    private UserEntity createInitialUser(UserModelRequest userModelRequest, String requestedRole) {
         UserEntity user = new UserEntity(userModelRequest, "");
-        user.getRoles().add(this.roleRepository.findByName(RoleConstant.MEMBER));
+        user.setEmail("");
+        user.getRoles().add(this.roleRepository.findByName(requestedRole));
 
         return this.userRepository.save(user);
     }
 
     @Override
+    public UserEntity createInitialMember(UserModelRequest userModelRequest) {
+        return createInitialUser(userModelRequest, RoleConstant.MEMBER);
+    }
+
+    @Override
+    public UserEntity createInitialAdmin(UserModelRequest userModelRequest) {
+        logger.info("Automatically creating admin user " + userModelRequest.getName());
+
+        return createInitialUser(userModelRequest, RoleConstant.ADMIN);
+    }
+
+    @Override
     public boolean userExists(UUID userId) {
         return this.userRepository.findById(userId).isPresent();
+    }
+
+    @Override
+    public boolean hasUsers() {
+        return this.userRepository.count() > 0;
     }
 
     @Override
