@@ -24,7 +24,7 @@ public interface PatternViewService {
     @PostFilter("hasResourcePermission(filterObject.id, @PC.PATTERN_VIEW_READ)")
     List<PatternView> getAllPatternViews();
 
-    @PreAuthorize(value = "hasResourcePermission(#patternLanguageId, @PC.PATTERN_VIEW_READ)")
+    @PreAuthorize(value = "hasResourcePermission(#patternViewId, @PC.PATTERN_VIEW_READ)")
     PatternView getPatternViewById(UUID patternViewId);
 
     @PostAuthorize(value = "hasResourcePermission(returnObject.id, @PC.PATTERN_VIEW_READ)")
@@ -86,14 +86,14 @@ public interface PatternViewService {
     void removeUndirectedEdgeFromPatternView(UUID patternViewId, UUID undirectedEdgeId);
 
     @PreAuthorize(value = "hasResourcePermission(#patternViewId, @PC.PATTERN_VIEW_READ)")
-    Object getGraphOfPatternView(UUID patternLanguageId);
+    Object getGraphOfPatternView(UUID patternViewId);
 
     @PreAuthorize(value = "hasResourcePermission(#patternViewId, @PC.PATTERN_VIEW_EDIT)")
-    Object createGraphOfPatternView(UUID patternLanguageId, Object graph);
+    Object createGraphOfPatternView(UUID patternViewId, Object graph);
 
     @PreAuthorize(value = "hasResourcePermission(#patternViewId, @PC.PATTERN_VIEW_EDIT)")
-    Object updateGraphOfPatternView(UUID patternLanguageId, Object graph);
+    Object updateGraphOfPatternView(UUID patternViewId, Object graph);
 
     @PreAuthorize(value = "hasResourcePermission(#patternViewId, @PC.PATTERN_VIEW_EDIT)")
-    void deleteGraphOfPatternView(UUID patternLanguageId);
+    void deleteGraphOfPatternView(UUID patternViewId);
 }

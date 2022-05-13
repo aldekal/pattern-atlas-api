@@ -58,7 +58,7 @@ public interface IssueService {
     @PreAuthorize(value = "hasResourcePermission(#issueId, @PC.ISSUE_COMMENT)")
     Issue createComment(UUID issueId, UUID userId, CommentModel commentModel);
 
-    @PreAuthorize(value = "hasResourcePermission(#issueId, @PC.ISSUE_READ)")
+    @PostAuthorize(value = "hasResourcePermission(returnObject.issue.id, @PC.ISSUE_READ)")
     IssueComment getCommentById(UUID issueCommentId);
 
     @PreAuthorize(value = "hasResourcePermission(#issueId, @PC.ISSUE_EDIT)")
@@ -74,7 +74,7 @@ public interface IssueService {
     @PreAuthorize(value = "hasResourcePermission(#issueId, @PC.ISSUE_EVIDENCE)")
     Issue createEvidence(UUID issueId, UUID userId, EvidenceModel evidenceModel);
 
-    @PreAuthorize(value = "hasResourcePermission(#issueId, @PC.ISSUE_READ)")
+    @PostAuthorize(value = "hasResourcePermission(returnObject.issue.id, @PC.ISSUE_READ)")
     IssueEvidence getEvidenceById(UUID issueEvidenceId);
 
     @PreAuthorize(value = "hasResourcePermission(#issueId, @PC.ISSUE_EDIT)")

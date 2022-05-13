@@ -142,7 +142,7 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
             }
         }
 
-        this.patternSchemaService.deletePatternSchemaById(patternLanguageId);
+        this.patternSchemaService.deletePatternSchema(patternLanguage.getPatternSchema());
 
         this.patternLanguageRepository.delete(patternLanguage);
     }
@@ -232,7 +232,7 @@ public class PatternLanguageServiceImpl implements PatternLanguageService {
         }
 
         // 2. Remove Pattern from Views it is included
-        pattern.setPatternViews(null);
+        pattern.getPatternViews().clear();
         pattern = this.patternService.updatePattern(pattern);
 
         // 3. Remove pattern

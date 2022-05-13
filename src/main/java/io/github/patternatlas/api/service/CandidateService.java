@@ -55,7 +55,7 @@ public interface CandidateService {
     @PreAuthorize(value = "hasResourcePermission(#candidateId, @PC.PATTERN_CANDIDATE_COMMENT)")
     Candidate createComment(UUID candidateId, UUID userId, CommentModel commentModel);
 
-    @PreAuthorize(value = "hasResourcePermission(#candidateId, @PC.PATTERN_CANDIDATE_READ)")
+    @PostAuthorize(value = "hasResourcePermission(returnObject.candidate.id, @PC.PATTERN_CANDIDATE_READ)")
     CandidateComment getCommentById(UUID candidateCommentId);
 
     @PreAuthorize(value = "hasResourcePermission(#candidateId, @PC.PATTERN_CANDIDATE_EDIT)")
@@ -71,10 +71,10 @@ public interface CandidateService {
     @PreAuthorize(value = "hasResourcePermission(#candidateId, @PC.PATTERN_CANDIDATE_EVIDENCE)")
     Candidate createEvidence(UUID candidateId, UUID userId, EvidenceModel evidenceModel);
 
-    @PreAuthorize(value = "hasResourcePermission(#candidateId, @PC.PATTERN_CANDIDATE_READ)")
+    @PostAuthorize(value = "hasResourcePermission(returnObject.candidate.id, @PC.PATTERN_CANDIDATE_READ)")
     CandidateEvidence getEvidenceById(UUID evidenceId);
 
-    @PreAuthorize(value = "hasResourcePermission(#candiateId, @PC.PATTERN_CANDIDATE_EDIT)")
+    @PreAuthorize(value = "hasResourcePermission(#candidateId, @PC.PATTERN_CANDIDATE_EDIT)")
     Candidate updateEvidence(UUID candidateId, UUID evidenceId, UUID userId, EvidenceModel evidenceModel);
 
     @PreAuthorize(value = "hasResourcePermission(#candidateId, @PC.PATTERN_CANDIDATE_VOTE)")
