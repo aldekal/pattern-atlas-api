@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,19 +64,19 @@ public class CandidateController {
      */
     @Operation(operationId = "getAllCandidates", responses = {@ApiResponse(responseCode = "200")}, description = "Retrieve all candidates")
     @GetMapping(value = "")
-    CollectionModel<EntityModel<CandidateModel>> all(@RequestParam(value = "lid", required = false) UUID languageId) {
-        
+    CollectionModel<EntityModel<CandidateModel>> getAllCandidates(@RequestParam(value = "lid", required = false) UUID languageId) {
+
         List<EntityModel<CandidateModel>> candidates;
         if (languageId == null) {
             candidates = this.candidateService.getAllCandidates()
-                .stream()
-                .map(candidate -> new EntityModel<>(new CandidateModel(candidate)))
-                .collect(Collectors.toList());
+                    .stream()
+                    .map(candidate -> new EntityModel<>(new CandidateModel(candidate)))
+                    .collect(Collectors.toList());
         } else {
             candidates = this.candidateService.getAllCandidatesByLanguageId(languageId)
-                .stream()
-                .map(candidate -> new EntityModel<>(new CandidateModel(candidate)))
-                .collect(Collectors.toList());
+                    .stream()
+                    .map(candidate -> new EntityModel<>(new CandidateModel(candidate)))
+                    .collect(Collectors.toList());
         }
 
         return new CollectionModel<>(candidates);

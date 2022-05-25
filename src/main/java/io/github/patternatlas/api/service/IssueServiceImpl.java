@@ -187,7 +187,6 @@ public class IssueServiceImpl implements IssueService {
     public void deleteIssue(UUID issueId) {
         this.roleService.deleteAllRolesByResourceId(issueId);
         this.privilegeService.deleteAllPrivilegesByResourceId(issueId);
-        //this.getIssueById(issueId);
         this.issueRepository.deleteById(issueId);
     }
 

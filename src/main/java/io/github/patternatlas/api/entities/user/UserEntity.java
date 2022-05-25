@@ -52,14 +52,8 @@ public class UserEntity implements Serializable{
     @JsonIgnore
     @ToString.Exclude
     @ManyToMany()
-    /*@JoinTable(
-        name = "user_entity_roles",
-        joinColumns = { @JoinColumn(name = "users_id") },
-        inverseJoinColumns = { @JoinColumn(name = "roles_id") }
-    )*/
     private Set<Role> roles;
 
-    //@NaturalId(mutable = true)
     @Column(nullable = false, unique = false)
     private String email;
 
@@ -107,13 +101,6 @@ public class UserEntity implements Serializable{
     private List<CandidateEvidence> candidateEvidence = new ArrayList<>();
 
     /** Pattern fields*/
-//    @JsonIgnore
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private Set<CandidateRating> candidateRatings = new HashSet<>();
-//
-//    @JsonIgnore
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<CandidateComment> candidateComments = new ArrayList<>();
 
     public UserEntity(UserModel userModel, String password) {
         this(userModel.getName(), userModel.getEmail(), password, null);

@@ -260,15 +260,6 @@ public class CandidateServiceImpl implements CandidateService {
         }
         CandidateRating updatedCandidateRating = this.candidateRatingRepository.save(candidateRating);
         return updatedCandidateRating.getCandidate();
-
-//        if (ratingModelMultiRequest.getRatingType().equals(RatingType.READABILITY)) {
-//            return new RatingModel(updatedCandidateRating, updatedCandidateRating.getReadability());
-//        } else if (ratingModelMultiRequest.getRatingType().equals(RatingType.UNDERSTANDABILITY)) {
-//            return new RatingModel(updatedCandidateRating, updatedCandidateRating.getUnderstandability());
-//        } else{
-//            return new RatingModel(updatedCandidateRating, updatedCandidateRating.getAppropriateness());
-//        }
-
     }
 
     @Override

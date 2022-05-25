@@ -71,7 +71,6 @@ public class IssueController {
         List<EntityModel<IssueModel>> issues = this.issueService.getAllIssues()
                 .stream()
                 .map(issue -> new EntityModel<>(new IssueModel(issue)))
-//                .sorted(Comparator.comparingInt(i -> i.getContent().getRating()))
                 .sorted((i1, i2) -> Integer.compare(i2.getContent().getRating(), i1.getContent().getRating()))
                 .collect(Collectors.toList());
         return CollectionModel.of(issues);

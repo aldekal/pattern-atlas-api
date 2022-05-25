@@ -31,11 +31,6 @@ public class Role {
     private Set<UserEntity> users;
 
     @ManyToMany(cascade = CascadeType.ALL)
-    /*@JoinTable(
-        name = "role_privileges",
-        joinColumns = { @JoinColumn(name = "roles_id") },
-        inverseJoinColumns = { @JoinColumn(name = "privileges_id") }
-    )*/
     private Collection<Privilege> privileges;
 
     public Role(String name) {

@@ -30,11 +30,6 @@ public class IssueComment extends Comment implements Serializable {
     @ManyToOne
     private Issue issue;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @ToString.Exclude
-    @ManyToOne
-    private UserEntity user;
-
     @JsonIgnore
     @OneToMany(mappedBy = "issueComment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<IssueCommentRating> userRating = new ArrayList<>();
@@ -42,9 +37,8 @@ public class IssueComment extends Comment implements Serializable {
     private int rating = 0;
 
     public IssueComment(String text, Issue issue, UserEntity user) {
-        super(text);
+        super(text, user);
         this.issue = issue;
-        this.user = user;
     }
 
     public void updateComment(String text) {

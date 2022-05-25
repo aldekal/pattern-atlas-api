@@ -245,11 +245,13 @@ public class UserServiceImpl implements UserService, UserAuthService {
         Role role = this.roleRepository.findById(roleId).orElseThrow(() -> new ResourceNotFoundException(String.format(" Role %s not found!", roleId)));
         Privilege privilege = this.privilegeRepository.findById(privilegeId).orElseThrow(() -> new ResourceNotFoundException(String.format("Privilege %s not found!", privilegeId)));
 
-        if (role.getPrivileges().contains(privilege) && !roleModelRequest.isCheckboxValue())
+        if (role.getPrivileges().contains(privilege) && !roleModelRequest.isCheckboxValue()) {
             role.getPrivileges().remove(privilege);
+        }
 
-        if (!role.getPrivileges().contains(privilege) && roleModelRequest.isCheckboxValue())
+        if (!role.getPrivileges().contains(privilege) && roleModelRequest.isCheckboxValue()) {
             role.getPrivileges().add(privilege);
+        }
 
         return this.roleRepository.save(role);
     }

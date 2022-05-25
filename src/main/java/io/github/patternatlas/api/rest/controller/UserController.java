@@ -8,6 +8,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import io.github.patternatlas.api.entities.user.UserEntity;
+import io.github.patternatlas.api.entities.user.role.Privilege;
+import io.github.patternatlas.api.entities.user.role.Role;
 import io.github.patternatlas.api.rest.model.user.PrivilegeModel;
 import io.github.patternatlas.api.rest.model.user.RoleModel;
 import io.github.patternatlas.api.rest.model.user.RoleModelRequest;
@@ -98,8 +100,13 @@ public class UserController {
             Map<String, Object> model = new HashMap<String, Object>();
             model.put("name", user.getName());
             model.put("id", user.getId());
-            model.put("role", user.getRoles().stream().map(role -> role.getName()).collect(Collectors.toList()));
-            model.put("privileges", user.getRoles().stream().flatMap(role -> role.getPrivileges().stream()).map(privilege -> privilege.getName()).collect(Collectors.toList()));
+            model.put("role", user.getRoles().stream()
+                    .map(Role::getName)
+                    .collect(Collectors.toList()));
+            model.put("privileges", user.getRoles().stream()
+                    .flatMap(role -> role.getPrivileges().stream())
+                    .map(Privilege::getName)
+                    .collect(Collectors.toList()));
             return model;
         }
         return null;

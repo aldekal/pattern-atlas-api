@@ -5,6 +5,8 @@ import io.github.patternatlas.api.entities.candidate.comment.CandidateCommentRat
 import io.github.patternatlas.api.entities.issue.IssueRating;
 import io.github.patternatlas.api.entities.issue.comment.IssueComment;
 import io.github.patternatlas.api.entities.issue.comment.IssueCommentRating;
+import io.github.patternatlas.api.entities.shared.Comment;
+import io.github.patternatlas.api.entities.user.UserEntity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -27,24 +29,32 @@ public class CommentModel {
     private Collection<UUID> upVotes = new ArrayList<>();
     private Collection<UUID> downVotes = new ArrayList<>();
 
+    private void initialize(Comment comment) {
+        this.id = comment.getId();
+        this.userId = comment.getUser().getId();
+        this.userName = comment.getUser().getName();
+        this.text = comment.getText();
+        this.rating = 0;
+    }
+
+    private void updateRatingInformation(UserEntity user, int rating) {
+        if (rating == 1) {
+            this.upVotes.add(user.getId());
+            this.rating = this.rating + 1;
+        }
+        if (rating == -1) {
+            this.downVotes.add(user.getId());
+            this.rating = this.rating - 1;
+        }
+    }
+
     /**
      * For Issue Comments
      */
     public CommentModel(IssueComment issueComment) {
-        this.id = issueComment.getId();
-        this.userId = issueComment.getUser().getId();
-        this.userName = issueComment.getUser().getName();
-        this.text = issueComment.getText();
-        this.rating = 0;
+        initialize(issueComment);
         for (IssueCommentRating issueRating : issueComment.getUserRating()) {
-            if (issueRating.getRating() == 1) {
-                this.upVotes.add(issueRating.getUser().getId());
-                this.rating = this.rating + 1;
-            }
-            if (issueRating.getRating() == -1) {
-                this.downVotes.add(issueRating.getUser().getId());
-                this.rating = this.rating - 1;
-            }
+            updateRatingInformation(issueRating.getUser(), issueRating.getRating());
         }
     }
 
@@ -56,20 +66,9 @@ public class CommentModel {
      * For Candidate Comments
      */
     public CommentModel(CandidateComment candidateComment) {
-        this.id = candidateComment.getId();
-        this.userId = candidateComment.getUser().getId();
-        this.userName = candidateComment.getUser().getName();
-        this.text = candidateComment.getText();
-        this.rating = 0;
-        for (CandidateCommentRating candidateCommentRating : candidateComment.getUserRating()) {
-            if (candidateCommentRating.getRating() == 1) {
-                this.upVotes.add(candidateCommentRating.getUser().getId());
-                this.rating = this.rating + 1;
-            }
-            if (candidateCommentRating.getRating() == -1) {
-                this.downVotes.add(candidateCommentRating.getUser().getId());
-                this.rating = this.rating - 1;
-            }
+        initialize(candidateComment);
+        for (CandidateCommentRating issueRating : candidateComment.getUserRating()) {
+            updateRatingInformation(issueRating.getUser(), issueRating.getRating());
         }
     }
 
