@@ -15,9 +15,21 @@ import io.github.patternatlas.api.entities.user.role.Privilege;
 import io.github.patternatlas.api.entities.user.role.PrivilegeConstant;
 import io.github.patternatlas.api.entities.user.role.Role;
 import io.github.patternatlas.api.entities.user.role.RoleConstant;
-import io.github.patternatlas.api.repositories.*;
+import io.github.patternatlas.api.repositories.CandidateAuthorRepository;
+import io.github.patternatlas.api.repositories.CandidateCommentRatingRepository;
+import io.github.patternatlas.api.repositories.CandidateCommentRepository;
+import io.github.patternatlas.api.repositories.CandidateEvidenceRatingRepository;
+import io.github.patternatlas.api.repositories.CandidateEvidenceRepository;
+import io.github.patternatlas.api.repositories.CandidateRatingRepository;
+import io.github.patternatlas.api.repositories.CandidateRepository;
 import io.github.patternatlas.api.rest.model.candidate.CandidateModelRequest;
-import io.github.patternatlas.api.rest.model.shared.*;
+import io.github.patternatlas.api.rest.model.shared.AuthorModel;
+import io.github.patternatlas.api.rest.model.shared.AuthorModelRequest;
+import io.github.patternatlas.api.rest.model.shared.CommentModel;
+import io.github.patternatlas.api.rest.model.shared.EvidenceModel;
+import io.github.patternatlas.api.rest.model.shared.RatingModelMultiRequest;
+import io.github.patternatlas.api.rest.model.shared.RatingModelRequest;
+import io.github.patternatlas.api.rest.model.shared.RatingType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +39,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
-import java.util.*;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service

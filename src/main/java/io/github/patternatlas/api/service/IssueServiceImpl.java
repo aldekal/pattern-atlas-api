@@ -1,9 +1,14 @@
 package io.github.patternatlas.api.service;
 
-import io.github.patternatlas.api.entities.issue.IssueRating;
-import io.github.patternatlas.api.entities.issue.comment.IssueComment;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import io.github.patternatlas.api.entities.issue.Issue;
+import io.github.patternatlas.api.entities.issue.IssueRating;
 import io.github.patternatlas.api.entities.issue.author.IssueAuthor;
+import io.github.patternatlas.api.entities.issue.comment.IssueComment;
 import io.github.patternatlas.api.entities.issue.comment.IssueCommentRating;
 import io.github.patternatlas.api.entities.issue.evidence.IssueEvidence;
 import io.github.patternatlas.api.entities.issue.evidence.IssueEvidenceRating;
@@ -13,23 +18,26 @@ import io.github.patternatlas.api.entities.user.role.Privilege;
 import io.github.patternatlas.api.entities.user.role.PrivilegeConstant;
 import io.github.patternatlas.api.entities.user.role.Role;
 import io.github.patternatlas.api.entities.user.role.RoleConstant;
-import io.github.patternatlas.api.repositories.*;
+import io.github.patternatlas.api.repositories.IssueAuthorRepository;
+import io.github.patternatlas.api.repositories.IssueCommentRatingRepository;
+import io.github.patternatlas.api.repositories.IssueCommentRepository;
+import io.github.patternatlas.api.repositories.IssueEvidenceRatingRepository;
+import io.github.patternatlas.api.repositories.IssueEvidenceRepository;
+import io.github.patternatlas.api.repositories.IssueRatingRepository;
+import io.github.patternatlas.api.repositories.IssueRepository;
 import io.github.patternatlas.api.rest.model.issue.IssueModelRequest;
 import io.github.patternatlas.api.rest.model.shared.AuthorModelRequest;
 import io.github.patternatlas.api.rest.model.shared.CommentModel;
 import io.github.patternatlas.api.rest.model.shared.EvidenceModel;
 import io.github.patternatlas.api.rest.model.shared.RatingModelRequest;
 
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional

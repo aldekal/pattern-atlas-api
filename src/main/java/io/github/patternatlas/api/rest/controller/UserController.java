@@ -1,29 +1,43 @@
 package io.github.patternatlas.api.rest.controller;
 
+import java.security.Principal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import io.github.patternatlas.api.entities.user.UserEntity;
-import io.github.patternatlas.api.rest.model.user.*;
+import io.github.patternatlas.api.rest.model.user.PrivilegeModel;
+import io.github.patternatlas.api.rest.model.user.RoleModel;
+import io.github.patternatlas.api.rest.model.user.RoleModelRequest;
+import io.github.patternatlas.api.rest.model.user.UserModel;
+import io.github.patternatlas.api.rest.model.user.UserModelRequest;
 import io.github.patternatlas.api.service.UserService;
 
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostFilter;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.security.Principal;
-import java.util.*;
-import java.util.stream.Collectors;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/users", produces = "application/hal+json")

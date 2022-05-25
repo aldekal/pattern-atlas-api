@@ -1,35 +1,38 @@
 package io.github.patternatlas.api.rest.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.security.Principal;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
-import io.github.patternatlas.api.config.Authority;
-import io.github.patternatlas.api.rest.model.issue.IssueModelRequest;
-import io.github.patternatlas.api.rest.model.shared.*;
 import io.github.patternatlas.api.rest.model.issue.IssueModel;
-import io.github.patternatlas.api.service.*;
+import io.github.patternatlas.api.rest.model.issue.IssueModelRequest;
+import io.github.patternatlas.api.rest.model.shared.AuthorModelRequest;
+import io.github.patternatlas.api.rest.model.shared.CommentModel;
+import io.github.patternatlas.api.rest.model.shared.EvidenceModel;
+import io.github.patternatlas.api.rest.model.shared.RatingModelRequest;
+import io.github.patternatlas.api.service.IssueService;
+import io.github.patternatlas.api.service.PatternLanguageService;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
-import liquibase.pro.packaged.P;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PostFilter;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/issues", produces = "application/hal+json")

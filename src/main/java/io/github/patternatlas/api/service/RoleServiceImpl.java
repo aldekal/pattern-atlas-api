@@ -1,17 +1,17 @@
 package io.github.patternatlas.api.service;
 
-import io.github.patternatlas.api.entities.user.role.Role;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
+
 import io.github.patternatlas.api.entities.user.role.Privilege;
-import io.github.patternatlas.api.repositories.*;
+import io.github.patternatlas.api.entities.user.role.Role;
+import io.github.patternatlas.api.repositories.RoleRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.UUID;
-import java.util.Collection;
 
 @Service
 @Transactional

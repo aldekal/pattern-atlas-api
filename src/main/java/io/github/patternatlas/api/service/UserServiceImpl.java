@@ -7,7 +7,9 @@ import io.github.patternatlas.api.entities.user.UserEntity;
 import io.github.patternatlas.api.repositories.PrivilegeRepository;
 import io.github.patternatlas.api.repositories.RoleRepository;
 import io.github.patternatlas.api.repositories.UserRepository;
-import io.github.patternatlas.api.rest.model.user.*;
+import io.github.patternatlas.api.rest.model.user.RoleModel;
+import io.github.patternatlas.api.rest.model.user.RoleModelRequest;
+import io.github.patternatlas.api.rest.model.user.UserModelRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +18,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service

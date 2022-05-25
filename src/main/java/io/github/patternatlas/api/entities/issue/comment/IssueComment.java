@@ -1,21 +1,23 @@
 package io.github.patternatlas.api.entities.issue.comment;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.github.patternatlas.api.entities.issue.Issue;
 import io.github.patternatlas.api.entities.shared.Comment;
 import io.github.patternatlas.api.entities.user.UserEntity;
-import io.github.patternatlas.api.entities.issue.comment.IssueCommentRating;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.*;
 
 @Entity
 @Data

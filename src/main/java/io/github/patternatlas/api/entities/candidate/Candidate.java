@@ -1,26 +1,30 @@
 package io.github.patternatlas.api.entities.candidate;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import io.github.patternatlas.api.entities.EntityWithURI;
 import io.github.patternatlas.api.entities.PatternLanguage;
 import io.github.patternatlas.api.entities.candidate.author.CandidateAuthor;
 import io.github.patternatlas.api.entities.candidate.comment.CandidateComment;
 import io.github.patternatlas.api.entities.candidate.evidence.CandidateEvidence;
-import io.github.patternatlas.api.entities.issue.evidence.IssueEvidence;
 import io.github.patternatlas.api.rest.model.candidate.CandidateModelRequest;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-
 import org.hibernate.annotations.Type;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.util.*;
 
 @Entity
 @Data

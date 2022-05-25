@@ -2,10 +2,15 @@ package io.github.patternatlas.api.entities.user.role;
 
 import io.github.patternatlas.api.entities.user.UserEntity;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.util.Set;
 import java.util.UUID;
 import java.util.Collection;

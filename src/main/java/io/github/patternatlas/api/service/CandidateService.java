@@ -1,21 +1,21 @@
 package io.github.patternatlas.api.service;
 
-import io.github.patternatlas.api.entities.candidate.Candidate;
-import io.github.patternatlas.api.entities.candidate.author.CandidateAuthor;
-import io.github.patternatlas.api.entities.candidate.comment.CandidateComment;
-import io.github.patternatlas.api.entities.candidate.comment.CandidateCommentRating;
-import io.github.patternatlas.api.entities.candidate.evidence.CandidateEvidence;
-import io.github.patternatlas.api.entities.candidate.evidence.CandidateEvidenceRating;
-import io.github.patternatlas.api.rest.model.candidate.CandidateModelRequest;
-import io.github.patternatlas.api.rest.model.shared.*;
+import java.util.List;
+import java.util.UUID;
 
-import org.springframework.http.ResponseEntity;
+import io.github.patternatlas.api.entities.candidate.Candidate;
+import io.github.patternatlas.api.entities.candidate.comment.CandidateComment;
+import io.github.patternatlas.api.entities.candidate.evidence.CandidateEvidence;
+import io.github.patternatlas.api.rest.model.candidate.CandidateModelRequest;
+import io.github.patternatlas.api.rest.model.shared.AuthorModelRequest;
+import io.github.patternatlas.api.rest.model.shared.CommentModel;
+import io.github.patternatlas.api.rest.model.shared.EvidenceModel;
+import io.github.patternatlas.api.rest.model.shared.RatingModelMultiRequest;
+import io.github.patternatlas.api.rest.model.shared.RatingModelRequest;
+
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
-
-import java.util.List;
-import java.util.UUID;
 
 public interface CandidateService {
     Candidate saveCandidate(Candidate candidate);
