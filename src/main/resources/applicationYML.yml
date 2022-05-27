@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: postgres
+    url: jdbc:postgresql://localhost:5060/patternatlas
+    username: patternatlas
+    password: patternatlas
     initialization-mode: always
   jpa:
     hibernate:
@@ -28,8 +28,4 @@ security:
       #      token-info-uri: http://localhost:8081/oauth/check_token
       jwk:
         key-set-uri: http://localhost:8081/.well-known/jwks.json
-
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
 

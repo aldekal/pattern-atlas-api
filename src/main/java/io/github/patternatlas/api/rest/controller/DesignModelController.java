@@ -18,6 +18,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.text.CaseUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
@@ -53,6 +54,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.apachecommons.CommonsLog;
 
 @RestController
+@ConditionalOnExpression(value = "false")  // TODO: set to true if the design models should be used again
 @CommonsLog
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping(value = "/design-models", produces = "application/hal+json")

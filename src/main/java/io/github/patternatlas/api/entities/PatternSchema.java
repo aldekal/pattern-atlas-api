@@ -1,6 +1,7 @@
 package io.github.patternatlas.api.entities;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -33,4 +34,9 @@ public class PatternSchema {
     @OneToOne
     @MapsId
     private PatternLanguage patternLanguage;
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, patternSectionSchemas);
+    }
 }

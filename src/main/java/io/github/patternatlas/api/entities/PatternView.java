@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -23,14 +24,17 @@ public class PatternView extends PatternGraph {
     private URL logo;
 
     @JsonIgnore
+    @ToString.Exclude
     @OneToMany(mappedBy = "patternView", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PatternViewPattern> patterns = new ArrayList<>();
 
     @JsonIgnore
+    @ToString.Exclude
     @OneToMany(mappedBy = "patternView", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PatternViewDirectedEdge> directedEdges;
 
     @JsonIgnore
+    @ToString.Exclude
     @OneToMany(mappedBy = "patternView", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PatternViewUndirectedEdge> undirectedEdges;
 

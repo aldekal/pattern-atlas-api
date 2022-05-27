@@ -36,6 +36,8 @@ ENV JDBC_DATABASE_NAME postgres
 ENV JDBC_DATABASE_PORT 5060
 ENV HAL_EXPLORER true
 
+ENV JWK_URI "http://localhost:8080/realms/patternatlas/protocol/openid-connect/certs"
+
 RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz

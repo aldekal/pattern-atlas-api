@@ -358,7 +358,7 @@ public class PatternController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(operationId = "addPatternToPatternLanguage", responses = {@ApiResponse(responseCode = "201")}, description = "Delete pattern from pattern view")
+    @Operation(operationId = "addPatternToPatternLanguage", responses = {@ApiResponse(responseCode = "201")}, description = "Add pattern to pattern language")
     @PostMapping(value = "/patternLanguages/{patternLanguageId}/patterns")
     @CrossOrigin(exposedHeaders = "Location")
     @ResponseStatus(HttpStatus.CREATED)

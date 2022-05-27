@@ -1,20 +1,19 @@
 package io.github.patternatlas.api.entities.issue;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+
+import io.github.patternatlas.api.entities.EntityWithURI;
+import io.github.patternatlas.api.entities.issue.author.IssueAuthor;
+import io.github.patternatlas.api.entities.issue.comment.IssueComment;
+import io.github.patternatlas.api.entities.issue.evidence.IssueEvidence;
+import io.github.patternatlas.api.rest.model.issue.IssueModelRequest;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import io.github.patternatlas.api.entities.issue.rating.IssueRating;
-import io.github.patternatlas.api.entities.user.UserEntity;
-import io.github.patternatlas.api.entities.EntityWithURI;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -27,42 +26,44 @@ public class Issue extends EntityWithURI {
 
     private String description;
 
-    private int rating = 0;
-
     private String version = "0.1.0";
+
+    private int rating;
 
     @JsonIgnore
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<IssueRating> userRating = new HashSet<>();
+    private List<IssueAuthor> authors = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<IssueRating> userRating = new ArrayList<>();
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<IssueComment> comments = new ArrayList<>();
 
-    public void addComment(IssueComment comment, UserEntity user) {
-        comments.add(comment);
-        comment.setIssue(this);
-        comment.setUser(user);
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<IssueEvidence> evidences = new ArrayList<>();
+
+    public Issue (IssueModelRequest issueModelRequest) {
+        this.setUri(issueModelRequest.getUri());
+        this.setName(issueModelRequest.getName());
+        this.setDescription(issueModelRequest.getDescription());
+        this.setVersion(issueModelRequest.getVersion());
+        this.setRating(issueModelRequest.getRating());
     }
 
-    public void updateComment(IssueComment updateComment) {
-        ListIterator<IssueComment> commentIterator = comments.listIterator();
-        while (commentIterator.hasNext()) {
-            IssueComment next = commentIterator.next();
-            if (next.getId().equals(updateComment.getId())) {
-                commentIterator.set(updateComment);
-                break;
-            }
-        }
-    }
-
-    public void removeComment(IssueComment comment) {
-        comments.remove(comment);
-        comment.setIssue(null);
-        comment.setUser(null);
+    public void updateIssue(IssueModelRequest issueModelRequest) {
+        this.setUri(issueModelRequest.getUri());
+        this.setName(issueModelRequest.getName());
+        this.setDescription(issueModelRequest.getDescription());
+        this.setVersion(issueModelRequest.getVersion());
+        this.setRating(issueModelRequest.getRating());
     }
 
     public String toString() {
-        return this.getId().toString() + this.getDescription();
+        return this.getId().toString() + this.getDescription() + this.getComments().toString();
     }
+
 }

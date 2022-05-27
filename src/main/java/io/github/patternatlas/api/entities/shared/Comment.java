@@ -2,12 +2,18 @@ package io.github.patternatlas.api.entities.shared;
 
 import java.util.Objects;
 import java.util.UUID;
+
+import io.github.patternatlas.api.entities.user.UserEntity;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @MappedSuperclass
 @Data
@@ -20,10 +26,14 @@ public abstract class Comment {
 
     private String text;
 
-    private int rating = 0;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @ToString.Exclude
+    @ManyToOne
+    private UserEntity user;
 
-    public Comment(String text) {
+    public Comment(String text, UserEntity user) {
         this.text = text;
+        this.user = user;
     }
 
     @Override
@@ -32,7 +42,8 @@ public abstract class Comment {
         if (!(o instanceof Comment)) return false;
         Comment that = (Comment) o;
         return id.equals(that.id) &&
-                text.equals(that.text);
+                text.equals(that.text) &&
+                user.equals(that.user);
     }
 
     @Override
@@ -42,6 +53,6 @@ public abstract class Comment {
 
     @Override
     public String toString() {
-        return "Comment: " + this.text + this.id.toString() + this.rating;
+        return "Comment: " + this.text + this.id.toString();
     }
 }

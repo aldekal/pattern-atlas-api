@@ -1,15 +1,13 @@
 package io.github.patternatlas.api.repositories;
 
+import io.github.patternatlas.api.entities.candidate.comment.CandidateCommentRating;
+import io.github.patternatlas.api.entities.shared.CompositeKey;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-import io.github.patternatlas.api.entities.candidate.CandidateComment;
-import io.github.patternatlas.api.entities.user.UserEntity;
-import io.github.patternatlas.api.entities.candidate.rating.CandidateCommentRating;
-import io.github.patternatlas.api.entities.candidate.rating.CandidateCommentRatingKey;
-
 @RepositoryRestResource(exported = false)
-public interface CandidateCommentRatingRepository extends JpaRepository<CandidateCommentRating, CandidateCommentRatingKey> {
+public interface CandidateCommentRatingRepository extends JpaRepository<CandidateCommentRating, CompositeKey> {
 
-    CandidateCommentRating findByCandidateCommentAndUser(CandidateComment candidateComment, UserEntity user);
+    boolean existsByIdAndRating(CompositeKey compositeKey, int rating);
 }

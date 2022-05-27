@@ -1,3 +1,4 @@
+
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
@@ -29,6 +30,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### MacOS File System ###
+**/.DS_STORE
 
 ### TexRendering ###
 *.png

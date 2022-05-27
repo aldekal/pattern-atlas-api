@@ -11,7 +11,7 @@ import io.github.patternatlas.api.entities.issue.Issue;
 @RepositoryRestResource(exported = false)
 public interface IssueRepository extends JpaRepository<Issue, UUID> {
 
-    Optional<Issue> findByUri(String uri);
-
-    boolean existsByUri(String uri);
+    public Optional<Issue> findByUri(String uri);
+    public boolean existsByUri(String uri);
+    public boolean existsByName(String name);
 }

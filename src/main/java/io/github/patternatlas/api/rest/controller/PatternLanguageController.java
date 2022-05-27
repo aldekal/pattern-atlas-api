@@ -39,7 +39,11 @@ import io.github.patternatlas.api.rest.model.GraphModel;
 import io.github.patternatlas.api.entities.PatternLanguage;
 import io.github.patternatlas.api.entities.PatternSchema;
 import io.github.patternatlas.api.rest.model.PatternLanguageModel;
+import io.github.patternatlas.api.rest.model.shared.PatternSchemaModel;
+import io.github.patternatlas.api.rest.model.PatternLanguageGraphModel;
+import io.github.patternatlas.api.rest.model.shared.PatternLanguageSchemaModel;
 import io.github.patternatlas.api.service.PatternLanguageService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -145,6 +149,16 @@ public class PatternLanguageController {
     ResponseEntity<Void> deletePatternLanguage(@PathVariable UUID patternLanguageId) {
         this.patternLanguageService.deletePatternLanguage(patternLanguageId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping(value = "/patternSchemas")
+    CollectionModel<EntityModel<PatternLanguageSchemaModel>> getAllPatternLanguagesWithSchema() {
+        List<EntityModel<PatternLanguageSchemaModel>> patternLanguages = this.patternLanguageService.getPatternLanguages()
+                .stream()
+                .map(patternLanguage -> new EntityModel<>(new PatternLanguageSchemaModel(patternLanguage)))
+                .collect(Collectors.toList());
+
+        return new CollectionModel<>(patternLanguages);
     }
 
     @Operation(operationId = "getPatternSchema", responses = {@ApiResponse(responseCode = "200")}, description = "Get pattern schema by pattern language id")

@@ -3,6 +3,7 @@ package io.github.patternatlas.api.rest.controller;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import io.github.patternatlas.api.service.DiscussionService;
 import io.github.patternatlas.api.service.ImageService;
 
 @RestController
+@ConditionalOnExpression(value = "false")  // TODO: check if the ImageController can be removed entirely
 @CrossOrigin(allowedHeaders = "*", origins = "*")
 public class ImageController {
 
