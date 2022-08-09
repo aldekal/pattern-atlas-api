@@ -17,6 +17,7 @@ import io.github.patternatlas.api.service.UserServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
@@ -53,6 +54,16 @@ public class ResourceSecurityExpressionRoot extends SecurityExpressionRoot imple
     }
 
     /**
+     * Checks if the user is logged in and makes sure the token-Information
+     * is stored in patternatlas db.
+     * @return true if the user is present in db and logged in, false otherwise
+     */
+    public boolean isLoggedIn() {
+        Optional<UUID> userId = loggedInUUID();
+        return userId.isPresent();
+    }
+
+    /**
      * Checks global permission for user.
      * Will only check for the exact permission (e.g. ISSUE_CREATE)
      * @param permissionType type of the permission (ISSUE_CREATE)
@@ -83,13 +94,21 @@ public class ResourceSecurityExpressionRoot extends SecurityExpressionRoot imple
             UserModelRequest req = new UserModelRequest();
             req.setId(userId);
             req.setName(preferredUsername);
-
-            if(this.userAuthService.hasUsers()) {
-                // Create standard member user
-                this.userAuthService.createInitialMember(req);
-            } else {
-                // There are no other users registered => create admin user as first user
-                this.userAuthService.createInitialAdmin(req);
+            try {
+                if(this.userAuthService.hasUsers()) {
+                    // Create standard member user
+                    this.userAuthService.createInitialMember(req);
+                } else {
+                    // There are no other users registered => create admin user as first user
+                    this.userAuthService.createInitialAdmin(req);
+                }
+            } catch (DataIntegrityViolationException e) {
+                /*
+                Is thrown if two simultaneous calls are the first calls a user makes to the API.
+                In this case the second create user call will fail since both calls are made with
+                the same ID. Since the call only fails if the user was properly created
+                by the first call, this exception can be ignored.
+                 */
             }
         } catch (JsonProcessingException e) {
             throw new UserNotFoundException("Cannot infer preferred username from Token");
