@@ -28,6 +28,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -93,6 +94,7 @@ public class UserController {
      */
     @RequestMapping(method = RequestMethod.GET, value = "/userinfo")
     @ResponseBody
+    @PreAuthorize(value = "isLoggedIn()") // must be checked here since user needs to be logged in to get info
     public Map<String, Object> user(Principal principal) {
         if (principal != null) {
             UUID id = UUID.fromString(principal.getName());

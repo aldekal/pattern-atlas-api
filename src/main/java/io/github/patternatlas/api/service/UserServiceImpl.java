@@ -11,8 +11,10 @@ import io.github.patternatlas.api.rest.model.user.RoleModel;
 import io.github.patternatlas.api.rest.model.user.RoleModelRequest;
 import io.github.patternatlas.api.rest.model.user.UserModelRequest;
 
+import javax.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -91,6 +93,7 @@ public class UserServiceImpl implements UserService, UserAuthService {
     }
 
     private UserEntity createInitialUser(UserModelRequest userModelRequest, String requestedRole) {
+        logger.info("Automatically creating user " + userModelRequest.getName() + " (role: " + requestedRole + ")");
         UserEntity user = new UserEntity(userModelRequest, "");
         user.setEmail("");
         user.getRoles().add(this.roleRepository.findByName(requestedRole));
@@ -99,14 +102,14 @@ public class UserServiceImpl implements UserService, UserAuthService {
     }
 
     @Override
+    @Transactional
     public UserEntity createInitialMember(UserModelRequest userModelRequest) {
         return createInitialUser(userModelRequest, RoleConstant.MEMBER);
     }
 
     @Override
+    @Transactional
     public UserEntity createInitialAdmin(UserModelRequest userModelRequest) {
-        logger.info("Automatically creating admin user " + userModelRequest.getName());
-
         return createInitialUser(userModelRequest, RoleConstant.ADMIN);
     }
 
