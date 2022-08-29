@@ -31,11 +31,9 @@ class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http
-                .requestMatchers()
-                .antMatchers("/**")
-                .and()
                 .authorizeRequests()
-                .anyRequest().permitAll()
+                .antMatchers("/**")
+                .permitAll()
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
