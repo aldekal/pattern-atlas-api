@@ -35,6 +35,7 @@ ENV DB_INIT_PASSWORD postgres
 ENV JDBC_DATABASE_NAME postgres
 ENV JDBC_DATABASE_PORT 5060
 ENV HAL_EXPLORER true
+ENV SECURITY_LOGLEVEL warn
 
 ENV JWK_URI "http://localhost:8080/realms/patternatlas/protocol/openid-connect/certs"
 

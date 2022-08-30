@@ -6,6 +6,7 @@ spring.datasource.url=jdbc:postgresql://{{.Env.JDBC_DATABASE_URL}}:{{.Env.JDBC_D
 spring.datasource.username={{.Env.JDBC_DATABASE_USERNAME}}
 spring.datasource.password={{.Env.JDBC_DATABASE_PASSWORD}}
 logging.level.io.github.patternatlas.api=info
+logging.level.org.springframework.security={{.Env.SECURITY_LOGLEVEL}}
 spring.jpa.show-sql=false
 spring.jpa.generate-ddl=true
 spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
