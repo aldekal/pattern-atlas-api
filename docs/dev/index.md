@@ -9,21 +9,22 @@ This is achieved through using the OAuth 2.0 Authentication Code Flow, additiona
 It runs on Port 8081
 
 ### Development
-1. Clone the repository `git clone https://github.com/PatternAtlas/pattern-pedia-auth.git`.
-2. Navigate to repository directory `cd pattern-pedia-auth/`.
-2. Build the repository 
-    - `mvn package -DskipTests`(Windows) (skiping the tests for a faster build), Java 8 required.
-    - `./mvnw clean package -DskipTests`(Unix) (skiping the tests for a faster build), Java 8 required.
-#### Docker Installation
-3. Build the image `docker build -t patternpedia/auth .` ([Docker](https://docs.docker.com/get-docker/) required)
 
-##### Auth & DB
-4. Navigate to directory  `..\.docker\`
-5. Insert the following commands  `docker-compose -f docker-compose-with-db.yml up -d`
+1. Run the maven build `mvn package -DskipTests`
+2. Clone the contents repository `git clone https://github.com/PatternAtlas/pattern-atlas-content`.
+3. Clone the Docker repository `git clone https://github.com/PatternAtlas/pattern-atlas-docker`
+4. Setup IntelliJ to also use the contents repository in the deployment. :warning: you MUST use the _Applicaition_ run configuration, not _Spring Boot_!
+  ![Run-Configuration](IntelliJ-run-config.png)
+5. Start the development configuration using docker compose:
+   1. Change into the docker compose repository
+   2. Run the following command  `docker-compose -f docker-compose.dev.yml up -d`
+6. Run the Pattern Atlas using IntelliJ
+7. Go to <http://localhost:7080/> and login with user admin and password admin
+8. Add a user by ONLY specifying her name
+9. Afterwards, under the _Credentials_ tab, you can set a password for this user. Make sure to set the `Temporary` flag to `false`!
+10. Start the UI (either using Docker or local setup)
+11. Go to <http://localhost:1978> and login. The first user is automatically assigned to the ADMIN role.
 
-##### Auth
-4. Navigate to directory  `..\.docker\`
-5. Insert the following commands  `docker-compose up -d`
 
 #### IntelliJ
 3. [Follow PatternAtlasAPI from Step 5 pls](#step5)
