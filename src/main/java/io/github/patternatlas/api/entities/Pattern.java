@@ -46,4 +46,10 @@ public class Pattern extends EntityWithURI {
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
     private Object renderedContent;
+
+    @Column(columnDefinition = "boolean default false")
+    private Boolean deploymentModelingStructurePattern;
+
+    @Column(columnDefinition = "boolean default false")
+    private Boolean deploymentModelingBehaviorPattern;
 }
