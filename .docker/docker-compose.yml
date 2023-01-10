@@ -1,13 +1,13 @@
 version: '3'
 services:
   db:
-    image: postgres:10
+    image: postgres:15
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+      POSTGRES_USER: patternatlas
+      POSTGRES_PASSWORD: patternatlas
+      POSTGRES_DB: patternatlas
     ports:
-      - "5432:5432"
+      - "5060:5432"
     networks:
       - default
 networks:
